@@ -25,6 +25,8 @@ app_title = tk.Label(frametop, text="Config General Printing Application", font=
 tab1 = tk.Frame(frame2)
 tab1a = tk.Frame(tab1)
 tab2 = tk.Frame(frame2)
+tab2a = tk.Frame(tab2)
+tab2b = tk.Frame(tab2)
 tab3 = tk.Frame(frame2)
 tab4 = tk.Frame(frame2)
 frame2.add(tab1, text = "Singles")
@@ -33,6 +35,8 @@ frame2.add(tab3, text = "Range")
 frame2.add(tab4, text = "Range-Auto")
 
 tab1a.pack(padx=20, pady=20)
+tab2a.pack(padx=20, pady=20)
+tab2b.pack(padx=20, pady=20)
 
 printer_select = tk.StringVar(None, "LPT1")
 tag_select = tk.IntVar(value=0)
@@ -47,8 +51,24 @@ def set_tag():
     global tag_select
     if tag_select.get() == 0:
         asset_type.set("Asset Tag :")
+        frame2.tab(2, state="normal")
+        frame2.tab(3, state="normal")
     elif tag_select.get() == 1:
         asset_type.set("Serial Number :")
+        frame2.tab(2, state="disabled")
+        frame2.tab(3, state="disabled")
+
+def return_key(event = None):
+    tab_name = frame2.select()
+    tab_index = frame2.index(tab_name)
+    if tab_index == 0:
+        print("Singles")
+    if tab_index == 1:
+        print("Groups")
+    if tab_index == 2:
+        print("Range")
+    if tab_index == 3:
+        print("Range-Auto")
 
 printer_label = tk.Label(master=frame1b,
                             text="Select printer:").pack(padx=10, side=TOP)
@@ -83,9 +103,25 @@ exit_button = tk.Button(master=frame1d,
                     text="Quit",
                     command=exit).pack()              
 
+# ============ Single Tab ============
+
 single_label = tk.Label(master=tab1a,
                             textvariable=asset_type).pack(side=LEFT)
 
 single_entry = tk.Entry(master=tab1a).pack(side=LEFT)
 
+# ============ Groups Tab ============
+
+group_label = tk.Label(master=tab2a,
+                            textvariable=asset_type).pack(side=LEFT)
+
+group_entry = tk.Entry(master=tab2a).pack(side=LEFT)
+
+group_textbox = tk.Text(master=tab2b).pack(side=BOTTOM)
+
+# ============ Range Tab ============
+
+# ============ Range-Auto Tab ============
+
+root.bind('<Return>', return_key)
 root.mainloop()
