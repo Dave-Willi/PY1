@@ -10,15 +10,15 @@ root.title("Config printing app")
 root.geometry=("780x520")
 
 frametop = tk.Frame(root, height=520,width=780)
-frame1 = tk.Frame(root, height=470, width=200, bg="red")
+frame1 = tk.Frame(root, height=470, width=200, bg="black")
 frame2 = Notebook (root, height=470, width=680)
 frametop.pack(side=TOP)
 frame1.pack(padx=10,pady=10,side=LEFT,fill=Y, expand=False)
 frame2.pack(padx=10,pady=10,side=RIGHT)
-frame1a = tk.Frame(frame1, height=60, pady=40, bg="blue").pack(side=TOP,fill=Y, expand=True)
-frame1b = tk.Frame(frame1, height=80, pady=60, bg="green").pack(side=TOP,fill=Y, expand=True)
-frame1c = tk.Frame(frame1, height=80, pady=60).pack(side=TOP,fill=Y, expand=True)
-frame1d = tk.Frame(frame1).pack(side=BOTTOM,fill=Y, expand=True)
+frame1a = tk.Frame(frame1, height=60, pady=40, bg="blue").pack(side=TOP,fill=y, expand=True)
+frame1b = tk.Frame(frame1, height=80, pady=60, bg="green").pack(side=TOP,fill=y, expand=True)
+frame1c = tk.Frame(frame1, height=80, pady=60).pack(side=TOP,fill=y, expand=True)
+frame1d = tk.Frame(frame1).pack(side=BOTTOM,fill=y, expand=True)
 
 app_title = tk.Label(frametop, text="Config General Printing Application", font="Helvetica").pack(side=TOP)
 
@@ -65,6 +65,10 @@ def return_key(event = None):
         print("Singles")
     if tab_index == 1:
         print("Groups")
+        if group_textbox == Null:
+            group_textbox.insert(end, group_entry)
+        else:
+            group_textbox.insert(end, ("," + group_entry))
     if tab_index == 2:
         print("Range")
     if tab_index == 3:
