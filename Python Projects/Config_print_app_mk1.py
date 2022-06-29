@@ -1,21 +1,42 @@
-from email.policy import strict
+from email.mime import image
 from tkinter import *
 import tkinter as tk
+from tkinter import messagebox
 from tkinter.ttk import Notebook
 import os
 import sys
 import subprocess
+from PIL import Image, ImageTk
 
 root = Tk()
 root.title("Config printing app")
 root.geometry=("780x520")
 
+# ============ Variables ============
+
+range_prefix = tk.StringVar(None, "")
+range_suffix = tk.StringVar(None, "")
+range_start = tk.StringVar(None)
+range_end = tk.StringVar(None)
+printer_select = tk.StringVar(None, "LPT1")
+tag_select = tk.IntVar(value=0)
+asset_type = tk.StringVar(None, "Asset Tag :")
+cust_quantity = tk.IntVar(None)
+
 # ============ Frames ============
 
 frametop = tk.Frame(root,
-                    height=520,
+                    height=100,
                     width=780)
 frametop.pack(side=TOP)
+frametop1 = tk.Frame(frametop,
+                    height=100,
+                    width=680)
+frametop1.pack(side=RIGHT)
+frametop2 = tk.Frame(frametop,
+                    height=100,
+                    width=100)
+frametop2.pack(side=LEFT)
 frame1 = tk.Frame(root,
                     height=470,
                     width=200)
@@ -30,7 +51,11 @@ frame1.grid_columnconfigure(0, weight=1)
 
 # ============ Title piece ============
 
-app_title = tk.Label(frametop, text="Config General Printing Application", font=("Helvetica",25)).pack(side=TOP)
+logo_img = ImageTk.PhotoImage(Image.open("Images/2560px-CDW_Logo.svg.png").resize((100, 60)))
+logo = Label(frametop2, image=logo_img)
+logo.image = "Images/2560px-CDW_Logo.svg.png"
+logo.pack()
+app_title = tk.Label(frametop1, text="Config General Printing Application", font=("Helvetica",25)).pack(side=TOP)
 
 # ============ Tabs ============
 
@@ -46,15 +71,13 @@ frame2.add(tab1, text = "Singles")
 frame2.add(tab2, text = "Groups")
 frame2.add(tab3, text = "Range")
 frame2.add(tab4, text = "Range-Auto")
-frame2.add(tab5, text = "Other malarky")
+frame2.add(tab5, text = "Customer Labels")
 frame2.add(tab6, text = "Report low print stock")
 
 tab2a.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
 tab2b.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
 
-printer_select = tk.StringVar(None, "LPT1")
-tag_select = tk.IntVar(value=0)
-asset_type = tk.StringVar(None, "Asset Tag :")
+# ============ Side menu commands ============
 
 def reset():
     root.destroy()
@@ -93,10 +116,6 @@ def return_key(event = None):
             group_textbox.insert("end", (", " + group_entry.get().upper()))
             group_entry.delete(0, END)
             group_entry.focus()
-    if tab_index == 2:
-        print("Range")
-    if tab_index == 3:
-        print("Range-Auto")
 
 # ============ Command definitions ============
 
@@ -108,13 +127,23 @@ def print_group_text():
     group_textbox.delete("1.0", END)
 
 def clear_range():
-    range_entry2.delete()
-    range_entry3.delete()
-    range_entry4.delete()
-    range_entry5.delete()
+    range_entry2.delete(0, END)
+    range_entry3.delete(0, END)
+    range_start.set(0)
+    range_end.set(0)
 
 def print_range():
-    print("printing range")
+    total_print = 1 + int(range_end.get()) - int(range_start.get())
+    if total_print <= 0:
+        messagebox.showerror("Error", "Please sure you have the start and end numbers the correct way around")
+        return
+    answer = messagebox.askyesno("Question","This will print " + str(total_print) + " labels.\nDo you wish to continue?")
+    if answer == True:
+        print("proceed to print range")
+        #z.output("^XA^LH10,5^FO120,0^AsN,20,20^FDDevice Asset Tag^FS^FO03,40^B3N,N,95,Y,N^FD" + str(range_prefix) + str(range_start) + str(range_suffix) + "^FS^XZ")
+            
+    else:
+        print("Print has been aborted")
 
 # ============ Settings panel (frame1a) ============
 
@@ -184,7 +213,7 @@ group_label = tk.Label(master=tab2a,
                         textvariable=asset_type)
 group_label.pack(side=LEFT)
 
-group_entry = tk.Entry(master=tab2a)
+group_entry = tk.Entry(master=tab2a,)
 group_entry.pack(side=LEFT, padx=10)
 
 group_clear = tk.Button(master=tab2b,
@@ -194,7 +223,6 @@ group_clear.pack(side=LEFT)
 
 group_print = tk.Button(master=tab2b,
                         text="Print",
-                        bg="grey80",
                         command=print_group_text)
 group_print.pack(side=LEFT, padx=100)
 
@@ -211,14 +239,16 @@ range_label2 = tk.Label(master=tab3,
                         text="Enter the Prefix of the tag")
 range_label2.pack()
 
-range_entry2 = tk.Entry(master=tab3)
+range_entry2 = tk.Entry(master=tab3,
+                        textvariable=range_prefix)
 range_entry2.pack()
 
 range_label3 = tk.Label(master=tab3,
                         text="Enter the Suffix of the tag")
 range_label3.pack()
 
-range_entry3 = tk.Entry(master=tab3)
+range_entry3 = tk.Entry(master=tab3,
+                        textvariable=range_suffix)
 range_entry3.pack()
 
 range_label4 = tk.Label(master=tab3,
@@ -226,7 +256,8 @@ range_label4 = tk.Label(master=tab3,
 range_label4.pack()
 
 range_entry4 = tk.Spinbox(master=tab3,
-                        from_=0, to=99999999999999999)
+                        from_=0, to=99999999999999999,
+                        textvariable=range_start)
 range_entry4.pack()
 
 range_label5 = tk.Label(master=tab3,
@@ -234,7 +265,8 @@ range_label5 = tk.Label(master=tab3,
 range_label5.pack()
 
 range_entry5 = tk.Spinbox(master=tab3,
-                        from_=0, to=99999999999999999)
+                        from_=0, to=99999999999999999,
+                        textvariable=range_end)
 range_entry5.pack()
 
 range_clear = tk.Button(master=tab3,
@@ -244,15 +276,19 @@ range_clear.pack(side=LEFT)
 
 range_print = tk.Button(master=tab3,
                         text="Print",
-                        bg="grey80",
                         command=print_range)
 range_print.pack(side=LEFT, padx=100)
 
 # ============ Range-Auto Tab (tab4) ============
 
-# ============ Malarky Tab (tab5) ============
+# ============ Customer label Tab (tab5) ============
 
-print_quantity = tk.Spinbox(master=tab5, from_=0, to=9999)
+print_quantity_label = tk.Label(master=tab5,
+                                text="Enter quantity of labels required")
+print_quantity_label.pack()
+
+print_quantity = tk.Spinbox(master=tab5, from_=0, to=9999,
+                            textvariable=cust_quantity)
 print_quantity.pack(padx=5, pady=5)
 
 bbc_button = tk.Button(master=tab5,
@@ -269,20 +305,39 @@ bbc_button.pack(padx=5, pady=5)
 
 # ============ Report Tab (tab6) ============
 
-label1 = tk.Label(master=tab6,
-                    text="How many rolls of labels remain?")
-label1.pack(pady=5)
+tab6a = tk.Frame(master=tab6)
+tab6a.pack(pady=20)
+tab6b = tk.Frame(master=tab6)
+tab6b.pack(pady=20)
 
-labels_remain = tk.Spinbox(master=tab6, from_=0, to=5, wrap=True)
-labels_remain.pack(pady=5)
+label_6a = tk.Label(master=tab6a,
+                    text="Less than 5 rolls of labels remaining?")
+label_6a.grid(row=0, column=0)
 
-label_send = tk.Button(master=tab6,
-                        text="Alert Admins")
-label_send.pack(pady=5)
+labels_ribbon = tk.Checkbutton(master=tab6a, text="Also ribbons?")
+labels_ribbon.grid(row=1, column=1)
 
-label2 = tk.Label(master=tab6,
-                    text="More than 5 packs is plenty and doesn't need to be reported")
-label2.pack(pady=5)
+labels_remain = tk.Spinbox(master=tab6a, from_=0, to=5, wrap=True)
+labels_remain.grid(row=0, column=1)
+
+labels_alert = tk.Button(master=tab6a,
+                        text="Report labels")
+labels_alert.grid(row=1, column=0)
+
+label_6b = tk.Label(master=tab6b,
+                    text="Faulty Network port:")
+label_6b.grid(row=1, column=0)
+
+label_6bb = tk.Label(master=tab6b,
+                    text="enter switch number and full port number (i.e. SW5 Gi2/0/4)")
+label_6bb.grid(row=0, column=0, columnspan=3)
+
+port_entry = tk.Entry(master=tab6b)
+port_entry.grid(row=1, column=2)
+
+ports_alert = tk.Button(master=tab6b,
+                        text="Report port")
+ports_alert.grid(row=2, column=2)
 
 # ============ Start up the routine ============
 
