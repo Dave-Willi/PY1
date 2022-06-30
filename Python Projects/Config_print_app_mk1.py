@@ -107,6 +107,7 @@ def return_key(event = None):
     tab_name = frame2.select()
     tab_index = frame2.index(tab_name)
     if tab_index == 0:
+        print("Device " + str(asset_type.get()))
         print(single_entry.get().upper())
         single_entry.delete(0, END)
         single_entry.focus()
@@ -129,6 +130,8 @@ def clear_group_text():
     group_textbox.delete("1.0", END)
 
 def print_group_text():
+    result = len(group_textbox.get("1.0", END).split(","))
+    print("This will print " + str(result) + " tags.")
     print(group_textbox.get("1.0", END))
     group_textbox.delete("1.0", END)
 
