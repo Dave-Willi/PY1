@@ -107,11 +107,17 @@ def return_key(event = None):
     tab_name = frame2.select()
     tab_index = frame2.index(tab_name)
     if tab_index == 0:
-        print("Device " + str(asset_type.get()))
-        print(single_entry.get().upper())
-        single_entry.delete(0, END)
-        single_entry.focus()
-        return
+        if single_entry.get() != "":
+            print("Device " + str(asset_type.get()))
+            print(single_entry.get().upper())
+            single_entry.delete(0, END)
+            single_entry.focus()
+            return
+        else:
+            print("Not a tag")
+            single_entry.delete(0, END)
+            single_entry.focus()
+            return
     if tab_index == 1:
         if group_entry.get() == "":
             return
