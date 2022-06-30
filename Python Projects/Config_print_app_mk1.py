@@ -28,23 +28,29 @@ cust_quantity = tk.IntVar(None)
 frametop = tk.Frame(root,
                     height=100,
                     width=780)
-frametop.pack(side=TOP)
+frametop.pack(side=TOP, fill=X, expand=False)
+
 frametop1 = tk.Frame(frametop,
-                    height=100,
-                    width=680)
-frametop1.pack(side=RIGHT)
-frametop2 = tk.Frame(frametop,
-                    height=100,
+                    height=80,
                     width=100)
-frametop2.pack(side=LEFT)
+frametop1.pack(side=LEFT, anchor=W)
+
+frametop2 = tk.Frame(frametop,
+                    height=80,
+                    width=680)
+frametop2.pack(side=RIGHT)
+frametop2.place(relx=0.25, y=15)
+
 frame1 = tk.Frame(root,
-                    height=470,
-                    width=200)
+                height=490,
+                width=200)
 frame1.pack(padx=10, pady=10, anchor=W, fill=Y, expand=False, side=LEFT)
+
 frame2 = Notebook (root, 
                     height=470,
                     width=680,)
 frame2.pack(padx=10,pady=10, anchor=E, fill=BOTH, expand=True, side=RIGHT)
+
 frame1.grid_rowconfigure((0,1,2,4,5,6,8,9), weight=1)
 frame1.grid_rowconfigure((3,7), weight=8)
 frame1.grid_columnconfigure(0, weight=1)
@@ -52,10 +58,10 @@ frame1.grid_columnconfigure(0, weight=1)
 # ============ Title piece ============
 
 logo_img = ImageTk.PhotoImage(Image.open("Images/2560px-CDW_Logo.svg.png").resize((100, 60)))
-logo = Label(frametop2, image=logo_img)
+logo = Label(frametop1, image=logo_img)
 logo.image = "Images/2560px-CDW_Logo.svg.png"
-logo.pack()
-app_title = tk.Label(frametop1, text="Config General Printing Application", font=("Helvetica",25)).pack(side=TOP)
+logo.pack(side=LEFT, anchor=W, padx=10, pady=10)
+app_title = tk.Label(frametop2, text="Config General Printing Application", font=("Helvetica",25)).pack(side=TOP)
 
 # ============ Tabs ============
 
@@ -139,9 +145,10 @@ def print_range():
         return
     answer = messagebox.askyesno("Question","This will print " + str(total_print) + " labels.\nDo you wish to continue?")
     if answer == True:
+        lead_zeros = len(range_end.get())
         print("proceed to print range")
-        #z.output("^XA^LH10,5^FO120,0^AsN,20,20^FDDevice Asset Tag^FS^FO03,40^B3N,N,95,Y,N^FD" + str(range_prefix) + str(range_start) + str(range_suffix) + "^FS^XZ")
-            
+        for x in range(int(range_start.get()), int(range_end.get())+1):
+            print(str(range_prefix.get()).upper() + str(x).zfill(lead_zeros) + str(range_suffix.get()).upper())
     else:
         print("Print has been aborted")
 
