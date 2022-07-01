@@ -1,11 +1,12 @@
-from email.mime import image
-from tkinter import *
+import os
+import re
+import subprocess
+import sys
 import tkinter as tk
+from tkinter import *
 from tkinter import messagebox
 from tkinter.ttk import Notebook
-import os
-import sys
-import subprocess
+
 from PIL import Image, ImageTk
 
 root = Tk()
@@ -22,7 +23,14 @@ printer_select = tk.StringVar(None, "LPT1")
 tag_select = tk.IntVar(value=0)
 asset_type = tk.StringVar(None, "Asset Tag :")
 cust_quantity = tk.IntVar(None)
-
+auto_1 = tk.StringVar(None)
+auto_2 = tk.StringVar(None)
+auto_prefix1 = ""
+auto_start = ""
+auto_suffix1 = "" 
+auto_prefix2 = ""
+auto_end = ""
+auto_suffix2 = ""
 # ============ Frames ============
 
 frametop = tk.Frame(root,
@@ -71,6 +79,7 @@ tab2a = tk.Frame(tab2)
 tab2b = tk.Frame(tab2)
 tab3 = tk.Frame(frame2)
 tab4 = tk.Frame(frame2)
+tab4a = tk.Frame(tab4)
 tab5 = tk.Frame(frame2)
 tab6 = tk.Frame(frame2)
 frame2.add(tab1, text = "Singles")
@@ -78,11 +87,11 @@ frame2.add(tab2, text = "Groups")
 frame2.add(tab3, text = "Range")
 frame2.add(tab4, text = "Range-Auto")
 frame2.add(tab5, text = "Customer Labels")
-frame2.add(tab6, text = "Report low print stock")
+frame2.add(tab6, text = "Reports")
 
 tab2a.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
 tab2b.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
-
+tab4a.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10, fill=BOTH)
 # ============ Side menu commands ============
 
 def reset():
@@ -144,9 +153,13 @@ def print_group_text():
 def clear_range():
     range_entry2.delete(0, END)
     range_entry3.delete(0, END)
-    range_start.set(0)
-    range_end.set(0)
+    range_start.delete(0, END)
+    range_end.delete(0, END)
 
+def clear_auto():
+    auto_entry1.delete(0, END)
+    auto_entry2.delete(0, END)
+    
 def print_range():
     total_print = 1 + int(range_end.get()) - int(range_start.get())
     if total_print <= 0:
@@ -159,7 +172,38 @@ def print_range():
         for x in range(int(range_start.get()), int(range_end.get())+1):
             print(str(range_prefix.get()).upper() + str(x).zfill(lead_zeros) + str(range_suffix.get()).upper())
     else:
-        print("Print has been aborted")
+        messagebox.showinfo("","Printing has been aborted")
+
+
+# ============ Auto Range (Experimental)============
+
+def print_auto():
+    auto_range_split1 = re.split("(\d+)", auto_1.get())
+    auto_range_split2 = re.split("(\d+)", auto_2.get())
+    auto_prefix1 = auto_range_split1[0]
+    auto_start = auto_range_split1[1]
+    auto_suffix1 = auto_range_split1[2]
+    auto_prefix2 = auto_range_split2[0]
+    auto_end = auto_range_split2[1]
+    auto_suffix2 = auto_range_split2[2]
+    if auto_prefix1 != auto_prefix2:
+        messagebox.showerror("Error", "Error detected in the prefix. Please check and try again")
+        return
+    elif auto_suffix1 != auto_suffix2:
+        messagebox.showerror("Error", "Error detected in the suffix. Please check and try again")
+        return
+    else:
+        total_print = 1 + int(auto_end) - int(auto_start)
+        if total_print <= 0:
+            messagebox.showerror("Error", "Please sure you have the start and end numbers the correct way around")
+            return
+        answer = messagebox.askyesno("Question","This will print " + str(total_print) + " labels.\nDo you wish to continue?")
+        if answer == True:
+            lead_zeros = len(auto_end)
+            for x in range(int(auto_start), int(auto_end)+1):
+                print(str(auto_prefix1).upper() + str(x).zfill(lead_zeros) + str(auto_suffix1.upper()))
+        else:
+            messagebox.showinfo("","Printing has been aborted")
 
 # ============ Settings panel (frame1a) ============
 
@@ -268,20 +312,18 @@ range_entry3 = tk.Entry(master=tab3,
 range_entry3.pack()
 
 range_label4 = tk.Label(master=tab3,
-                        text="Enter the start number of the range")
+                        text="Enter the starting number of the range")
 range_label4.pack()
 
-range_entry4 = tk.Spinbox(master=tab3,
-                        from_=0, to=99999999999999999,
+range_entry4 = tk.Entry(master=tab3,
                         textvariable=range_start)
 range_entry4.pack()
 
 range_label5 = tk.Label(master=tab3,
-                        text="Enter the end number of the range")
+                        text="Enter the ending number of the range")
 range_label5.pack()
 
-range_entry5 = tk.Spinbox(master=tab3,
-                        from_=0, to=99999999999999999,
+range_entry5 = tk.Entry(master=tab3,
                         textvariable=range_end)
 range_entry5.pack()
 
@@ -296,6 +338,38 @@ range_print = tk.Button(master=tab3,
 range_print.pack(side=LEFT, padx=100)
 
 # ============ Range-Auto Tab (tab4) ============
+
+auto_label1 = tk.Label(master=tab4a,
+                        text="Scan the first tag in the range")
+auto_label1.pack()
+
+auto_entry1 = tk.Entry(master=tab4a,
+                        textvariable=auto_1)
+auto_entry1.pack()
+
+auto_label2 = tk.Label(master=tab4a,
+                        text="Scan the last tag in the range")
+auto_label2.pack()
+
+auto_entry2 = tk.Entry(master=tab4a,
+                        textvariable=auto_2)
+auto_entry2.pack()
+
+auto_clear = tk.Button(master=tab4a,
+                        text="Clear",
+                        command=clear_auto)
+auto_clear.pack(side=LEFT, padx=40)
+
+auto_print = tk.Button(master=tab4a,
+                        text="Print",
+                        command=print_auto)
+auto_print.pack(side=LEFT, padx=40)
+
+warn_label = tk.Label(master=tab4a,
+                        text="Experimental\nUse caution",
+                        font=("Helvetica",18),
+                        fg="red")
+warn_label.pack(side=TOP, padx=40, pady=40)
 
 # ============ Customer label Tab (tab5) ============
 
@@ -319,7 +393,7 @@ bbc_button = tk.Button(master=tab5,
                         text="UOB PC QR Code")
 bbc_button.pack(padx=5, pady=5)
 
-# ============ Report Tab (tab6) ============
+# ============ Reports Tab (tab6) ============
 
 tab6a = tk.Frame(master=tab6)
 tab6a.pack(pady=20)
