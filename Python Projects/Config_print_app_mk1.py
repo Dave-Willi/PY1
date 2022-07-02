@@ -6,7 +6,7 @@ import tkinter as tk
 from tkinter import *
 from tkinter import messagebox
 from tkinter.ttk import Notebook
-
+import socket
 from PIL import Image, ImageTk
 
 root = Tk()
@@ -25,12 +25,14 @@ asset_type = tk.StringVar(None, "Asset Tag :")
 cust_quantity = tk.IntVar(None)
 auto_1 = tk.StringVar(None)
 auto_2 = tk.StringVar(None)
-auto_prefix1 = ""
-auto_start = ""
-auto_suffix1 = "" 
-auto_prefix2 = ""
-auto_end = ""
-auto_suffix2 = ""
+
+# ============ Printer Setup ============
+
+mysocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+mysocket.settimeout(10.0)
+host = str(printer_select.get())
+port = 9100
+
 # ============ Frames ============
 
 frametop = tk.Frame(root,
@@ -113,14 +115,26 @@ def set_tag():
 # ============ What to do when the enter key is pressed ============
 
 def return_key(event = None):
+    host = str(printer_select.get())
     tab_name = frame2.select()
     tab_index = frame2.index(tab_name)
     if tab_index == 0:
         if single_entry.get() != "":
-            print("Device " + str(asset_type.get()))
-            print(single_entry.get().upper())
-            single_entry.delete(0, END)
-            single_entry.focus()
+            print("host = " + str(host))
+            print("port = " + str(port))
+            try:
+                zplMessage = bytes(single_entry.get(),'utf-8')  
+                mysocket.connect((host, port)) #connecting to host
+                mysocket.send(b"^XA^A0N,50,50^FO50,50^FD" + zplMessage + b"^FS^XZ")#using bytes
+                #mysocket.send(b"^XA^A0N,50,50^FO50,50^FDSocket Test^FS^XZ")#using bytes
+                #mysocket.shutdown(socket.SHUT_RDWR)
+                mysocket.close() #closing connection
+            except:
+                print("Error with the connection")
+            # print("Device " + str(asset_type.get()))
+            # print(single_entry.get().upper())
+            # single_entry.delete(0, END)
+            # single_entry.focus()
             return
         else:
             print("Not a tag")
@@ -178,32 +192,69 @@ def print_range():
 # ============ Auto Range (Experimental)============
 
 def print_auto():
+    if auto_1.get() == "" or auto_2.get() == "":
+        return
+    if auto_1.get() == auto_2.get():
+        messagebox.showerror("Error", "Error, that's the same tag twice")
+        return
+    auto_prefix1 = ""
+    auto_start = ""
+    auto_suffix1 = "" 
+    auto_prefix2 = ""
+    auto_end = ""
+    auto_suffix2 = ""
     auto_range_split1 = re.split("(\d+)", auto_1.get())
     auto_range_split2 = re.split("(\d+)", auto_2.get())
-    auto_prefix1 = auto_range_split1[0]
-    auto_start = auto_range_split1[1]
-    auto_suffix1 = auto_range_split1[2]
-    auto_prefix2 = auto_range_split2[0]
-    auto_end = auto_range_split2[1]
-    auto_suffix2 = auto_range_split2[2]
+    if len(auto_1.get()) != len(auto_2.get()) or len(auto_range_split1) != len(auto_range_split2):
+        messagebox.showerror("Error", "Error, tags don't match")
+        return
+    y = 0
+    z = 0
+    for x in auto_range_split1: #cycles through however many splits exist in the first split
+        if auto_range_split1[y] != auto_range_split2[y]:
+            z = y + 1
+            auto_start = auto_range_split1[y]
+            auto_end = auto_range_split2[y]
+            for x in auto_range_split1[z:]:
+                try:
+                    if auto_range_split1[z] == auto_range_split2[z]:
+                        auto_suffix1 += x
+                        auto_suffix2 += x
+                        z+=1
+                    else:
+                        messagebox.showerror("Error", "Problem determining the suffix")
+                        return
+                except:
+                    break
+            break
+        elif auto_range_split1[y] == auto_range_split2[y]:
+            auto_prefix1 += x
+            auto_prefix2 += x
+        y+=1
     if auto_prefix1 != auto_prefix2:
-        messagebox.showerror("Error", "Error detected in the prefix. Please check and try again")
+        messagebox.showerror("Error", "Error detected in the prefix. \nPlease check and try again")
+        print(auto_prefix1)
+        print(auto_prefix2)
         return
     elif auto_suffix1 != auto_suffix2:
-        messagebox.showerror("Error", "Error detected in the suffix. Please check and try again")
+        messagebox.showerror("Error", "Error detected in the suffix. \nPlease check and try again")
+        print(auto_suffix1)
+        print(auto_suffix2)
         return
     else:
         total_print = 1 + int(auto_end) - int(auto_start)
         if total_print <= 0:
-            messagebox.showerror("Error", "Please sure you have the start and end numbers the correct way around")
+            messagebox.showerror("Error", "Please sure you have the first and last tags the correct way around")
             return
         answer = messagebox.askyesno("Question","This will print " + str(total_print) + " labels.\nDo you wish to continue?")
         if answer == True:
             lead_zeros = len(auto_end)
             for x in range(int(auto_start), int(auto_end)+1):
                 print(str(auto_prefix1).upper() + str(x).zfill(lead_zeros) + str(auto_suffix1.upper()))
+            clear_auto()
         else:
             messagebox.showinfo("","Printing has been aborted")
+            return
 
 # ============ Settings panel (frame1a) ============
 
@@ -211,17 +262,23 @@ printer_label = tk.Label(master=frame1,
                             text="Select printer:")
 printer_label.grid(row=0, sticky=EW)
 
-check_print_button = tk.Radiobutton(master=frame1,
+config_print_button = tk.Radiobutton(master=frame1,
                     text="Config Printer",
                     variable=printer_select,
                     value="LPT1")
-check_print_button.grid(row=1, sticky=W)
+config_print_button.grid(row=1, sticky=W)
 
-set_print_button = tk.Radiobutton(master=frame1,
+mezz_print_button = tk.Radiobutton(master=frame1,
                     text="MEZZ Printer",
                     variable=printer_select,
                     value="LPT7")
-set_print_button.grid(row=2, sticky=W)
+mezz_print_button.grid(row=2, sticky=W)
+
+test_print_button = tk.Radiobutton(master=frame1,
+                    text="Test Printer",
+                    variable=printer_select,
+                    value="192.168.8.100")
+test_print_button.grid(row=3, sticky=W)
 
 asset_label = tk.Label(master=frame1,
                             text="Asset or serial?")
