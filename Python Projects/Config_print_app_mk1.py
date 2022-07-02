@@ -8,6 +8,7 @@ from tkinter import messagebox
 from tkinter.ttk import Notebook
 import socket
 from PIL import Image, ImageTk
+from time import sleep
 
 root = Tk()
 root.title("Config printing app")
@@ -19,17 +20,16 @@ range_prefix = tk.StringVar(None, "")
 range_suffix = tk.StringVar(None, "")
 range_start = tk.StringVar(None)
 range_end = tk.StringVar(None)
-printer_select = tk.StringVar(None, "LPT1")
+printer_select = tk.StringVar(None, "192.168.8.100")
 tag_select = tk.IntVar(value=0)
 asset_type = tk.StringVar(None, "Asset Tag :")
 cust_quantity = tk.IntVar(None)
 auto_1 = tk.StringVar(None)
 auto_2 = tk.StringVar(None)
 
-# ============ Printer Setup ============
+# ============ Printer Initial Setup ============
 
 mysocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-mysocket.settimeout(10.0)
 host = str(printer_select.get())
 port = 9100
 
@@ -44,6 +44,11 @@ frametop1 = tk.Frame(frametop,
                     height=80,
                     width=100)
 frametop1.pack(side=LEFT, anchor=W)
+
+frametop3 = tk.Frame(frametop,
+                    height=80,
+                    width=680)
+frametop3.pack(side=RIGHT)
 
 frametop2 = tk.Frame(frametop,
                     height=80,
@@ -64,14 +69,6 @@ frame2.pack(padx=10,pady=10, anchor=E, fill=BOTH, expand=True, side=RIGHT)
 frame1.grid_rowconfigure((0,1,2,4,5,6,8,9), weight=1)
 frame1.grid_rowconfigure((3,7), weight=8)
 frame1.grid_columnconfigure(0, weight=1)
-
-# ============ Title piece ============
-
-logo_img = ImageTk.PhotoImage(Image.open("Images/2560px-CDW_Logo.svg.png").resize((100, 60)))
-logo = Label(frametop1, image=logo_img)
-logo.image = "Images/2560px-CDW_Logo.svg.png"
-logo.pack(side=LEFT, anchor=W, padx=10, pady=10)
-app_title = tk.Label(frametop2, text="Config General Printing Application", font=("Helvetica",25)).pack(side=TOP)
 
 # ============ Tabs ============
 
@@ -112,29 +109,31 @@ def set_tag():
         frame2.tab(2, state="disabled")
         frame2.tab(3, state="disabled")
 
+def help_me():
+    messagebox.showinfo("About", "Made by Dave Williams for the\nExclusive use of config in the\nCDW NDC located in Rugby")
+
 # ============ What to do when the enter key is pressed ============
 
 def return_key(event = None):
-    host = str(printer_select.get())
+
     tab_name = frame2.select()
     tab_index = frame2.index(tab_name)
     if tab_index == 0:
+        mysocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+        host = str(printer_select.get())
         if single_entry.get() != "":
-            print("host = " + str(host))
-            print("port = " + str(port))
             try:
+                tag_type = bytes(asset_type.get(), 'utf-8')
                 zplMessage = bytes(single_entry.get(),'utf-8')  
                 mysocket.connect((host, port)) #connecting to host
-                mysocket.send(b"^XA^A0N,50,50^FO50,50^FD" + zplMessage + b"^FS^XZ")#using bytes
-                #mysocket.send(b"^XA^A0N,50,50^FO50,50^FDSocket Test^FS^XZ")#using bytes
+                #mysocket.send(b"^XA^A0N,50,50^FO50,50^FD" + zplMessage + b"^FS^XZ")#using bytes
+                mysocket.send(b"^XA^LH15,0^FO1,20^AsN,25,25^FDDevice " + tag_type + b"^FS^FO03,60^B3N,N,100,Y,N^FD" + zplMessage + b"^FS^XZ")#using bytes
                 #mysocket.shutdown(socket.SHUT_RDWR)
                 mysocket.close() #closing connection
+                single_entry.delete(0, END)
+                single_entry.focus()
             except:
                 print("Error with the connection")
-            # print("Device " + str(asset_type.get()))
-            # print(single_entry.get().upper())
-            # single_entry.delete(0, END)
-            # single_entry.focus()
             return
         else:
             print("Not a tag")
@@ -159,10 +158,32 @@ def clear_group_text():
     group_textbox.delete("1.0", END)
 
 def print_group_text():
-    result = len(group_textbox.get("1.0", END).split(","))
-    print("This will print " + str(result) + " tags.")
-    print(group_textbox.get("1.0", END))
-    group_textbox.delete("1.0", END)
+    total_print = len(group_textbox.get("1.0", END).split(","))
+    if total_print <= 0:
+        messagebox.showerror("Error", "Nothing to print")
+        return
+    answer = messagebox.askyesno("Question","This will print " + str(total_print) + " labels.\nDo you wish to continue?")
+    if answer == True:
+        mysocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+        host = str(printer_select.get())
+        for x in (group_textbox.get("1.0", END).split(", ")):
+            try:
+                mysocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+                host = str(printer_select.get())
+                mysocket.connect((host, port)) #connecting to host
+                tag_type = bytes(asset_type.get(), 'utf-8')
+                y = bytes(x,'utf-8')  
+                mysocket.send(b"^XA^LH15,0^FO1,20^AsN,25,25^FDDevice " + tag_type + b"^FS^FO03,60^B3N,N,100,Y,N^FD" + y + b"^FS^XZ")#using bytes
+                mysocket.close() #closing connection
+            except:
+                messagebox.showerror("Error", "Connection error")
+                return
+            sleep(0.5)
+        clear_group_text()
+        return
+    else:
+        messagebox.showinfo("","Printing has been aborted")
+
 
 def clear_range():
     range_entry2.delete(0, END)
@@ -255,6 +276,15 @@ def print_auto():
         else:
             messagebox.showinfo("","Printing has been aborted")
             return
+
+# ============ Title piece ============
+
+logo_img = ImageTk.PhotoImage(Image.open("Images/2560px-CDW_Logo.svg.png").resize((100, 60)))
+logo = Label(frametop1, image=logo_img)
+logo.image = "Images/2560px-CDW_Logo.svg.png"
+logo.pack(side=LEFT, anchor=W, padx=10, pady=10)
+app_title = tk.Label(frametop2, text="Config General Printing Application", font=("Helvetica",25)).pack(side=TOP)
+help_button = tk.Button(master=frametop3, text="?", font=('Helvetica',20), command=help_me).pack(padx=(0,10))
 
 # ============ Settings panel (frame1a) ============
 
