@@ -5,6 +5,7 @@ import sys
 import tkinter as tk
 from tkinter import *
 from tkinter import messagebox
+from tkinter import filedialog
 from tkinter.ttk import Notebook
 import socket
 from PIL import Image, ImageTk
@@ -152,24 +153,37 @@ def return_key(event = None):
 
 # ============ Command definitions ============
 
+def Open():
+    File1 = filedialog.askopenfilename()
+    File2 = open(File1, "r")
+    group_textbox.insert("1.0", File2.read())
+    File2.close()  # Make sure you close the file when done
+
 def clear_group_text():
     group_textbox.delete("1.0", END)
 
 def print_group_text():
-    total_print = len(group_textbox.get("1.0", END).split(","))
+    if group_textbox.get("1.0", END) == "\n":
+        return
+    group_text = group_textbox.get("1.0", END)
+    group_text = group_text.strip()
+    group_text = group_text.upper()
+    total_print = len(re.split(", |\n",group_text))
     if total_print <= 0:
         messagebox.showerror("Error", "Nothing to print")
         return
     answer = messagebox.askyesno("Question","This will print " + str(total_print) + " labels.\nDo you wish to continue?")
     if answer == True:
-        for x in (group_textbox.get("1.0", END).split(", ")):
+        for x in (re.split(", |\n",group_text)):
             try:
+                if x == "":
+                    continue
                 mysocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
                 host = str(printer_select.get())
                 mysocket.connect((host, port)) #connecting to host
                 tag_type = bytes(asset_type.get(), 'utf-8')
                 y = bytes(x,'utf-8')
-                mysocket.send(b"^XA^LH15,0^FO1,20^AsN,25,25^FDDevice Asset Tag^FS^FO03,60^B3N,N,100,Y,N^FD" + y + b"^FS^XZ")#using bytes
+                mysocket.send(b"^XA^LH15,0^FO1,20^AsN,25,25^FDDevice" + tag_type + b"^FS^FO03,60^B3N,N,100,Y,N^FD" + y + b"^FS^XZ")#using bytes
                 mysocket.close() #closing connection
             except:
                 messagebox.showerror("Error", "Connection error")
@@ -184,8 +198,8 @@ def print_group_text():
 def clear_range():
     range_entry2.delete(0, END)
     range_entry3.delete(0, END)
-    range_start.delete(0, END)
-    range_end.delete(0, END)
+    range_start.set(0)
+    range_end.set(0)
 
 def clear_auto():
     auto_entry1.delete(0, END)
@@ -199,12 +213,24 @@ def print_range():
     answer = messagebox.askyesno("Question","This will print " + str(total_print) + " labels.\nDo you wish to continue?")
     if answer == True:
         lead_zeros = len(range_end.get())
-        print("proceed to print range")
+        prefixed = bytes(str(range_prefix.get()).upper(), 'utf-8')
+        suffixed = bytes(str(range_suffix.get()).upper(), 'utf-8')
         for x in range(int(range_start.get()), int(range_end.get())+1):
-            print(str(range_prefix.get()).upper() + str(x).zfill(lead_zeros) + str(range_suffix.get()).upper())
+            try:
+                mysocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+                host = str(printer_select.get())
+                mysocket.connect((host, port)) #connecting to host
+                y = bytes(str(x).zfill(lead_zeros), 'utf-8')
+                mysocket.send(b"^XA^LH15,0^FO1,20^AsN,25,25^FDDevice Asset Tag^FS^FO03,60^B3N,N,100,Y,N^FD" + prefixed + y + suffixed + b"^FS^XZ")#using bytes
+                mysocket.close() #closing connection
+            except:
+                messagebox.showerror("Error", "Connection error")
+                return
+            sleep(0.5)    
+        clear_range()
     else:
         messagebox.showinfo("","Printing has been aborted")
-
+        return
 
 # ============ Auto Range (Experimental)============
 
@@ -269,9 +295,8 @@ def print_auto():
                     mysocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
                     host = str(printer_select.get())
                     mysocket.connect((host, port)) #connecting to host
-                    tag_type = bytes(asset_type.get(), 'utf-8')
                     y = bytes(str(x).zfill(lead_zeros), 'utf-8')
-                    mysocket.send(b"^XA^LH15,0^FO1,20^AsN,25,25^FDDevice " + tag_type + b"^FS^FO03,60^B3N,N,100,Y,N^FD" + prefixed + y + suffixed + b"^FS^XZ")#using bytes
+                    mysocket.send(b"^XA^LH15,0^FO1,20^AsN,25,25^FDDevice Asset Tag^FS^FO03,60^B3N,N,100,Y,N^FD" + prefixed + y + suffixed + b"^FS^XZ")#using bytes
                     mysocket.close() #closing connection
                 except:
                     messagebox.showerror("Error", "Connection error")
@@ -381,6 +406,11 @@ group_print = tk.Button(master=tab2b,
                         text="Print",
                         command=print_group_text)
 group_print.pack(side=LEFT, padx=100)
+
+group_load = tk.Button(master=tab2b,
+                        text="Load from file",
+                        command=Open)
+group_load.pack(side=LEFT, padx=(0,100))
 
 group_textbox = Text(master=tab2, wrap=WORD)
 group_textbox.pack(side=BOTTOM, fill=BOTH, expand=True, padx=5, pady=5)
