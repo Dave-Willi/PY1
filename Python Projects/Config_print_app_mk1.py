@@ -126,9 +126,7 @@ def return_key(event = None):
                 tag_type = bytes(asset_type.get(), 'utf-8')
                 zplMessage = bytes(single_entry.get(),'utf-8')  
                 mysocket.connect((host, port)) #connecting to host
-                #mysocket.send(b"^XA^A0N,50,50^FO50,50^FD" + zplMessage + b"^FS^XZ")#using bytes
                 mysocket.send(b"^XA^LH15,0^FO1,20^AsN,25,25^FDDevice " + tag_type + b"^FS^FO03,60^B3N,N,100,Y,N^FD" + zplMessage + b"^FS^XZ")#using bytes
-                #mysocket.shutdown(socket.SHUT_RDWR)
                 mysocket.close() #closing connection
                 single_entry.delete(0, END)
                 single_entry.focus()
@@ -164,16 +162,14 @@ def print_group_text():
         return
     answer = messagebox.askyesno("Question","This will print " + str(total_print) + " labels.\nDo you wish to continue?")
     if answer == True:
-        mysocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-        host = str(printer_select.get())
         for x in (group_textbox.get("1.0", END).split(", ")):
             try:
                 mysocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
                 host = str(printer_select.get())
                 mysocket.connect((host, port)) #connecting to host
                 tag_type = bytes(asset_type.get(), 'utf-8')
-                y = bytes(x,'utf-8')  
-                mysocket.send(b"^XA^LH15,0^FO1,20^AsN,25,25^FDDevice " + tag_type + b"^FS^FO03,60^B3N,N,100,Y,N^FD" + y + b"^FS^XZ")#using bytes
+                y = bytes(x,'utf-8')
+                mysocket.send(b"^XA^LH15,0^FO1,20^AsN,25,25^FDDevice Asset Tag^FS^FO03,60^B3N,N,100,Y,N^FD" + y + b"^FS^XZ")#using bytes
                 mysocket.close() #closing connection
             except:
                 messagebox.showerror("Error", "Connection error")
@@ -254,13 +250,9 @@ def print_auto():
         y+=1
     if auto_prefix1 != auto_prefix2:
         messagebox.showerror("Error", "Error detected in the prefix. \nPlease check and try again")
-        print(auto_prefix1)
-        print(auto_prefix2)
         return
     elif auto_suffix1 != auto_suffix2:
         messagebox.showerror("Error", "Error detected in the suffix. \nPlease check and try again")
-        print(auto_suffix1)
-        print(auto_suffix2)
         return
     else:
         total_print = 1 + int(auto_end) - int(auto_start)
@@ -270,8 +262,25 @@ def print_auto():
         answer = messagebox.askyesno("Question","This will print " + str(total_print) + " labels.\nDo you wish to continue?")
         if answer == True:
             lead_zeros = len(auto_end)
+            prefixed = bytes(str(auto_prefix1).upper(), 'utf-8')
+            suffixed = bytes(str(auto_suffix1).upper(), 'utf-8')
             for x in range(int(auto_start), int(auto_end)+1):
-                print(str(auto_prefix1).upper() + str(x).zfill(lead_zeros) + str(auto_suffix1.upper()))
+                try:
+                    mysocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+                    host = str(printer_select.get())
+                    mysocket.connect((host, port)) #connecting to host
+                    tag_type = bytes(asset_type.get(), 'utf-8')
+                    y = bytes(str(x).zfill(lead_zeros), 'utf-8')
+                    mysocket.send(b"^XA^LH15,0^FO1,20^AsN,25,25^FDDevice " + tag_type + b"^FS^FO03,60^B3N,N,100,Y,N^FD" + prefixed + y + suffixed + b"^FS^XZ")#using bytes
+                    mysocket.close() #closing connection
+                except:
+                    messagebox.showerror("Error", "Connection error")
+                    return
+                sleep(0.5)    
+
+
+
+                #print(str(auto_prefix1).upper() + str(x).zfill(lead_zeros) + str(auto_suffix1.upper()))
             clear_auto()
         else:
             messagebox.showinfo("","Printing has been aborted")
