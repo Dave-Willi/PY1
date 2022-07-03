@@ -28,6 +28,16 @@ cust_quantity = tk.IntVar(None)
 auto_1 = tk.StringVar(None)
 auto_2 = tk.StringVar(None)
 
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception: 
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+
 # ============ Printer Initial Setup ============
 
 mysocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
@@ -153,6 +163,9 @@ def return_key(event = None):
 
 # ============ Command definitions ============
 
+def quit():
+    sys.exit()
+
 def Open():
     File1 = filedialog.askopenfilename()
     File2 = open(File1, "r")
@@ -183,7 +196,7 @@ def print_group_text():
                 mysocket.connect((host, port)) #connecting to host
                 tag_type = bytes(asset_type.get(), 'utf-8')
                 y = bytes(x,'utf-8')
-                mysocket.send(b"^XA^LH15,0^FO1,20^AsN,25,25^FDDevice" + tag_type + b"^FS^FO03,60^B3N,N,100,Y,N^FD" + y + b"^FS^XZ")#using bytes
+                mysocket.send(b"^XA^LH15,0^FO1,20^AsN,25,25^FDDevice " + tag_type + b"^FS^FO03,60^B3N,N,100,Y,N^FD" + y + b"^FS^XZ")#using bytes
                 mysocket.close() #closing connection
             except:
                 messagebox.showerror("Error", "Connection error")
@@ -302,14 +315,49 @@ def print_auto():
                     messagebox.showerror("Error", "Connection error")
                     return
                 sleep(0.5)    
-
-
-
-                #print(str(auto_prefix1).upper() + str(x).zfill(lead_zeros) + str(auto_suffix1.upper()))
             clear_auto()
         else:
             messagebox.showinfo("","Printing has been aborted")
             return
+
+# ============ Customer label codes ============
+
+def BBC():
+    answer = messagebox.askyesno("Question","This will print " + str(cust_quantity.get()) + " BBC labels.\nDo you wish to continue?")
+    if answer == True:
+        try:
+            mysocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+            host = str(printer_select.get())
+            mysocket.connect((host, port)) #connecting to host
+            y = bytes(str(cust_quantity.get()), 'utf-8')
+            mysocket.send(b"^XA^LRY^FO10,10^GB195,203,195^FS^FO225,10^GB195,203,195^FS^FO440,10^GB195,203,195^FS^FO50,37^CFG,180^FDB^FS^FO260,37^FDB^FS^FO470,37^FDC^PQ" + y + b"^FS^XZ")#using bytes
+            mysocket.close() #closing connection
+        except:
+            messagebox.showerror("Error", "Connection error")
+            return
+    else:
+        messagebox.showinfo("","Printing has been aborted")
+        return
+
+def UOB_mac():
+    answer = messagebox.askyesno("Question","This will print " + str(cust_quantity.get()) + " MAC QR Code labels.\n for University of Birmingham (UOB)\nDo you wish to continue?")
+    if answer == True:
+        try:
+            mysocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+            host = str(printer_select.get())
+            mysocket.connect((host, port)) #connecting to host
+            y = bytes(str(cust_quantity.get()), 'utf-8')
+            mysocket.send(b"^XA^FX^CF0,60^FO10,10^FDUniversity of^FS^FO10,75^FDBirmingham^FS^FO420,5^BQN,2,3^FDhttps://www.youtube.com/watch?v=dQw4w9WgXcQ&ab^PQ" + y + b"^FS^XZ")#using bytes
+            mysocket.close() #closing connection
+        except:
+            messagebox.showerror("Error", "Connection error")
+            return
+    else:
+        messagebox.showinfo("","Printing has been aborted")
+        return
+
+def UOB_PC():
+    print()
 
 # ============ Title piece ============
 
@@ -369,7 +417,7 @@ reset_button.grid(row=8, sticky=EW)
 
 exit_button = tk.Button(master=frame1,
                     text="Quit",
-                    command=exit)
+                    command=quit)
 exit_button.grid(row=9, sticky=EW)
 
 # ============ Single Tab (tab1) ============
@@ -503,20 +551,23 @@ print_quantity_label = tk.Label(master=tab5,
                                 text="Enter quantity of labels required")
 print_quantity_label.pack()
 
-print_quantity = tk.Spinbox(master=tab5, from_=0, to=9999,
+print_quantity = tk.Spinbox(master=tab5, from_=1, to=9999,
                             textvariable=cust_quantity)
 print_quantity.pack(padx=5, pady=5)
 
 bbc_button = tk.Button(master=tab5,
-                        text="BBC")
+                        text="BBC",
+                        command=BBC)
 bbc_button.pack(padx=5, pady=5)
 
 bbc_button = tk.Button(master=tab5,
-                        text="UOB Mac QR Code")
+                        text="UOB Mac QR Code",
+                        command=UOB_mac)
 bbc_button.pack(padx=5, pady=5)
 
 bbc_button = tk.Button(master=tab5,
-                        text="UOB PC QR Code")
+                        text="UOB PC QR Code",
+                        command=UOB_PC)
 bbc_button.pack(padx=5, pady=5)
 
 # ============ Reports Tab (tab6) ============
