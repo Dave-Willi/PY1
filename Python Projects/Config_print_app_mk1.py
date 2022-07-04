@@ -21,7 +21,7 @@ range_prefix = tk.StringVar(None, "")
 range_suffix = tk.StringVar(None, "")
 range_start = tk.StringVar(None)
 range_end = tk.StringVar(None)
-printer_select = tk.StringVar(None, "192.168.8.100")
+printer_select = tk.StringVar(None, "LPT1")
 tag_select = tk.IntVar(value=0)
 asset_type = tk.StringVar(None, "Asset Tag :")
 cust_quantity = tk.IntVar(None)
@@ -142,7 +142,7 @@ def return_key(event = None):
                 single_entry.delete(0, END)
                 single_entry.focus()
             except:
-                print("Error with the connection")
+                con_error()
             return
         else:
             print("Not a tag")
@@ -165,6 +165,24 @@ def return_key(event = None):
 
 def quit():
     sys.exit()
+
+def con_error():
+    answer = messagebox.askyesno("Question", "Connection error\nAttempt to map network printers?")
+    if answer == True:
+        subprocess.call(r'net use lpt1: /delete',shell=True)
+        subprocess.call(r'net use lpt2: /delete',shell=True)
+        subprocess.call(r'net use lpt3: /delete',shell=True)
+        subprocess.call(r'net use lpt4: /delete',shell=True)
+        subprocess.call(r'net use lpt6: /delete',shell=True)
+        subprocess.call(r'net use lpt7: /delete',shell=True)
+        subprocess.call(r'net use lpt1 \\10.151.53.22\rug-cfg-zebra-01 /persistent:yes /USER:config\config.engineer homebuild',shell=True)
+        subprocess.call(r'net use lpt2 \\10.151.53.22\rug-cfg-zebra-02 /persistent:yes /USER:config\config.engineer homebuild',shell=True)
+        subprocess.call(r'net use lpt3 \\10.151.53.22\rug-cfg-zebra-03 /persistent:yes /USER:config\config.engineer homebuild',shell=True)
+        subprocess.call(r'net use lpt4 \\10.151.53.22\rug-cfg-zebra-04 /persistent:yes /USER:config\config.engineer homebuild',shell=True)
+        subprocess.call(r'net use lpt6 \\10.151.53.22\rug-cfg-zebra-06 /persistent:yes /USER:config\config.engineer homebuild',shell=True)
+        subprocess.call(r'net use lpt7 \\10.151.53.22\rug-cfg-zebra-07 /persistent:yes /USER:config\config.engineer homebuild',shell=True)
+    else:
+        return
 
 def Open():
     File1 = filedialog.askopenfilename()
@@ -199,7 +217,7 @@ def print_group_text():
                 mysocket.send(b"^XA^LH15,0^FO1,20^AsN,25,25^FDDevice " + tag_type + b"^FS^FO03,60^B3N,N,100,Y,N^FD" + y + b"^FS^XZ")#using bytes
                 mysocket.close() #closing connection
             except:
-                messagebox.showerror("Error", "Connection error")
+                con_error()
                 return
             sleep(0.5)
         clear_group_text()
@@ -237,7 +255,7 @@ def print_range():
                 mysocket.send(b"^XA^LH15,0^FO1,20^AsN,25,25^FDDevice Asset Tag^FS^FO03,60^B3N,N,100,Y,N^FD" + prefixed + y + suffixed + b"^FS^XZ")#using bytes
                 mysocket.close() #closing connection
             except:
-                messagebox.showerror("Error", "Connection error")
+                con_error()
                 return
             sleep(0.5)    
         clear_range()
@@ -312,7 +330,7 @@ def print_auto():
                     mysocket.send(b"^XA^LH15,0^FO1,20^AsN,25,25^FDDevice Asset Tag^FS^FO03,60^B3N,N,100,Y,N^FD" + prefixed + y + suffixed + b"^FS^XZ")#using bytes
                     mysocket.close() #closing connection
                 except:
-                    messagebox.showerror("Error", "Connection error")
+                    con_error()
                     return
                 sleep(0.5)    
             clear_auto()
@@ -333,7 +351,7 @@ def BBC():
             mysocket.send(b"^XA^LRY^FO10,10^GB195,203,195^FS^FO225,10^GB195,203,195^FS^FO440,10^GB195,203,195^FS^FO50,37^CFG,180^FDB^FS^FO260,37^FDB^FS^FO470,37^FDC^PQ" + y + b"^FS^XZ")#using bytes
             mysocket.close() #closing connection
         except:
-            messagebox.showerror("Error", "Connection error")
+            con_error()
             return
     else:
         messagebox.showinfo("","Printing has been aborted")
@@ -350,7 +368,7 @@ def UOB_mac():
             mysocket.send(b"^XA^FX^CF0,60^FO10,10^FDUniversity of^FS^FO10,75^FDBirmingham^FS^FO420,5^BQN,2,3^FDhttps://www.youtube.com/watch?v=dQw4w9WgXcQ&ab^PQ" + y + b"^FS^XZ")#using bytes
             mysocket.close() #closing connection
         except:
-            messagebox.showerror("Error", "Connection error")
+            con_error()
             return
     else:
         messagebox.showinfo("","Printing has been aborted")
@@ -360,11 +378,14 @@ def UOB_PC():
     print()
 
 # ============ Title piece ============
-
-logo_img = ImageTk.PhotoImage(Image.open("Images/2560px-CDW_Logo.svg.png").resize((100, 60)))
-logo = Label(frametop1, image=logo_img)
-logo.image = "Images/2560px-CDW_Logo.svg.png"
-logo.pack(side=LEFT, anchor=W, padx=10, pady=10)
+try:
+    logo_img = ImageTk.PhotoImage(Image.open("Images/2560px-CDW_Logo.svg.png").resize((100, 60)))
+    logo = Label(frametop1, image=logo_img)
+    logo.image = "Images/2560px-CDW_Logo.svg.png"
+    logo.pack(side=LEFT, anchor=W, padx=10, pady=10)
+except:
+    logo_text = tk.Label(frametop1, text="CDW", font=("Helvetica",20))
+    logo_text.pack(side=LEFT, anchor=W, padx=10, pady=10)
 app_title = tk.Label(frametop2, text="Config General Printing Application", font=("Helvetica",25)).pack(side=TOP)
 help_button = tk.Button(master=frametop3, text="?", font=('Helvetica',20), command=help_me).pack(padx=(0,10))
 
