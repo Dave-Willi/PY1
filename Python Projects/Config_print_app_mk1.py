@@ -153,12 +153,12 @@ def set_config():
     editor.pack(side=TOP, padx=5, pady=10)
 
     try:
-        File1 = "Python Projects/Images/con_print.ini"
+        File1 = "Images/con_print.ini"
         File2 = open(File1, "r")
         editor.insert("1.0", File2.read())
         File2.close()
     except:
-        File1 = "Python Projects/Images/con_print.ini"
+        File1 = "Images/con_print.ini"
         File2 = open(File1, "w")
         editor.insert("1.0", File2.read())
         File2.close()
@@ -442,7 +442,7 @@ except:
 app_title = tk.Label(frametop2, text="Config General Printing Application", font=("Helvetica",25)).pack(side=TOP)
 help_button = tk.Button(master=frametop3, text="?", font=('Helvetica',20), command=help_me).pack(padx=(0,10))
 try:
-    cog_icon = ImageTk.PhotoImage(Image.open("Python Projects/Images/cogwheel.png").resize((25, 25)))
+    cog_icon = ImageTk.PhotoImage(Image.open("Images/cogwheel.png").resize((25, 25)))
     cog = tk.Button(master=frametop3, image=cog_icon, borderwidth=0, command=set_config)
     cog.pack(padx=(0,8), pady=(5,0))    
 except:
