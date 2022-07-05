@@ -19,8 +19,8 @@ root.geometry=("780x520")
 
 range_prefix = tk.StringVar(None, "")
 range_suffix = tk.StringVar(None, "")
-range_start = tk.StringVar(None)
-range_end = tk.StringVar(None)
+range_start = tk.StringVar(None, "0")
+range_end = tk.StringVar(None, "0")
 printer_select = tk.StringVar(None, "LPT1")
 tag_select = tk.IntVar(value=0)
 asset_type = tk.StringVar(None, "Asset Tag :")
@@ -88,20 +88,26 @@ tab2 = tk.Frame(frame2)
 tab2a = tk.Frame(tab2)
 tab2b = tk.Frame(tab2)
 tab3 = tk.Frame(frame2)
+tab3a = tk.Frame(tab3)
 tab4 = tk.Frame(frame2)
 tab4a = tk.Frame(tab4)
+tab4b = tk.Frame(tab4)
+tab4c = tk.Frame(tab4)
 tab5 = tk.Frame(frame2)
 tab6 = tk.Frame(frame2)
 frame2.add(tab1, text = "Singles")
 frame2.add(tab2, text = "Groups")
 frame2.add(tab3, text = "Range")
-frame2.add(tab4, text = "Range-Auto")
+frame2.add(tab4, text = "Range (Auto)")
 frame2.add(tab5, text = "Customer Labels")
 frame2.add(tab6, text = "Reports")
 
 tab2a.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
 tab2b.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
+tab3a.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
 tab4a.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10, fill=BOTH)
+tab4b.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
+tab4c.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10, fill=BOTH)
 # ============ Side menu commands ============
 
 def reset():
@@ -109,8 +115,6 @@ def reset():
     subprocess.call([sys.executable, os.path.realpath(__file__)] + sys.argv[1:])
 
 def set_tag():
-    global asset_type
-    global tag_select
     if tag_select.get() == 0:
         asset_type.set("Asset Tag :")
         frame2.tab(2, state="normal")
@@ -121,7 +125,22 @@ def set_tag():
         frame2.tab(3, state="disabled")
 
 def help_me():
-    messagebox.showinfo("About", "Made by Dave Williams for the\nExclusive use of config in the\nCDW NDC located in Rugby")
+    tab_name = frame2.select()
+    tab_index = frame2.index(tab_name)
+    if tab_index == 0:
+        messagebox.showinfo("Singles","Enter a tag into the box and press enter.\nYour scanner should do this automatically")
+    if tab_index == 1:
+        messagebox.showinfo("Groups","Enter as many tags as you like into the box below. You can enter them directly or via the entry box. If you have a list of tags saved in a file you can load it directly from there")
+    if tab_index == 2:
+        messagebox.showinfo("Range","The prefix is the part of the tag which is the same for all of the tags and comes before the number. The suffix is the same but it comes after the number")
+    if tab_index == 3:
+        messagebox.showinfo("Range (Auto)","Simple scan the first and last tag and it will print those plus any in between")
+    if tab_index == 4:
+        messagebox.showinfo("Customer Labels","For printing labels that are unique to a customer")
+    if tab_index == 5:
+        messagebox.showinfo("Reports","Quickly and easily report one of the listed issues to the leadership team")
+
+    # messagebox.showinfo("About", "Made by Dave Williams for the\nExclusive use of config in the\nCDW NDC located in Rugby")
 
 # ============ What to do when the enter key is pressed ============
 
@@ -197,15 +216,19 @@ def print_group_text():
     if group_textbox.get("1.0", END) == "\n":
         return
     group_text = group_textbox.get("1.0", END)
-    group_text = group_text.strip()
-    group_text = group_text.upper()
-    total_print = len(re.split(", |\n",group_text))
+    group_text = re.split(", |\n",group_text)
+    try:
+        while True:
+            group_text.remove("")
+    except ValueError:
+        pass
+    total_print = len(group_text)
     if total_print <= 0:
         messagebox.showerror("Error", "Nothing to print")
         return
     answer = messagebox.askyesno("Question","This will print " + str(total_print) + " labels.\nDo you wish to continue?")
     if answer == True:
-        for x in (re.split(", |\n",group_text)):
+        for x in (group_text):
             try:
                 if x == "":
                     continue
@@ -388,7 +411,13 @@ except:
     logo_text.pack(side=LEFT, anchor=W, padx=10, pady=10)
 app_title = tk.Label(frametop2, text="Config General Printing Application", font=("Helvetica",25)).pack(side=TOP)
 help_button = tk.Button(master=frametop3, text="?", font=('Helvetica',20), command=help_me).pack(padx=(0,10))
-
+try:
+    cog_icon = ImageTk.PhotoImage(Image.open("Python Projects/Images/cogwheel.png").resize((25, 25)))
+    cog = tk.Button(master=frametop3, image=cog_icon, borderwidth=0)
+    cog.image = "Python Projects/Images/cogwheel-and-pen-pngrepo-com.png"
+    cog.pack()    
+except:
+    cog = tk.Button(master=frametop3, text="...", font=("Helvetica",14)).pack()
 # ============ Settings panel (frame1a) ============
 
 printer_label = tk.Label(master=frame1,
@@ -451,20 +480,28 @@ single_label = tk.Label(master=tab1,
 single_label.grid(row=0, column=1, sticky=E)
 
 single_entry = tk.Entry(master=tab1)
-single_entry.grid(row=0, column=2, sticky=W)
+single_entry.grid(row=0, column=2, sticky=W, padx=10)
 
 single_descript = tk.Label(master=tab1,
-                        text="This will print a single label")
+                        text="This will print a single label",
+                        font=12,
+                        fg="blue")
 single_descript.grid(row=1, column=1, columnspan=2, sticky=N)
 
 # ============ Groups Tab (tab2) ============
 
+group_label1 = tk.Label(master=tab2,
+                        font=12,
+                        fg="blue",
+                        text="Print the tags below:")
+group_label1.pack()
+
 group_label = tk.Label(master=tab2a,
                         textvariable=asset_type)
-group_label.pack(side=LEFT)
+group_label.pack(side=LEFT, pady=(20,0))
 
 group_entry = tk.Entry(master=tab2a,)
-group_entry.pack(side=LEFT, padx=10)
+group_entry.pack(side=LEFT, padx=10, pady=(20,0))
 
 group_clear = tk.Button(master=tab2b,
                         text="Clear",
@@ -486,51 +523,53 @@ group_textbox.pack(side=BOTTOM, fill=BOTH, expand=True, padx=5, pady=5)
 
 # ============ Range Tab (tab3) ============
 
-range_label1 = tk.Label(master=tab3,
-                        text="For printing a range of asset tags")
-range_label1.pack()
+range_label1 = tk.Label(master=tab3a,
+                        font=12,
+                        fg="blue",
+                        text="Print a range of asset tags")
+range_label1.grid(row=0, column=0, columnspan=2)
 
-range_label2 = tk.Label(master=tab3,
+range_label2 = tk.Label(master=tab3a,
                         text="Enter the Prefix of the tag")
-range_label2.pack()
+range_label2.grid(row=1, column=0, pady=(20,0))
 
-range_entry2 = tk.Entry(master=tab3,
+range_entry2 = tk.Entry(master=tab3a,
                         textvariable=range_prefix)
-range_entry2.pack()
+range_entry2.grid(row=2, column=0)
 
-range_label3 = tk.Label(master=tab3,
+range_label3 = tk.Label(master=tab3a,
                         text="Enter the Suffix of the tag")
-range_label3.pack()
+range_label3.grid(row=1, column=1, pady=(20,0))
 
-range_entry3 = tk.Entry(master=tab3,
+range_entry3 = tk.Entry(master=tab3a,
                         textvariable=range_suffix)
-range_entry3.pack()
+range_entry3.grid(row=2, column=1)
 
-range_label4 = tk.Label(master=tab3,
+range_label4 = tk.Label(master=tab3a,
                         text="Enter the starting number of the range")
-range_label4.pack()
+range_label4.grid(row=3, column=0, pady=(20,0), padx=10)
 
-range_entry4 = tk.Entry(master=tab3,
+range_entry4 = tk.Entry(master=tab3a,
                         textvariable=range_start)
-range_entry4.pack()
+range_entry4.grid(row=4, column=0)
 
-range_label5 = tk.Label(master=tab3,
+range_label5 = tk.Label(master=tab3a,
                         text="Enter the ending number of the range")
-range_label5.pack()
+range_label5.grid(row=3, column=1, pady=(20,0), padx=10)
 
-range_entry5 = tk.Entry(master=tab3,
+range_entry5 = tk.Entry(master=tab3a,
                         textvariable=range_end)
-range_entry5.pack()
+range_entry5.grid(row=4, column=1)
 
-range_clear = tk.Button(master=tab3,
+range_clear = tk.Button(master=tab3a,
                         text="Clear",
                         command=clear_range)
-range_clear.pack(side=LEFT)
+range_clear.grid(row=5, column=0, pady=(20,0), padx=40, sticky=E)
 
-range_print = tk.Button(master=tab3,
+range_print = tk.Button(master=tab3a,
                         text="Print",
                         command=print_range)
-range_print.pack(side=LEFT, padx=100)
+range_print.grid(row=5, column=1, pady=(20,0), padx=40, sticky=W)
 
 # ============ Range-Auto Tab (tab4) ============
 
@@ -550,46 +589,48 @@ auto_entry2 = tk.Entry(master=tab4a,
                         textvariable=auto_2)
 auto_entry2.pack()
 
-auto_clear = tk.Button(master=tab4a,
+auto_clear = tk.Button(master=tab4b,
                         text="Clear",
                         command=clear_auto)
-auto_clear.pack(side=LEFT, padx=40)
+auto_clear.grid(row=0, column=1, padx=10)
 
-auto_print = tk.Button(master=tab4a,
+auto_print = tk.Button(master=tab4b,
                         text="Print",
                         command=print_auto)
-auto_print.pack(side=LEFT, padx=40)
+auto_print.grid(row=0, column=2, padx=10)
 
-warn_label = tk.Label(master=tab4a,
-                        text="Experimental\nUse caution",
-                        font=("Helvetica",18),
-                        fg="red")
+warn_label = tk.Label(master=tab4c,
+                        text="New Feature\nCheck number of tags\n is correct\nbefore printing",
+                        font=("Helvetica",14),
+                        fg="dark red")
 warn_label.pack(side=TOP, padx=40, pady=40)
 
 # ============ Customer label Tab (tab5) ============
 
 print_quantity_label = tk.Label(master=tab5,
-                                text="Enter quantity of labels required")
-print_quantity_label.pack()
+                            font=12,
+                            fg="blue",
+                            text="Enter quantity of labels required")
+print_quantity_label.grid(row=0, column=0, pady=20, padx= 10)
 
 print_quantity = tk.Spinbox(master=tab5, from_=1, to=9999,
                             textvariable=cust_quantity)
-print_quantity.pack(padx=5, pady=5)
+print_quantity.grid(row=0, column=1, pady=10, padx= 10)
 
 bbc_button = tk.Button(master=tab5,
                         text="BBC",
                         command=BBC)
-bbc_button.pack(padx=5, pady=5)
+bbc_button.grid(row=2, column=0, pady=10, padx= 10)
 
 bbc_button = tk.Button(master=tab5,
-                        text="UOB Mac QR Code",
+                        text="eBay Mac QR Code",
                         command=UOB_mac)
-bbc_button.pack(padx=5, pady=5)
+bbc_button.grid(row=3, column=0, pady=10, padx= 10)
 
 bbc_button = tk.Button(master=tab5,
-                        text="UOB PC QR Code",
+                        text="eBay PC QR Code",
                         command=UOB_PC)
-bbc_button.pack(padx=5, pady=5)
+bbc_button.grid(row=4, column=0, pady=10, padx= 10)
 
 # ============ Reports Tab (tab6) ============
 
