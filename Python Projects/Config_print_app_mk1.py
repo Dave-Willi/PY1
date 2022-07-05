@@ -1,3 +1,4 @@
+import fileinput
 import os
 import re
 import subprocess
@@ -6,6 +7,7 @@ import tkinter as tk
 from tkinter import *
 from tkinter import messagebox
 from tkinter import filedialog
+import tkinter
 from tkinter.ttk import Notebook
 import socket
 from PIL import Image, ImageTk
@@ -142,6 +144,32 @@ def help_me():
 
     # messagebox.showinfo("About", "Made by Dave Williams for the\nExclusive use of config in the\nCDW NDC located in Rugby")
 
+def set_config():
+    config_box = Toplevel(root)
+    config_box.title("App Setup")
+    config_box.geometry("300x500")
+
+    editor = tkinter.Text(config_box, wrap=WORD, width=34, height=22)
+    editor.pack(side=TOP, padx=5, pady=10)
+
+    try:
+        File1 = "Python Projects/Images/con_print.ini"
+        File2 = open(File1, "r")
+        editor.insert("1.0", File2.read())
+        File2.close()
+    except:
+        File1 = "Python Projects/Images/con_print.ini"
+        File2 = open(File1, "w")
+        editor.insert("1.0", File2.read())
+        File2.close()
+
+    save_btn = tkinter.Button(config_box, text="Save Changes", command=save_edit)
+    save_btn.pack(side=TOP)
+
+    #Label(config_box, text="Boo, ya filthy animal").pack()
+    Label(config_box, text="©Dave Williams 2022").pack(side=BOTTOM)
+    Label(config_box, text="Created for the exclusive use in\nconfig at the NDC in Rugby").pack(side=BOTTOM)
+
 # ============ What to do when the enter key is pressed ============
 
 def return_key(event = None):
@@ -202,6 +230,9 @@ def con_error():
         subprocess.call(r'net use lpt7 \\10.151.53.22\rug-cfg-zebra-07 /persistent:yes /USER:config\config.engineer homebuild',shell=True)
     else:
         return
+
+def save_edit():
+    print()
 
 def Open():
     File1 = filedialog.askopenfilename()
@@ -404,7 +435,6 @@ def UOB_PC():
 try:
     logo_img = ImageTk.PhotoImage(Image.open("Images/2560px-CDW_Logo.svg.png").resize((100, 60)))
     logo = Label(frametop1, image=logo_img)
-    logo.image = "Images/2560px-CDW_Logo.svg.png"
     logo.pack(side=LEFT, anchor=W, padx=10, pady=10)
 except:
     logo_text = tk.Label(frametop1, text="CDW", font=("Helvetica",20))
@@ -413,11 +443,10 @@ app_title = tk.Label(frametop2, text="Config General Printing Application", font
 help_button = tk.Button(master=frametop3, text="?", font=('Helvetica',20), command=help_me).pack(padx=(0,10))
 try:
     cog_icon = ImageTk.PhotoImage(Image.open("Python Projects/Images/cogwheel.png").resize((25, 25)))
-    cog = tk.Button(master=frametop3, image=cog_icon, borderwidth=0)
-    cog.image = "Python Projects/Images/cogwheel-and-pen-pngrepo-com.png"
-    cog.pack()    
+    cog = tk.Button(master=frametop3, image=cog_icon, borderwidth=0, command=set_config)
+    cog.pack(padx=(0,8), pady=(5,0))    
 except:
-    cog = tk.Button(master=frametop3, text="...", font=("Helvetica",14)).pack()
+    cog = tk.Button(master=frametop3, text="...", font=("Helvetica",14), command=set_config).pack()
 # ============ Settings panel (frame1a) ============
 
 printer_label = tk.Label(master=frame1,
