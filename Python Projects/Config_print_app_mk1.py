@@ -1,4 +1,4 @@
-import fileinput
+from genericpath import exists
 import os
 import re
 import subprocess
@@ -7,11 +7,11 @@ import tkinter as tk
 from tkinter import *
 from tkinter import messagebox
 from tkinter import filedialog
-import tkinter
 from tkinter.ttk import Notebook
 import socket
 from PIL import Image, ImageTk
 from time import sleep
+from configparser import ConfigParser
 
 root = Tk()
 root.title("Config printing app")
@@ -40,6 +40,34 @@ def resource_path(relative_path):
 
     return os.path.join(base_path, relative_path)
 
+# ============ Config Parser ============
+
+try:
+    #Get the configparser object and read file
+    config_object = ConfigParser()
+    config_object.read("Images/con_print.ini")
+    #Get the settings
+    printer = config_object["PRINTER"]
+    tag = config_object["TAG-TYPE"]
+    # printer_select.set = tk.StringVar(format(printer["printer_select"]))
+    # asset_type.set = tk.StringVar(format(tag["asset_type"]))
+    printer_select.set = format(printer["printer_select"])
+    asset_type.set = format(tag["asset_type"])
+    asset_type = tk.StringVar(None, value=asset_type.get())
+    tag_select.set = format(tag["tag_select"])
+    tag_select = tk.IntVar(value=tag_select.get())
+    print("File loaded")
+except:
+    #Get the configparser object and create file
+    config_object = ConfigParser()
+    config_object["PRINTER"] = {
+        "printer_select": printer_select.get()}
+    config_object["TAG-TYPE"] = {
+        "asset_type": str(asset_type.get()),
+        "tag_select": 0}
+    with open('Images/con_print.ini', 'w') as conf:
+        config_object.write(conf)
+    print("File not loaded")
 # ============ Printer Initial Setup ============
 
 mysocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
@@ -121,10 +149,12 @@ def set_tag():
         asset_type.set("Asset Tag :")
         frame2.tab(2, state="normal")
         frame2.tab(3, state="normal")
+        con_update()
     elif tag_select.get() == 1:
         asset_type.set("Serial Number :")
         frame2.tab(2, state="disabled")
         frame2.tab(3, state="disabled")
+        con_update()
 
 def help_me():
     tab_name = frame2.select()
@@ -149,25 +179,32 @@ def set_config():
     config_box.title("App Setup")
     config_box.geometry("300x500")
 
-    editor = tkinter.Text(config_box, wrap=WORD, width=34, height=22)
-    editor.pack(side=TOP, padx=5, pady=10)
+    label2 = tk.Label(config_box,
+                    text="The below settings are saved in the config file")
+    label2.pack()                    
+
+    config_text = tk.Text(config_box, wrap=WORD, width=34, height=8)
+    config_text.pack(side=TOP, padx=5, pady=10)
 
     try:
         File1 = "Images/con_print.ini"
         File2 = open(File1, "r")
-        editor.insert("1.0", File2.read())
+        config_text.insert("1.0", File2.read())
         File2.close()
     except:
         File1 = "Images/con_print.ini"
         File2 = open(File1, "w")
-        editor.insert("1.0", File2.read())
+        #config_text.insert("1.0", File2.read())
         File2.close()
+        config_box.destroy()
+        set_config()
 
-    save_btn = tkinter.Button(config_box, text="Save Changes", command=save_edit)
-    save_btn.pack(side=TOP)
+    # save_btn = tk.Button(config_box, text="Save Changes", command=save_edit)
+    # save_btn.pack(side=TOP)
 
     #Label(config_box, text="Boo, ya filthy animal").pack()
     Label(config_box, text="©Dave Williams 2022").pack(side=BOTTOM)
+    Label(config_box, text="CDW Logo ©CDW 2022").pack(side=BOTTOM)
     Label(config_box, text="Created for the exclusive use in\nconfig at the NDC in Rugby").pack(side=BOTTOM)
 
 # ============ What to do when the enter key is pressed ============
@@ -317,6 +354,26 @@ def print_range():
         messagebox.showinfo("","Printing has been aborted")
         return
 
+def con_update():
+    #Read config.ini file
+    config_object = ConfigParser()
+    config_object.read("Images/con_print.ini")
+    #Get the PRINTER section
+    printer = config_object["PRINTER"]
+    #Update the printer
+    printer["printer_select"] = printer_select.get()
+    #Get the TAG-TYPE section
+    tag = config_object["TAG-TYPE"]
+    #Update the tag
+    tag["asset_type"] = asset_type.get()
+    tag["tag_select"] = str(tag_select)
+
+
+    #Write changes back to file
+    with open('Images/con_print.ini', 'w') as conf:
+        config_object.write(conf)
+    print("Update settings")
+
 # ============ Auto Range (Experimental)============
 
 def print_auto():
@@ -432,6 +489,7 @@ def UOB_PC():
     print()
 
 # ============ Title piece ============
+
 try:
     logo_img = ImageTk.PhotoImage(Image.open("Images/2560px-CDW_Logo.svg.png").resize((100, 60)))
     logo = Label(frametop1, image=logo_img)
@@ -447,6 +505,7 @@ try:
     cog.pack(padx=(0,8), pady=(5,0))    
 except:
     cog = tk.Button(master=frametop3, text="...", font=("Helvetica",14), command=set_config).pack()
+
 # ============ Settings panel (frame1a) ============
 
 printer_label = tk.Label(master=frame1,
@@ -456,13 +515,15 @@ printer_label.grid(row=0, sticky=EW)
 config_print_button = tk.Radiobutton(master=frame1,
                     text="Config Printer",
                     variable=printer_select,
-                    value="LPT1")
+                    value="LPT1",
+                    command=con_update)
 config_print_button.grid(row=1, sticky=W)
 
 mezz_print_button = tk.Radiobutton(master=frame1,
                     text="MEZZ Printer",
                     variable=printer_select,
-                    value="LPT7")
+                    value="LPT7",
+                    command=con_update)
 mezz_print_button.grid(row=2, sticky=W)
 
 test_print_button = tk.Radiobutton(master=frame1,
