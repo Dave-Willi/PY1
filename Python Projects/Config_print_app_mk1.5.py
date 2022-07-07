@@ -1,4 +1,3 @@
-from codecs import StreamWriter
 import os
 import re
 import subprocess
@@ -9,7 +8,6 @@ from tkinter import messagebox
 from tkinter import filedialog
 from tkinter.ttk import Notebook
 import socket
-from xml.etree.ElementInclude import include
 from PIL import Image, ImageTk
 from time import sleep
 from configparser import ConfigParser
@@ -32,15 +30,15 @@ y = (hs/2) - (h/2)
 # and where it is placed
 root.geometry('%dx%d+%d+%d' % (w, h, x, y))
 
-#root.geometry=("780x520+100+100")
 
 # ============ Variables ============
-global xyz
+
 range_prefix = tk.StringVar(None, "")
 range_suffix = tk.StringVar(None, "")
 range_start = tk.StringVar(None, "0")
 range_end = tk.StringVar(None, "0")
 printer_select = tk.StringVar(None, "LPT1")
+local_print = tk.StringVar(None, "192.168.8.100")
 tag_select = tk.IntVar(value=0)
 asset_type = tk.StringVar(None, "Asset Tag :")
 cust_quantity = tk.IntVar(None)
@@ -61,9 +59,8 @@ def resource_path(relative_path):
 
 # ============ Printer Initial Setup ============
 
-# mysocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 host = str(printer_select.get())
-# port = 9100
+port = 9100
 
 # ============ Frames ============
 
@@ -235,26 +232,16 @@ def return_key(event = None):
     tab_name = frame2.select()
     tab_index = frame2.index(tab_name)
     if tab_index == 0:
-        # mysocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-        host = str(printer_select.get())
         if single_entry.get() != "":
             try:
                 tag_type = bytes(asset_type.get(), 'utf-8')
                 zplMessage = bytes(single_entry.get(),'utf-8')
-                
-                # ===== Simple LPT print =====
-                sys.stdout = open(host, 'w')
                 xyz = (b"^XA^LH15,0^FO1,20^AsN,25,25^FDDevice " + tag_type + b"^FS^FO03,60^B3N,N,100,Y,N^FD" + zplMessage + b"^FS^XZ")
-                sys.stdout.close()
-
-                # ===== Network print =====
-                # mysocket.connect((host, port)) #connecting to host
-                # mysocket.send(b"^XA^LH15,0^FO1,20^AsN,25,25^FDDevice " + tag_type + b"^FS^FO03,60^B3N,N,100,Y,N^FD" + zplMessage + b"^FS^XZ")#using bytes
-                # mysocket.close() #closing connection
+                to_print(xyz)
                 single_entry.delete(0, END)
                 single_entry.focus()
             except:
-                pass
+                print("Print error")
                 # con_error()
             return
         else:
@@ -324,22 +311,16 @@ def print_group_text():
             try:
                 if x == "":
                     continue
-                # mysocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-                host = str(printer_select.get())
                 tag_type = bytes(asset_type.get(), 'utf-8')
                 y = bytes(x,'utf-8')
 
                 # ===== Simple LPT print =====
-                sys.stdout = open(host, 'w')
-                print(b"^XA^LH15,0^FO1,20^AsN,25,25^FDDevice " + tag_type + b"^FS^FO03,60^B3N,N,100,Y,N^FD" + y + b"^FS^XZ")
-                sys.stdout.close()
-
-                # ===== Network print =====
-                # mysocket.connect((host, port)) #connecting to host
-                # mysocket.send(b"^XA^LH15,0^FO1,20^AsN,25,25^FDDevice " + tag_type + b"^FS^FO03,60^B3N,N,100,Y,N^FD" + y + b"^FS^XZ")#using bytes
-                # mysocket.close() #closing connection
+                
+                xyz = (b"^XA^LH15,0^FO1,20^AsN,25,25^FDDevice " + tag_type + b"^FS^FO03,60^B3N,N,100,Y,N^FD" + y + b"^FS^XZ")
+                to_print(xyz)
             except:
-                con_error()
+                print("Print error")
+                # con_error()
                 return
             sleep(0.5)
         clear_group_text()
@@ -370,21 +351,15 @@ def print_range():
         suffixed = bytes(str(range_suffix.get()).upper(), 'utf-8')
         for x in range(int(range_start.get()), int(range_end.get())+1):
             try:
-                # mysocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-                host = str(printer_select.get())
                 y = bytes(str(x).zfill(lead_zeros), 'utf-8')
 
                 # ===== Simple LPT print =====
-                sys.stdout = open(host, 'w')
-                print(b"^XA^LH15,0^FO1,20^AsN,25,25^FDDevice Asset Tag^FS^FO03,60^B3N,N,100,Y,N^FD" + prefixed + y + suffixed + b"^FS^XZ")#using bytes
-                sys.stdout.close()
-
-                # ===== Network print =====
-                # mysocket.connect((host, port)) #connecting to host
-                # mysocket.send(b"^XA^LH15,0^FO1,20^AsN,25,25^FDDevice Asset Tag^FS^FO03,60^B3N,N,100,Y,N^FD" + prefixed + y + suffixed + b"^FS^XZ")#using bytes
-                # mysocket.close() #closing connection
+                
+                xyz = (b"^XA^LH15,0^FO1,20^AsN,25,25^FDDevice Asset Tag^FS^FO03,60^B3N,N,100,Y,N^FD" + prefixed + y + suffixed + b"^FS^XZ")#using bytes
+                to_print(xyz)
             except:
-                con_error()
+                # con_error()
+                print("Print error")
                 return
             sleep(0.5)    
         clear_range()
@@ -400,6 +375,7 @@ def con_update():
     printer = config_object["PRINTER"]
     #Update the printer
     printer["printer_select"] = printer_select.get()
+    printer["local_print"] = local_print.get()
     #Get the TAG-TYPE section
     tag = config_object["TAG-TYPE"]
     #Update the tag
@@ -410,11 +386,20 @@ def con_update():
     with open('data/con_print.ini', 'w') as conf:
         config_object.write(conf)
 
-def to_print(xyz):
-    if "LPT" or "lpt" in host:
+def to_print(zyx):
+    host = str(printer_select.get())
+    if host == "local":
+        host = str(local_print.get())
+    if "LPT" in host:
+        print("LPT Print")
         sys.stdout = open(host, 'w')
-        print(xyz)
+        print(zyx)
         sys.stdout.close()
+    else:
+        mysocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+        mysocket.connect((host, port)) #connecting to host
+        mysocket.send(zyx)
+        mysocket.close() #closing connection
 
 # ============ Auto Range (Experimental)============
 
@@ -476,21 +461,15 @@ def print_auto():
             suffixed = bytes(str(auto_suffix1).upper(), 'utf-8')
             for x in range(int(auto_start), int(auto_end)+1):
                 try:
-                    # mysocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-                    host = str(printer_select.get())
                     y = bytes(str(x).zfill(lead_zeros), 'utf-8')
 
                     # ===== Simple LPT print =====
-                    sys.stdout = open(host, 'w')
-                    print(b"^XA^LH15,0^FO1,20^AsN,25,25^FDDevice Asset Tag^FS^FO03,60^B3N,N,100,Y,N^FD" + prefixed + y + suffixed + b"^FS^XZ")#using bytes
-                    sys.stdout.close()
-
-                    # ===== Network print =====
-                    # mysocket.connect((host, port)) #connecting to host
-                    # mysocket.send(b"^XA^LH15,0^FO1,20^AsN,25,25^FDDevice Asset Tag^FS^FO03,60^B3N,N,100,Y,N^FD" + prefixed + y + suffixed + b"^FS^XZ")#using bytes
-                    # mysocket.close() #closing connection
+                    
+                    xyz = (b"^XA^LH15,0^FO1,20^AsN,25,25^FDDevice Asset Tag^FS^FO03,60^B3N,N,100,Y,N^FD" + prefixed + y + suffixed + b"^FS^XZ")#using bytes
+                    to_print(xyz)
                 except:
-                    con_error()
+                    # con_error()
+                    print("Print error")
                     return
                 sleep(0.5)    
             clear_auto()
@@ -510,6 +489,8 @@ try:
     # printer_select.set = tk.StringVar(format(printer["printer_select"]))
     print_1 = str(format(printer["printer_select"]))
     printer_select.set(print_1)
+    local_1 = str(format(printer["local_print"]))
+    local_print.set(local_1)
     tag_1 = int(tag["tag_select"])
     tag_select.set(tag_1)
     set_tag()
@@ -517,7 +498,8 @@ except:
     #Get the configparser object and create file
     config_object = ConfigParser()
     config_object["PRINTER"] = {
-        "printer_select": printer_select.get()}
+        "printer_select": printer_select.get(),
+        "local_print": local_print.get()}
     config_object["TAG-TYPE"] = {
         "tag_select": 0}
     with open('data/con_print.ini', 'w') as conf:
@@ -529,21 +511,16 @@ def BBC():
     answer = messagebox.askyesno("Question","This will print " + str(cust_quantity.get()) + " BBC labels.\nDo you wish to continue?")
     if answer == True:
         try:
-            # mysocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-            host = str(printer_select.get())
             y = bytes(str(cust_quantity.get()), 'utf-8')
 
             # ===== Simple LPT print =====
-            sys.stdout = open(host, 'w')
-            print(b"^XA^LRY^FO10,10^GB195,203,195^FS^FO225,10^GB195,203,195^FS^FO440,10^GB195,203,195^FS^FO50,37^CFG,180^FDB^FS^FO260,37^FDB^FS^FO470,37^FDC^PQ" + y + b"^FS^XZ")#using bytes
-            sys.stdout.close()
-
-            # ===== Network print =====
-            # mysocket.connect((host, port)) #connecting to host
-            # mysocket.send(b"^XA^LRY^FO10,10^GB195,203,195^FS^FO225,10^GB195,203,195^FS^FO440,10^GB195,203,195^FS^FO50,37^CFG,180^FDB^FS^FO260,37^FDB^FS^FO470,37^FDC^PQ" + y + b"^FS^XZ")#using bytes
-            # mysocket.close() #closing connection
+            
+            xyz = (b"^XA^LRY^FO10,10^GB195,203,195^FS^FO225,10^GB195,203,195^FS^FO440,10^GB195,203,195^FS^FO50,37^CFG,180^FDB^FS^FO260,37^FDB^FS^FO470,37^FDC^PQ" + y + b"^FS^XZ")#using bytes
+            to_print(xyz)
+            return
         except:
-            con_error()
+            # con_error()
+            print("Print error")
             return
     else:
         messagebox.showinfo("","Printing has been aborted")
@@ -553,21 +530,16 @@ def ebay_mac():
     answer = messagebox.askyesno("Question","This will print " + str(cust_quantity.get()) + " MAC QR\nCode label for eBay\nDo you wish to continue?")
     if answer == True:
         try:
-            # mysocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-            host = str(printer_select.get())
             y = bytes(str(cust_quantity.get()), 'utf-8')
 
             # ===== Simple LPT print =====
-            sys.stdout = open(host, 'w')
-            print(b"^XA^FX^CF0,60^FO10,10^FDeBay QR Code^FS^FO10,75^FDfor MAC^FS^FO420,5^BQN,2,4^FDQA,www.youtube.com/watch?v=dQw4w9WgXcQ^PQ" + y + b"^FS^XZ")#using bytes
-            sys.stdout.close()
-
-            # ===== Network print =====
-            # mysocket.connect((host, port)) #connecting to host
-            # mysocket.send(b"^XA^FX^CF0,60^FO10,10^FDeBay QR Code^FS^FO10,75^FDfor MAC^FS^FO420,5^BQN,2,4^FDQA,www.youtube.com/watch?v=dQw4w9WgXcQ^PQ" + y + b"^FS^XZ")#using bytes
-            # mysocket.close() #closing connection
+            
+            xyz = (b"^XA^FX^CF0,60^FO10,10^FDeBay QR Code^FS^FO10,75^FDfor MAC^FS^FO420,5^BQN,2,4^FDQA,www.youtube.com/watch?v=dQw4w9WgXcQ^PQ" + y + b"^FS^XZ")#using bytes
+            to_print(xyz)
+            return
         except:
-            con_error()
+            # con_error()
+            print("Print error")
             return
     else:
         messagebox.showinfo("","Printing has been aborted")
@@ -577,21 +549,15 @@ def ebay_PC():
     answer = messagebox.askyesno("Question","This will print " + str(cust_quantity.get()) + " MAC QR\nCode label for eBay\nDo you wish to continue?")
     if answer == True:
         try:
-            # mysocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-            host = str(printer_select.get())
             y = bytes(str(cust_quantity.get()), 'utf-8')
 
-            # ===== Simple LPT print =====
-            sys.stdout = open(host, 'w')
-            print(b"^XA^FX^CF0,60^FO10,10^FDeBay QR Code^FS^FO10,75^FDfor PC^FS^FO420,5^BQN,2,4^FDQA,www.youtube.com/watch?v=KMYN4djSq7o^PQ" + y + b"^FS^XZ")#using bytes
-            sys.stdout.close()
-
-            # ===== Network print =====
-            # mysocket.connect((host, port)) #connecting to host
-            # mysocket.send(b"^XA^FX^CF0,60^FO10,10^FDeBay QR Code^FS^FO10,75^FDfor PC^FS^FO420,5^BQN,2,4^FDQA,www.youtube.com/watch?v=KMYN4djSq7o^PQ" + y + b"^FS^XZ")#using bytes
-            # mysocket.close() #closing connection
+            # ===== send to print =====
+            xyz = (b"^XA^FX^CF0,60^FO10,10^FDeBay QR Code^FS^FO10,75^FDfor PC^FS^FO420,5^BQN,2,4^FDQA,www.youtube.com/watch?v=KMYN4djSq7o^PQ" + y + b"^FS^XZ")#using bytes
+            to_print(xyz)
+            return
         except:
-            con_error()
+            # con_error()
+            print("Print error")
             return
     else:
         messagebox.showinfo("","Printing has been aborted")
@@ -635,11 +601,12 @@ mezz_print_button = tk.Radiobutton(master=frame1,
                     command=con_update)
 mezz_print_button.grid(row=2, sticky=W)
 
-# test_print_button = tk.Radiobutton(master=frame1,
-#                     text="Test Printer",
-#                     variable=printer_select,
-#                     value="192.168.8.100")
-# test_print_button.grid(row=3, sticky=W)
+test_print_button = tk.Radiobutton(master=frame1,
+                    text="Test Printer",
+                    value="local",
+                    variable=printer_select,
+                    command=con_update)
+test_print_button.grid(row=3, sticky=W)
 
 asset_label = tk.Label(master=frame1,
                             text="Asset or serial?")
