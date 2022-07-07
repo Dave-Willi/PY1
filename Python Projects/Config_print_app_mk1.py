@@ -1,3 +1,4 @@
+from codecs import StreamWriter
 import os
 import re
 import subprocess
@@ -238,10 +239,11 @@ def return_key(event = None):
             try:
                 tag_type = bytes(asset_type.get(), 'utf-8')
                 zplMessage = bytes(single_entry.get(),'utf-8')
-
+                
                 # ===== Simple LPT print =====
-                pr = os.popen(str(host), "w")
-                pr.write(b"^XA^LH15,0^FO1,20^AsN,25,25^FDDevice " + tag_type + b"^FS^FO03,60^B3N,N,100,Y,N^FD" + zplMessage + b"^FS^XZ")
+                sys.stdout = open(host, 'w')
+                print(b"^XA^LH15,0^FO1,20^AsN,25,25^FDDevice " + tag_type + b"^FS^FO03,60^B3N,N,100,Y,N^FD" + zplMessage + b"^FS^XZ")
+                sys.stdout.close()
 
                 # ===== Network print =====
                 # mysocket.connect((host, port)) #connecting to host
@@ -250,7 +252,8 @@ def return_key(event = None):
                 single_entry.delete(0, END)
                 single_entry.focus()
             except:
-                con_error()
+                pass
+                # con_error()
             return
         else:
             single_entry.focus()
@@ -325,8 +328,9 @@ def print_group_text():
                 y = bytes(x,'utf-8')
 
                 # ===== Simple LPT print =====
-                pr = os.popen(str(host), "w")
-                pr.write(b"^XA^LH15,0^FO1,20^AsN,25,25^FDDevice " + tag_type + b"^FS^FO03,60^B3N,N,100,Y,N^FD" + y + b"^FS^XZ")
+                sys.stdout = open(host, 'w')
+                print(b"^XA^LH15,0^FO1,20^AsN,25,25^FDDevice " + tag_type + b"^FS^FO03,60^B3N,N,100,Y,N^FD" + y + b"^FS^XZ")
+                sys.stdout.close()
 
                 # ===== Network print =====
                 # mysocket.connect((host, port)) #connecting to host
@@ -369,8 +373,9 @@ def print_range():
                 y = bytes(str(x).zfill(lead_zeros), 'utf-8')
 
                 # ===== Simple LPT print =====
-                pr = os.popen(str(host), "w")
-                pr.write(b"^XA^LH15,0^FO1,20^AsN,25,25^FDDevice Asset Tag^FS^FO03,60^B3N,N,100,Y,N^FD" + prefixed + y + suffixed + b"^FS^XZ")
+                sys.stdout = open(host, 'w')
+                print(b"^XA^LH15,0^FO1,20^AsN,25,25^FDDevice Asset Tag^FS^FO03,60^B3N,N,100,Y,N^FD" + prefixed + y + suffixed + b"^FS^XZ")#using bytes
+                sys.stdout.close()
 
                 # ===== Network print =====
                 # mysocket.connect((host, port)) #connecting to host
@@ -468,8 +473,9 @@ def print_auto():
                     y = bytes(str(x).zfill(lead_zeros), 'utf-8')
 
                     # ===== Simple LPT print =====
-                    pr = os.popen(str(host), "w")
-                    pr.write(b"^XA^LH15,0^FO1,20^AsN,25,25^FDDevice Asset Tag^FS^FO03,60^B3N,N,100,Y,N^FD" + prefixed + y + suffixed + b"^FS^XZ")
+                    sys.stdout = open(host, 'w')
+                    print(b"^XA^LH15,0^FO1,20^AsN,25,25^FDDevice Asset Tag^FS^FO03,60^B3N,N,100,Y,N^FD" + prefixed + y + suffixed + b"^FS^XZ")#using bytes
+                    sys.stdout.close()
 
                     # ===== Network print =====
                     # mysocket.connect((host, port)) #connecting to host
@@ -520,8 +526,9 @@ def BBC():
             y = bytes(str(cust_quantity.get()), 'utf-8')
 
             # ===== Simple LPT print =====
-            pr = os.popen(str(host), "w")
-            pr.write(b"^XA^LRY^FO10,10^GB195,203,195^FS^FO225,10^GB195,203,195^FS^FO440,10^GB195,203,195^FS^FO50,37^CFG,180^FDB^FS^FO260,37^FDB^FS^FO470,37^FDC^PQ" + y + b"^FS^XZ")
+            sys.stdout = open(host, 'w')
+            print(b"^XA^LRY^FO10,10^GB195,203,195^FS^FO225,10^GB195,203,195^FS^FO440,10^GB195,203,195^FS^FO50,37^CFG,180^FDB^FS^FO260,37^FDB^FS^FO470,37^FDC^PQ" + y + b"^FS^XZ")#using bytes
+            sys.stdout.close()
 
             # ===== Network print =====
             # mysocket.connect((host, port)) #connecting to host
@@ -543,9 +550,10 @@ def ebay_mac():
             y = bytes(str(cust_quantity.get()), 'utf-8')
 
             # ===== Simple LPT print =====
-            pr = os.popen(str(host), "w")
-            pr.write(b"^XA^FX^CF0,60^FO10,10^FDeBay QR Code^FS^FO10,75^FDfor MAC^FS^FO420,5^BQN,2,4^FDQA,www.youtube.com/watch?v=dQw4w9WgXcQ^PQ" + y + b"^FS^XZ")
-            
+            sys.stdout = open(host, 'w')
+            print(b"^XA^FX^CF0,60^FO10,10^FDeBay QR Code^FS^FO10,75^FDfor MAC^FS^FO420,5^BQN,2,4^FDQA,www.youtube.com/watch?v=dQw4w9WgXcQ^PQ" + y + b"^FS^XZ")#using bytes
+            sys.stdout.close()
+
             # ===== Network print =====
             # mysocket.connect((host, port)) #connecting to host
             # mysocket.send(b"^XA^FX^CF0,60^FO10,10^FDeBay QR Code^FS^FO10,75^FDfor MAC^FS^FO420,5^BQN,2,4^FDQA,www.youtube.com/watch?v=dQw4w9WgXcQ^PQ" + y + b"^FS^XZ")#using bytes
@@ -562,13 +570,13 @@ def ebay_PC():
     if answer == True:
         try:
             # mysocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-            print(str(printer_select.get()))
             host = str(printer_select.get())
             y = bytes(str(cust_quantity.get()), 'utf-8')
 
             # ===== Simple LPT print =====
-            pr = os.popen(str(host), "w")
-            pr.write(b"^XA^FX^CF0,60^FO10,10^FDeBay QR Code^FS^FO10,75^FDfor PC^FS^FO420,5^BQN,2,4^FDQA,www.youtube.com/watch?v=KMYN4djSq7o^PQ" + y + b"^FS^XZ")
+            sys.stdout = open(host, 'w')
+            print(b"^XA^FX^CF0,60^FO10,10^FDeBay QR Code^FS^FO10,75^FDfor PC^FS^FO420,5^BQN,2,4^FDQA,www.youtube.com/watch?v=KMYN4djSq7o^PQ" + y + b"^FS^XZ")#using bytes
+            sys.stdout.close()
 
             # ===== Network print =====
             # mysocket.connect((host, port)) #connecting to host
