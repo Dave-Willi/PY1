@@ -11,9 +11,13 @@ import socket
 from PIL import Image, ImageTk
 from time import sleep
 from configparser import ConfigParser
+from svglib.svglib import svg2rlg
+from reportlab.graphics import renderPM
+from io import BytesIO
 
 root = tk.Tk()
 root.title("Config printing app")
+# root.tk_setPalette(background="#444", foreground="#eee")
 
 w = 780 # width for the Tk root
 h = 520 # height for the Tk root
@@ -29,7 +33,6 @@ y = (hs/2) - (h/2)
 # set the dimensions of the screen 
 # and where it is placed
 root.geometry('%dx%d+%d+%d' % (w, h, x, y))
-
 
 # ============ Variables ============
 
@@ -163,7 +166,7 @@ def help_me():
     if tab_index == 2:
         messagebox.showinfo("Range","The prefix is the part of the tag which is the same for all of the tags and comes before the number. The suffix is the same but it comes after the number")
     if tab_index == 3:
-        messagebox.showinfo("Range (Auto)","Simple scan the first and last tag and it will print those plus any in between")
+        messagebox.showinfo("Range (Auto)","Simply scan the first and last tag and it will print those plus any in between")
     if tab_index == 4:
         messagebox.showinfo("Customer Labels","For printing labels that are unique to a customer")
     if tab_index == 5:
@@ -192,34 +195,59 @@ def set_config():
     # set the dimensions of the screen 
     # and where it is placed
     config_box.geometry('%dx%d+%d+%d' % (w, h, x, y))
+
+    # Close config window on lose focus
     config_box.focus_force()
-    #config_box.bind('<FocusOut>', kill_me())
+    config_box.bind('<FocusOut>', lambda x:kill_me())
 
+    # Fill the config window with stuff
     label2 = tk.Label(config_box,
-                    text="The below settings are saved in the config file")
-    label2.pack()                    
+                    text="Settings saved in the config file")
+    label2.pack(side=TOP)                    
 
-    config_text = tk.Text(config_box, wrap=WORD, width=34, height=8, state=DISABLED)
-    config_text.pack(side=TOP, padx=5, pady=10)
+    config_text = tk.Text(config_box, wrap=WORD, width=34, height=7, state=DISABLED)
+    config_text.pack(side=TOP, padx=5, pady=(0,10))
 
-    try:
+    try: # If the file doesn't exist 
         File1 = "data/con_print.ini"
         File2 = open(File1, "r")
         config_text.config(state=NORMAL)
         config_text.insert("1.0", File2.read())
         config_text.config(state=DISABLED)
         File2.close()
-    except:
+    except: # create a fresh file and restart the config window in one smooth action
         File1 = "data/con_print.ini"
         File2 = open(File1, "w")
         File2.close()
         kill_me()
         set_config()
+    label3 = tk.Label(config_box,
+                    text="The last 1000 tags you printed")
+    label3.pack(side=TOP)  
 
-    exit_btn = tk.Button(config_box, text="Close window", command=kill_me)
-    exit_btn.pack(side=TOP, pady=(50,0))
+    log_text = tkscrolled.ScrolledText(config_box, wrap=WORD, width=32, height=15, state=DISABLED)
+    log_text.pack(side=TOP, padx=5)
 
-    #Label(config_box, text="Boo, ya filthy animal").pack()
+    try: # If the file doesn't exist 
+        File1 = "data/logs.txt"
+        File2 = open(File1, "r")
+        log_text.config(state=NORMAL)
+        log_text.insert("1.0", File2.read())
+        log_text.config(state=DISABLED)
+        File2.close()
+    except: # create a fresh file and restart the config window in one smooth action
+        File1 = "data/logs.txt"
+        File2 = open(File1, "w")
+        File2.close()
+        kill_me()
+        set_config()
+
+
+
+    # exit_btn = tk.Button(config_box, text="Close window", command=kill_me)
+    # exit_btn.pack(side=BOTTOM, pady=(30,20))
+
+    
     Label(config_box, text="©Dave Williams 2022").pack(side=BOTTOM)
     Label(config_box, text="CDW Logo ©CDW 2022").pack(side=BOTTOM)
     Label(config_box, text="Created for the exclusive use in\nconfig at the NDC in Rugby").pack(side=BOTTOM)
@@ -233,16 +261,13 @@ def return_key(event = None):
     tab_index = frame2.index(tab_name)
     if tab_index == 0:
         if single_entry.get() != "":
-            try:
-                tag_type = asset_type.get()
-                zplMessage = single_entry.get()
-                xyz = ("^XA^LH15,0^FO1,20^AsN,25,25^FDDevice " + tag_type + "^FS^FO03,60^B3N,N,100,Y,N^FD" + zplMessage + "^FS^XZ")
-                to_print(xyz)
-                single_entry.delete(0, END)
-                single_entry.focus()
-            except:
-                print("Print error")
-                # con_error()
+            tag_type = asset_type.get()
+            zplMessage = single_entry.get()
+            xyz = ("^XA^LH15,0^FO1,20^AsN,25,25^FDDevice " + tag_type + "^FS^FO03,60^B3N,N,100,Y,N^FD" + zplMessage + "^FS^XZ")
+            log = zplMessage
+            to_print(xyz ,log)
+            single_entry.delete(0, END)
+            single_entry.focus()
             return
         else:
             single_entry.focus()
@@ -265,22 +290,69 @@ def quit():
     sys.exit()
 
 def con_error():
-    answer = messagebox.askyesno("Question", "Connection error\nAttempt to map network printers?")
-    # if answer == True:
-    #     # subprocess.call(r'net use lpt1: /delete',shell=True)
-    #     # subprocess.call(r'net use lpt2: /delete',shell=True)
-    #     # subprocess.call(r'net use lpt3: /delete',shell=True)
-    #     # subprocess.call(r'net use lpt4: /delete',shell=True)
-    #     # subprocess.call(r'net use lpt6: /delete',shell=True)
-    #     # subprocess.call(r'net use lpt7: /delete',shell=True)
-    #     # subprocess.call(r'net use lpt1 \\\\10.151.53.22\\rug-cfg-zebra-01 /persistent:yes /USER:config\\config.engineer homebuild',shell=True)
-    #     # subprocess.call(r'net use lpt2 \\\\10.151.53.22\\rug-cfg-zebra-02 /persistent:yes /USER:config\\config.engineer homebuild',shell=True)
-    #     # subprocess.call(r'net use lpt3 \\\\10.151.53.22\\rug-cfg-zebra-03 /persistent:yes /USER:config\\config.engineer homebuild',shell=True)
-    #     # subprocess.call(r'net use lpt4 \\\\10.151.53.22\\rug-cfg-zebra-04 /persistent:yes /USER:config\\config.engineer homebuild',shell=True)
-    #     # subprocess.call(r'net use lpt6 \\\\10.151.53.22\\rug-cfg-zebra-06 /persistent:yes /USER:config\\config.engineer homebuild',shell=True)
-    #     # subprocess.call(r'net use lpt7 \\\\10.151.53.22\\rug-cfg-zebra-07 /persistent:yes /USER:config\\config.engineer homebuild',shell=True)
-    # else:
-    #     return
+    answer = messagebox.askyesno("Question", "Connection error\n\nAttempt to map network printers?")
+    if answer == True:
+        # subprocess.call(r'net use lpt1: /delete',shell=True)
+        # subprocess.call(r'net use lpt2: /delete',shell=True)
+        # subprocess.call(r'net use lpt3: /delete',shell=True)
+        # subprocess.call(r'net use lpt4: /delete',shell=True)
+        # subprocess.call(r'net use lpt6: /delete',shell=True)
+        # subprocess.call(r'net use lpt7: /delete',shell=True)
+        subprocess.call(r'net use lpt7: /delete',shell=True)
+        # subprocess.call(r'net use lpt1 \\10.151.53.22\rug-cfg-zebra-01 /persistent:yes /USER:config\config.engineer homebuild',shell=True)
+        # subprocess.call(r'net use lpt2 \\10.151.53.22\rug-cfg-zebra-02 /persistent:yes /USER:config\config.engineer homebuild',shell=True)
+        # subprocess.call(r'net use lpt3 \\10.151.53.22\rug-cfg-zebra-03 /persistent:yes /USER:config\config.engineer homebuild',shell=True)
+        # subprocess.call(r'net use lpt4 \\10.151.53.22\rug-cfg-zebra-04 /persistent:yes /USER:config\config.engineer homebuild',shell=True)
+        # subprocess.call(r'net use lpt6 \\10.151.53.22\rug-cfg-zebra-06 /persistent:yes /USER:config\config.engineer homebuild',shell=True)
+        # subprocess.call(r'net use lpt7 \\10.151.53.22\rug-cfg-zebra-07 /persistent:yes /USER:config\config.engineer homebuild',shell=True)
+        subprocess.call(r'net use lpt7 \\192.168.8.100\zpl' ,shell=True)
+    else:
+        return
+
+def history(log):
+    file = open("data\logs.txt", "a")
+    file.close()
+    with open("data\logs.txt", "r") as history_orig:
+        save = history_orig.read().upper()
+    with open("data\logs.txt", "w") as history_orig:
+        history_orig.write(str(log).upper())
+        history_orig.write("\n")
+        history_orig.write(save)
+    N = 1000 # number of lines you want to keep
+    with open("data\logs.txt","r+") as f:
+        data = f.readlines()
+        if len(data) > N: data = data[0:N]
+        f.seek(0)
+        f.writelines(data)
+        f.truncate()
+    # lines = []
+    # # read file
+    # with open("data\logs.txt", 'r') as fp:
+    #     # read an store all lines into list
+    #     lines = fp.readlines()
+
+    # # Write file
+    # with open("data\logs.txt", 'w') as fp:
+    #     # iterate each line
+    #     for number, line in enumerate(lines):
+    #         if number < 5:
+    #             fp.write(line)
+    
+    return
+    
+    
+    
+    # historyfile = open("logs.txt", "w")
+    # print("Original")
+    # print(history_orig.read())
+    # print("histoyfile")
+    # print(historyfile.read())
+    # new_log = (str(log).upper() + "\n" + str(history_orig.read()).upper())
+    # historyfile.write(new_log)
+    # historyfile.write("\n")
+    # history_orig.close()
+    # historyfile.close()
+    return
 
 def Open():
     File1 = filedialog.askopenfilename()
@@ -308,20 +380,13 @@ def print_group_text():
     answer = messagebox.askyesno("Question","This will print " + str(total_print) + " labels.\nDo you wish to continue?")
     if answer == True:
         for x in (group_text):
-            try:
-                if x == "":
-                    continue
-                tag_type = asset_type.get()
-                y = x
-
-                # ===== Simple LPT print =====
-                
-                xyz = ("^XA^LH15,0^FO1,20^AsN,25,25^FDDevice " + tag_type + "^FS^FO03,60^B3N,N,100,Y,N^FD" + y + "^FS^XZ")
-                to_print(xyz)
-            except:
-                print("Print error")
-                # con_error()
-                return
+            if x == "":
+                continue
+            tag_type = asset_type.get()
+            y = x
+            xyz = ("^XA^LH15,0^FO1,20^AsN,25,25^FDDevice " + tag_type + "^FS^FO03,60^B3N,N,100,Y,N^FD" + y + "^FS^XZ")
+            log = y
+            to_print(xyz ,log)
             sleep(0.7)
         clear_group_text()
         return
@@ -346,21 +411,14 @@ def print_range():
         return
     answer = messagebox.askyesno("Question","This will print " + str(total_print) + " labels.\nDo you wish to continue?")
     if answer == True:
-        lead_zeros = len(range_end.get())
+        lead_zeros = max(len(range_end.get()), len(range_start.get()))
         prefixed = str(range_prefix.get()).upper()
         suffixed = str(range_suffix.get()).upper()
         for x in range(int(range_start.get()), int(range_end.get())+1):
-            try:
-                y = str(x).zfill(lead_zeros)
-
-                # ===== Simple LPT print =====
-                
-                xyz = ("^XA^LH15,0^FO1,20^AsN,25,25^FDDevice Asset Tag^FS^FO03,60^B3N,N,100,Y,N^FD" + prefixed + y + suffixed + "^FS^XZ")
-                to_print(xyz)
-            except:
-                # con_error()
-                print("Print error")
-                return
+            y = str(x).zfill(lead_zeros)
+            xyz = ("^XA^LH15,0^FO1,20^AsN,25,25^FDDevice Asset Tag^FS^FO03,60^B3N,N,100,Y,N^FD" + prefixed + y + suffixed + "^FS^XZ")
+            log = prefixed + y + suffixed
+            to_print(xyz, log)
             sleep(0.7)    
         clear_range()
     else:
@@ -386,25 +444,27 @@ def con_update():
     with open('data/con_print.ini', 'w') as conf:
         config_object.write(conf)
 
-def to_print(zyx):
+def to_print(zyx, log):
     host = str(printer_select.get())
     if host == "local":
         host = str(local_print.get())
     print_me = bytes(zyx, 'utf-8')
-    if "LPT" in host:
-        print("LPT Print")
-        sys.stdout = open(host, 'w')
-        print(print_me)
-        sys.stdout = sys.__stdout__
-        # pin = open(host, 'w')
-        # pin.write(print_me)
-        # pin.close()
-        return
-    else:
-        mysocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-        mysocket.connect((host, port)) #connecting to host
-        mysocket.send(print_me)
-        mysocket.close() #closing connection
+    try:
+        if "LPT" in host:
+            sys.stdout = open(host, 'a')
+            print(print_me)
+            sys.stdout = sys.__stdout__
+            history(log)
+            return
+        else:
+            mysocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+            mysocket.connect((host, port)) #connecting to host
+            mysocket.send(print_me)
+            mysocket.close() #closing connection
+            history(log)
+            return
+    except:
+        con_error()
         return
 
 # ============ Auto Range (Experimental)============
@@ -466,17 +526,10 @@ def print_auto():
             prefixed = str(auto_prefix1).upper()
             suffixed = str(auto_suffix1).upper()
             for x in range(int(auto_start), int(auto_end)+1):
-                try:
-                    y = str(x).zfill(lead_zeros)
-
-                    # ===== Simple LPT print =====
-                    
-                    xyz = ("^XA^LH15,0^FO1,20^AsN,25,25^FDDevice Asset Tag^FS^FO03,60^B3N,N,100,Y,N^FD" + prefixed + y + suffixed + "^FS^XZ")
-                    to_print(xyz)
-                except:
-                    # con_error()
-                    print("Print error")
-                    return
+                y = str(x).zfill(lead_zeros)
+                xyz = ("^XA^LH15,0^FO1,20^AsN,25,25^FDDevice Asset Tag^FS^FO03,60^B3N,N,100,Y,N^FD" + prefixed + y + suffixed + "^FS^XZ")
+                log = prefixed + y + suffixed
+                to_print(xyz ,log)
                 sleep(0.7)    
             clear_auto()
         else:
@@ -486,6 +539,7 @@ def print_auto():
 # ============ Config Parser ============
 
 try:
+    os.makedirs("data", exist_ok=True)
     #Get the configparser object and read file
     config_object = ConfigParser()
     config_object.read("data/con_print.ini")
@@ -516,18 +570,11 @@ except:
 def BBC():
     answer = messagebox.askyesno("Question","This will print " + str(cust_quantity.get()) + " BBC labels.\nDo you wish to continue?")
     if answer == True:
-        try:
-            y = str(cust_quantity.get())
-
-            # ===== Simple LPT print =====
-            
-            xyz = ("^XA^LRY^FO10,10^GB195,203,195^FS^FO225,10^GB195,203,195^FS^FO440,10^GB195,203,195^FS^FO50,37^CFG,180^FDB^FS^FO260,37^FDB^FS^FO470,37^FDC^PQ" + y + "^FS^XZ")
-            to_print(xyz)
-            return
-        except:
-            # con_error()
-            print("Print error")
-            return
+        y = str(cust_quantity.get())
+        xyz = ("^XA^LRY^FO10,10^GB195,203,195^FS^FO225,10^GB195,203,195^FS^FO440,10^GB195,203,195^FS^FO50,37^CFG,180^FDB^FS^FO260,37^FDB^FS^FO470,37^FDC^PQ" + y + "^FS^XZ")
+        log = "BBC Tag"
+        to_print(xyz ,log)
+        return
     else:
         messagebox.showinfo("","Printing has been aborted")
         return
@@ -535,18 +582,11 @@ def BBC():
 def ebay_mac():
     answer = messagebox.askyesno("Question","This will print " + str(cust_quantity.get()) + " MAC QR\nCode label for eBay\nDo you wish to continue?")
     if answer == True:
-        try:
-            y = str(cust_quantity.get())
-
-            # ===== Simple LPT print =====
-            
-            xyz = ("^XA^FX^CF0,60^FO10,10^FDeBay QR Code^FS^FO10,75^FDfor MAC^FS^FO420,5^BQN,2,4^FDQA,www.youtube.com/watch?v=dQw4w9WgXcQ^PQ" + y + "^FS^XZ")
-            to_print(xyz)
-            return
-        except:
-            # con_error()
-            print("Print error")
-            return
+        y = str(cust_quantity.get())
+        xyz = ("^XA^FX^CF0,60^FO10,10^FDeBay QR Code^FS^FO10,75^FDfor MAC^FS^FO420,5^BQN,2,4^FDQA,www.youtube.com/watch?v=dQw4w9WgXcQ^PQ" + y + "^FS^XZ")
+        log = "Ebay MAC QR tag"
+        to_print(xyz ,log)
+        return
     else:
         messagebox.showinfo("","Printing has been aborted")
         return
@@ -554,17 +594,11 @@ def ebay_mac():
 def ebay_PC():
     answer = messagebox.askyesno("Question","This will print " + str(cust_quantity.get()) + " MAC QR\nCode label for eBay\nDo you wish to continue?")
     if answer == True:
-        try:
-            y = str(cust_quantity.get())
-
-            # ===== send to print =====
-            xyz = ("^XA^FX^CF0,60^FO10,10^FDeBay QR Code^FS^FO10,75^FDfor PC^FS^FO420,5^BQN,2,4^FDQA,www.youtube.com/watch?v=KMYN4djSq7o^PQ" + y + "^FS^XZ")
-            to_print(xyz)
-            return
-        except:
-            # con_error()
-            print("Print error")
-            return
+        y = str(cust_quantity.get())
+        xyz = ("^XA^FX^CF0,60^FO10,10^FDeBay QR Code^FS^FO10,75^FDfor PC^FS^FO420,5^BQN,2,4^FDQA,www.youtube.com/watch?v=KMYN4djSq7o^PQ" + y + "^FS^XZ")
+        log = "Ebay PC QR tag"
+        to_print(xyz ,log)
+        return
     else:
         messagebox.showinfo("","Printing has been aborted")
         return
@@ -572,9 +606,9 @@ def ebay_PC():
 # ============ Title piece ============
 
 try:
-    logo_img = ImageTk.PhotoImage(Image.open("data/2560px-CDW_Logo.svg.png").resize((100, 60)))
+    logo_img = ImageTk.PhotoImage(Image.open("data/CDW_Logo.png").resize((100, 60)))
     logo = Label(frametop1, image=logo_img)
-    logo.pack(side=LEFT, anchor=W, padx=10, pady=10)
+    logo.pack(side=LEFT, anchor=W, padx=15, pady=10)
 except:
     logo_text = tk.Label(frametop1, text="CDW", font=("Helvetica",20))
     logo_text.pack(side=LEFT, anchor=W, padx=10, pady=10)
@@ -690,7 +724,10 @@ group_load = tk.Button(master=tab2b,
                         command=Open)
 group_load.pack(side=LEFT, padx=(0,100))
 
-group_textbox = Text(master=tab2, wrap=WORD)
+import tkinter.scrolledtext as tkscrolled
+
+# group_textbox = Text(master=tab2, wrap=WORD)
+group_textbox = tkscrolled.ScrolledText(master=tab2, wrap=WORD)
 group_textbox.pack(side=BOTTOM, fill=BOTH, expand=True, padx=5, pady=5)
 
 # ============ Range Tab (tab3) ============
