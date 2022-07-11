@@ -47,6 +47,7 @@ auto_1 = tk.StringVar(None)
 auto_2 = tk.StringVar(None)
 bg_col = str("white")
 xyz = str(" ")
+flag_1 = int(1)
 
 def resource_path(relative_path):
     """ Get absolute path to resource, works for dev and for PyInstaller """
@@ -135,24 +136,32 @@ def reset():
     subprocess.call([sys.executable, os.path.realpath(__file__)] + sys.argv[1:])
 
 def set_tag():
-    global bg_col
     if tag_select.get() == 0:
         asset_type.set("Asset Tag :")
         frame2.tab(2, state="normal")
         frame2.tab(3, state="normal")
-        bg_col = "#eef"
-        con_update()
     elif tag_select.get() == 1:
         asset_type.set("Serial Number :")
         frame2.tab(2, state="disabled")
         frame2.tab(3, state="disabled")
-        bg_col = "#fee"
-        con_update()
     try:
-        single_entry.config(bg=bg_col)
-        group_entry.config(bg=bg_col)
+        if flag_1 == 1:
+            mezz_print_button.configure(state=DISABLED)
+            config_print_button.configure(state=NORMAL)
+            print("Flag = 1")
+        elif flag_1 == 2:
+            config_print_button.configure(state=DISABLED)
+            mezz_print_button.configure(state=NORMAL)
+            print("Flag = 2")
+        elif flag_1 == 0:
+            mezz_print_button.configure(state=NORMAL)
+            config_print_button.configure(state=NORMAL)
+            print("Flag = 0")
     except:
         pass
+    print("Flag_1 is set to")
+    print(flag_1)
+    con_update()
 
 def help_me():
     tab_name = frame2.select()
@@ -416,7 +425,8 @@ def con_update():
     tag = config_object["TAG-TYPE"]
     #Update the tag
     tag["tag_select"] = str(tag_select.get())
-
+    flag = config_object["FLAGS"]
+    flag["flag_1"] = str(flag_1)
 
     #Write changes back to file
     with open('data/con_print.ini', 'w') as conf:
@@ -518,13 +528,14 @@ def print_auto():
 # ============ Config Parser ============
 
 try:
-    os.makedirs("data", exist_ok=True)
+    # os.makedirs("data", exist_ok=True)
     #Get the configparser object and read file
     config_object = ConfigParser()
     config_object.read("data/con_print.ini")
     #Get the settings
     printer = config_object["PRINTER"]
     tag = config_object["TAG-TYPE"]
+    flag = config_object["FLAGS"]
     # printer_select.set = tk.StringVar(format(printer["printer_select"]))
     print_1 = str(format(printer["printer_select"]))
     printer_select.set(print_1)
@@ -532,7 +543,9 @@ try:
     local_print.set(local_1)
     tag_1 = int(tag["tag_select"])
     tag_select.set(tag_1)
-    set_tag()
+    flag_1a = int(flag["flag_1"]) # 1 = Config, 2 = Mezz, 0 = Technician
+    flag_1 = flag_1a
+    
 except:
     #Get the configparser object and create file
     config_object = ConfigParser()
@@ -540,7 +553,9 @@ except:
         "printer_select": printer_select.get(),
         "local_print": local_print.get()}
     config_object["TAG-TYPE"] = {
-        "tag_select": 0}
+        "tag_select": tag_select.get()}
+    config_object["FLAGS"] = {
+        "flag_1": flag_1}
     with open('data/con_print.ini', 'w') as conf:
         config_object.write(conf)
     
@@ -862,5 +877,9 @@ ports_alert.grid(row=2, column=2)
 
 # ============ Start up the routine ============
 
+try:
+    set_tag()
+except:
+    pass
 root.bind('<Return>', return_key)
 root.mainloop()
