@@ -1,0 +1,14 @@
+Can do asset tags or serial numbers
+Single Tags
+	Auto focus on entry box so no long need to click it for each one
+Groups of tags
+	Single entry - with auto focus
+		Or scan/copy paste directly into text box
+	Load from file
+Range - Manual (keeps leading zeros)
+Range - Auto
+Works on both printers
+Records log of last 1000 labels printed
+Print customer specific tags (work in progress)
+Remembers last used settings
+Report general issues to leadership quickly and effectively (work in progress)
