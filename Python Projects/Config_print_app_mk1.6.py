@@ -148,19 +148,19 @@ def set_tag():
         if flag_1 == 1:
             mezz_print_button.configure(state=DISABLED)
             config_print_button.configure(state=NORMAL)
-            print("Flag = 1")
+            # print("Flag = 1")
         elif flag_1 == 2:
             config_print_button.configure(state=DISABLED)
             mezz_print_button.configure(state=NORMAL)
-            print("Flag = 2")
+            # print("Flag = 2")
         elif flag_1 == 0:
             mezz_print_button.configure(state=NORMAL)
             config_print_button.configure(state=NORMAL)
-            print("Flag = 0")
+            # print("Flag = 0")
     except:
         pass
-    print("Flag_1 is set to")
-    print(flag_1)
+    # print("Flag_1 is set to")
+    # print(flag_1)
     con_update()
 
 def help_me():
