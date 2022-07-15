@@ -31,7 +31,7 @@ y = (hs/2) - (h/2)
 # set the dimensions of the screen 
 # and where it is placed
 root.geometry('%dx%d+%d+%d' % (w, h, x, y))
-
+root.resizable(False,False)
 # ============ Variables ============
 
 range_prefix = tk.StringVar(None, "")
@@ -184,6 +184,7 @@ def help_me():
 def set_config():
     config_box = Toplevel(root)
     config_box.title("Settings and about")
+    config_box.overrideredirect(True)
 
     def kill_me():
         config_box.destroy()
