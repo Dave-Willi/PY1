@@ -131,39 +131,38 @@ tab4c.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10, fill=BOTH)
 
 # ============ Side menu commands ============
 
-def reset():
+def reset(): # stop and restart app. Can be disabled for final release
     root.destroy()
     subprocess.call([sys.executable, os.path.realpath(__file__)] + sys.argv[1:])
 
-def set_tag():
+def set_tag(): # Change between asset tag and serial number. Sets colour of entry box as an added hint for which is selected. Disable range tabs in serial number mode.
     if tag_select.get() == 0:
         asset_type.set("Asset Tag :")
         frame2.tab(2, state="normal")
         frame2.tab(3, state="normal")
+        bg_col = "#eef"
     elif tag_select.get() == 1:
         asset_type.set("Serial Number :")
         frame2.tab(2, state="disabled")
         frame2.tab(3, state="disabled")
+        bg_col = "#fee"
     try:
+        single_entry.config(bg=bg_col)
+        group_entry.config(bg=bg_col)
         if flag_1 == 1:
             mezz_print_button.configure(state=DISABLED)
             config_print_button.configure(state=NORMAL)
-            # print("Flag = 1")
         elif flag_1 == 2:
             config_print_button.configure(state=DISABLED)
             mezz_print_button.configure(state=NORMAL)
-            # print("Flag = 2")
         elif flag_1 == 0:
             mezz_print_button.configure(state=NORMAL)
             config_print_button.configure(state=NORMAL)
-            # print("Flag = 0")
     except:
         pass
-    # print("Flag_1 is set to")
-    # print(flag_1)
     con_update()
 
-def help_me():
+def help_me(): # Set custom help dialog boxes for each page/tab
     tab_name = frame2.select()
     tab_index = frame2.index(tab_name)
     if tab_index == 0:
@@ -529,7 +528,7 @@ def print_auto():
 # ============ Config Parser ============
 
 try:
-    # os.makedirs("data", exist_ok=True)
+    os.makedirs("data", exist_ok=True)
     #Get the configparser object and read file
     config_object = ConfigParser()
     config_object.read("data/con_print.ini")
@@ -598,7 +597,7 @@ def ebay_PC():
         messagebox.showinfo("","Printing has been aborted")
         return
 
-# ============ Title piece ============
+# ============ Title header ============
 
 try:
     logo_img = ImageTk.PhotoImage(Image.open("data/CDW_Logo.png").resize((100, 60)))
@@ -636,7 +635,7 @@ mezz_print_button = tk.Radiobutton(master=frame1,
                     command=con_update)
 mezz_print_button.grid(row=2, sticky=W)
 
-test_print_button = tk.Radiobutton(master=frame1,
+test_print_button = tk.Radiobutton(master=frame1, # test print button. Remove for final release
                     text="Test Printer",
                     value="local",
                     variable=printer_select,
@@ -666,7 +665,7 @@ set_serial_button = tk.Radiobutton(master=frame1,
                     command=set_tag)
 set_serial_button.grid(row=7, sticky=W)
 
-reset_button = tk.Button(master=frame1,
+reset_button = tk.Button(master=frame1, # restart app button, can be removed for final release
                     text="Restart App",
                     command=reset)
 reset_button.grid(row=9, sticky=EW)
