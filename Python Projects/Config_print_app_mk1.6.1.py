@@ -1,3 +1,4 @@
+# imports.... so many imports 
 import os
 import re
 import subprocess
@@ -15,10 +16,11 @@ import tkinter.scrolledtext as tkscrolled
 
 root = tk.Tk()
 root.title("Config printing app")
-# root.tk_setPalette(background="#444", foreground="#eee")
 
 w = 780 # width for the Tk root
 h = 520 # height for the Tk root
+
+# =========== Position window in centre ===========
 
 # get screen width and height
 ws = root.winfo_screenwidth() # width of the screen
@@ -32,6 +34,8 @@ y = (hs/2) - (h/2)
 # and where it is placed
 root.geometry('%dx%d+%d+%d' % (w, h, x, y))
 root.resizable(False,False)
+
+
 # ============ Variables ============
 
 range_prefix = tk.StringVar(None, "")
@@ -59,12 +63,15 @@ def resource_path(relative_path):
 
     return os.path.join(base_path, relative_path)
 
-# ============ Printer Initial Setup ============
+# ============ Printer Initial Selection ============
 
 host = str(printer_select.get())
 port = 9100
 
-# ============ Frames ============
+# ============ Primary Frames ============
+# frametop = header
+# header is further split into 3 sections = frametop1, frametop2, frametop3
+# Body is split into 2x1 = frame1, frame2
 
 frametop = tk.Frame(root,
                     height=100,
@@ -76,10 +83,10 @@ frametop1 = tk.Frame(frametop,
                     width=100)
 frametop1.pack(side=LEFT, anchor=W)
 
-frametop3 = tk.Frame(frametop,
+frametop3 = tk.Frame(frametop, 
                     height=80,
                     width=680)
-frametop3.pack(side=RIGHT)
+frametop3.pack(side=RIGHT) #frametop3 before frametop2 to keep it on the right
 
 frametop2 = tk.Frame(frametop,
                     height=80,
@@ -102,19 +109,20 @@ frame1.grid_rowconfigure((3,4,8), weight=8)
 frame1.grid_columnconfigure(0, weight=1)
 
 # ============ Tabs ============
+# additional frames created inside tabs for formatting
 
-tab1 = tk.Frame(frame2)
-tab2 = tk.Frame(frame2)
+tab1 = tk.Frame(frame2) # singles
+tab2 = tk.Frame(frame2) # groups
 tab2a = tk.Frame(tab2)
 tab2b = tk.Frame(tab2)
-tab3 = tk.Frame(frame2)
+tab3 = tk.Frame(frame2) # range
 tab3a = tk.Frame(tab3)
-tab4 = tk.Frame(frame2)
+tab4 = tk.Frame(frame2) # range auto
 tab4a = tk.Frame(tab4)
 tab4b = tk.Frame(tab4)
 tab4c = tk.Frame(tab4)
-tab5 = tk.Frame(frame2)
-tab6 = tk.Frame(frame2)
+tab5 = tk.Frame(frame2) # customer labels
+tab6 = tk.Frame(frame2) # reports
 frame2.add(tab1, text = "Singles")
 frame2.add(tab2, text = "Groups")
 frame2.add(tab3, text = "Range")
@@ -130,6 +138,7 @@ tab4b.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
 tab4c.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10, fill=BOTH)
 
 # ============ Side menu commands ============
+# definitions required for the buttons on the left side menu to function
 
 def reset(): # stop and restart app. Can be disabled for final release
     root.destroy()
@@ -178,14 +187,13 @@ def help_me(): # Set custom help dialog boxes for each page/tab
     if tab_index == 5:
         messagebox.showinfo("Reports","Quickly and easily report one of the listed issues to the leadership team")
 
-    # messagebox.showinfo("About", "Made by Dave Williams for the\nExclusive use of config in the\nCDW NDC located in Rugby")
 
-def set_config():
+def set_config(): # additional window with extra info such as print log
     config_box = Toplevel(root)
     config_box.title("Settings and about")
     config_box.overrideredirect(True)
 
-    def kill_me():
+    def kill_me(): # closes the extra window
         config_box.destroy()
 
     w = 300 # width for the Tk root
@@ -208,6 +216,8 @@ def set_config():
     config_box.bind('<FocusOut>', lambda x:kill_me())
 
     # Fill the config window with stuff
+
+    # =========== Display config file contents ===========
     label2 = tk.Label(config_box,
                     text="Settings saved in the config file")
     label2.pack(side=TOP)                    
@@ -228,6 +238,9 @@ def set_config():
         File2.close()
         kill_me()
         set_config()
+
+    # =========== Display last 100 tags printed from log file ===========
+
     label3 = tk.Label(config_box,
                     text="The last 1000 tags you printed")
     label3.pack(side=TOP)  
@@ -249,24 +262,21 @@ def set_config():
         kill_me()
         set_config()
 
-
-
-    # exit_btn = tk.Button(config_box, text="Close window", command=kill_me)
-    # exit_btn.pack(side=BOTTOM, pady=(30,20))
-
-    
+    # =========== short about info ===========
+    # attaches to bottom of window, items placed here are bottom to top
     Label(config_box, text="©Dave Williams 2022").pack(side=BOTTOM)
     Label(config_box, text="CDW Logo ©CDW 2022").pack(side=BOTTOM)
     Label(config_box, text="Created for the exclusive use in\nconfig at the NDC in Rugby").pack(side=BOTTOM)
 
 
 # ============ What to do when the enter key is pressed ============
+# Currently only applies to single and group tags
 
 def return_key(event = None):
 
     tab_name = frame2.select()
     tab_index = frame2.index(tab_name)
-    if tab_index == 0:
+    if tab_index == 0: # single tags
         if single_entry.get() != "":
             tag_type = asset_type.get()
             zplMessage = single_entry.get()
@@ -279,7 +289,7 @@ def return_key(event = None):
         else:
             single_entry.focus()
             return
-    if tab_index == 1:
+    if tab_index == 1: # group tags
         if group_entry.get() == "":
             return
         if len(group_textbox.get("1.0",END)) == 1:
@@ -292,32 +302,25 @@ def return_key(event = None):
             group_entry.focus()
 
 # ============ Command definitions ============
+# miscellaneous defined commands
 
-def quit():
+def quit(): # simple shutdown of program
     sys.exit()
 
-def con_error():
+def con_error(): # connection error
     print("Print error")
 
-def set_print():
+def set_print(): # attempt to map printers
     answer = messagebox.askyesno("Question", "Attempt to map network printers?")
     if answer == True:
         subprocess.call(r'net use lpt1: /delete',shell=True)
-        subprocess.call(r'net use lpt2: /delete',shell=True)
-        subprocess.call(r'net use lpt3: /delete',shell=True)
-        subprocess.call(r'net use lpt4: /delete',shell=True)
-        subprocess.call(r'net use lpt6: /delete',shell=True)
         subprocess.call(r'net use lpt7: /delete',shell=True)
         subprocess.call(r'net use lpt1 \\10.151.53.22\rug-cfg-zebra-01 /persistent:yes /USER:config\config.engineer homebuild',shell=True)
-        subprocess.call(r'net use lpt2 \\10.151.53.22\rug-cfg-zebra-02 /persistent:yes /USER:config\config.engineer homebuild',shell=True)
-        subprocess.call(r'net use lpt3 \\10.151.53.22\rug-cfg-zebra-03 /persistent:yes /USER:config\config.engineer homebuild',shell=True)
-        subprocess.call(r'net use lpt4 \\10.151.53.22\rug-cfg-zebra-04 /persistent:yes /USER:config\config.engineer homebuild',shell=True)
-        subprocess.call(r'net use lpt6 \\10.151.53.22\rug-cfg-zebra-06 /persistent:yes /USER:config\config.engineer homebuild',shell=True)
         subprocess.call(r'net use lpt7 \\10.151.53.22\rug-cfg-zebra-07 /persistent:yes /USER:config\config.engineer homebuild',shell=True)
     else:
         return
 
-def history(log):
+def history(log): # writes to history log file
     file = open("data\logs.txt", "a")
     file.close()
     with open("data\logs.txt", "r") as history_orig:
@@ -334,22 +337,21 @@ def history(log):
         f.writelines(data)
         f.truncate()
     return
-    
 
-def Open():
+def Open(): # opens selected file for group textbox insertion
     File1 = filedialog.askopenfilename()
     File2 = open(File1, "r")
     group_textbox.insert("1.0", File2.read())
     File2.close()  # Make sure you close the file when done
 
-def clear_group_text():
+def clear_group_text(): # clears the group tab text box
     group_textbox.delete("1.0", END)
 
-def print_group_text():
+def print_group_text(): # print the group text box
     if group_textbox.get("1.0", END) == "\n":
         return
     group_text = group_textbox.get("1.0", END)
-    group_text = re.split(", |\n| ",group_text)
+    group_text = re.split(", |\n| ",group_text) # split and parse the text box into a list
     try:
         while True:
             group_text.remove("")
