@@ -6,16 +6,13 @@ import sys
 import tkinter as tk
 from tkinter import *
 from tkinter import messagebox
-from tkinter import filedialog
+# from tkinter import filedialog
 from tkinter.ttk import Notebook
-import socket
+# import socket
 from PIL import Image, ImageTk
 from time import sleep
 from configparser import ConfigParser
 import tkinter.scrolledtext as tkscrolled
-from conFuncs import *
-from zplPrint import *
-import cfg
 
 root = tk.Tk()
 root.title("Config printing app")
@@ -37,6 +34,10 @@ y = (hs/2) - (h/2)
 # and where it is placed
 root.geometry('%dx%d+%d+%d' % (w, h, x, y))
 root.resizable(False,False)
+
+import cfg
+from conFuncs import clear_auto, help_me, con_update, set_print, set_tag, clear_group_text, print_group_text, clear_range, print_range, return_key, open_file
+from zplPrint import to_print
 
 
 # ============ Variables ============
@@ -143,9 +144,9 @@ tab4c.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10, fill=BOTH)
 # # ============ Side menu commands ============
 # # definitions required for the buttons on the left side menu to function
 
-# def reset(): # stop and restart app. Can be disabled for final release
-#     root.destroy()
-#     subprocess.call([sys.executable, os.path.realpath(__file__)] + sys.argv[1:])
+def reset(): # stop and restart app. Can be disabled for final release
+    root.destroy()
+    subprocess.call([sys.executable, os.path.realpath(__file__)] + sys.argv[1:])
 
 # def set_tag(): # Change between asset tag and serial number. Sets colour of entry box as an added hint for which is selected. Disable range tabs in serial number mode.
 #     if cfg.tag_select.get() == 0:
@@ -524,7 +525,7 @@ def print_auto():
                 xyz = ("^XA^LH15,0^FO1,20^AsN,25,25^FDDevice Asset Tag^FS^FO03,60^B3N,N,100,Y,N^FD" + prefixed + y + suffixed + "^FS^XZ")
                 log = prefixed + y + suffixed
                 to_print(xyz ,log)
-                sleep(0.7)    
+                sleep(0.7)
             clear_auto()
         else:
             messagebox.showinfo("","Printing has been aborted")
@@ -725,7 +726,7 @@ group_print.pack(side=LEFT, padx=100)
 
 group_load = tk.Button(master=tab2b,
                         text="Load from file",
-                        command=Open)
+                        command=open_file)
 group_load.pack(side=LEFT, padx=(0,100))
 
 

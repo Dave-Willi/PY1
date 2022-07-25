@@ -1,7 +1,7 @@
 import cfg
 import sys
 import socket
-import conFuncs
+from conFuncs import con_error
 
 # ========== QRPrint ==========
 # 1x parameter = Just QR code
@@ -46,16 +46,16 @@ def to_print(zyx, log):
             sys.stdout = open(host, 'a')
             print(print_me)
             sys.stdout = sys.__stdout__
-            conFuncs.history(log)
-            conFuncs.clear_all()
+            history(log)
+            clear_all()
             return
         else:
             mysocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
             mysocket.connect((host, cfg.port)) #connecting to host
             mysocket.send(print_me)
             mysocket.close() #closing connection
-            conFuncs.history(log)
+            history(log)
             return
     except:
-        conFuncs.con_error()
+        con_error()
         return

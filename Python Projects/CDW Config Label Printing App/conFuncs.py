@@ -1,29 +1,23 @@
 import cfg
-import tkinter as tk
-import os
 import subprocess
 import sys
-App = "printApp1.6.1"
-
-root = tk.Tk()
+from zplPrint import to_print
+# from printApp import *
+from tkinter import filedialog, messagebox
 
 # ============ Side menu commands ============
 # definitions required for the buttons on the left side menu to function
 
-def reset(): # stop and restart app. Can be disabled for final release
-    root.destroy()
-    subprocess.call([sys.executable, os.path.realpath(__file__)] + sys.argv[1:])
-
 def set_tag(): # Change between asset tag and serial number. Sets colour of entry box as an added hint for which is selected. Disable range tabs in serial number mode.
     if cfg.tag_select.get() == 0:
         cfg.asset_type.set("Asset Tag :")
-        App.frame2.tab(2, state="normal")
-        App.frame2.tab(3, state="normal")
+        frame2.tab(2, state="normal")
+        frame2.tab(3, state="normal")
         bg_col = "#eef"
     elif cfg.tag_select.get() == 1:
         cfg.asset_type.set("Serial Number :")
-        App.frame2.tab(2, state="disabled")
-        App.frame2.tab(3, state="disabled")
+        frame2.tab(2, state="disabled")
+        frame2.tab(3, state="disabled")
         bg_col = "#fee"
     try:
         single_entry.config(bg=bg_col)
@@ -126,7 +120,7 @@ def history(log): # writes to history log file
         f.truncate()
     return
 
-def Open(): # opens selected file for group textbox insertion
+def open_file(): # opens selected file for group textbox insertion
     File1 = filedialog.askopenfilename()
     File2 = open(File1, "r")
     group_textbox.insert("1.0", File2.read())
