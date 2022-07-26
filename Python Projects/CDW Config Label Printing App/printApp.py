@@ -36,9 +36,7 @@ root.geometry('%dx%d+%d+%d' % (w, h, x, y))
 root.resizable(False,False)
 
 import cfg
-from conFuncs import clear_auto, help_me, con_update, set_print, set_tag, clear_group_text, print_group_text, clear_range, print_range, return_key, open_file
-from zplPrint import to_print
-
+from conFuncs import clear_auto, help_me, con_update, set_print, set_tag, clear_group_text, print_group_text, clear_range, print_range, return_key, open_file, QRPrint, txtPrint, BCPrint, to_print
 
 # ============ Variables ============
 
@@ -583,7 +581,7 @@ def ebay_mac():
     answer = messagebox.askyesno("Question","This will print " + str(cfg.cust_quantity.get()) + " MAC QR\nCode label for eBay\nDo you wish to continue?")
     if answer == True:
         y = str(cfg.cust_quantity.get())
-        xyz = ("^XA^FX^CF0,60^FO10,10^FDeBay QR Code^FS^FO10,75^FDfor MAC^FS^FO420,5^BQN,2,4^FDQA,www.youtube.com/watch?v=dQw4w9WgXcQ^PQ" + y + "^FS^XZ")
+        xyz = ("^XA^FX^CF0,60^FO10,10^FDeBay QR Code^FS^FO10,75^FDfor MAC^FS^FO420,5^BQN,2,4^FDQA,www.youtube.com/watch?v=dQw4w9WgXcQ^FS^PQ" + y + "^XZ")
         log = ("**Ebay MAC QR tag** x" + y)
         to_print(xyz ,log)
         return

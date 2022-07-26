@@ -1,8 +1,6 @@
 import cfg
 import subprocess
 import sys
-from zplPrint import to_print
-# from printApp import *
 from tkinter import filedialog, messagebox
 
 # ============ Side menu commands ============
@@ -215,3 +213,145 @@ def con_update():
     #Write changes back to file
     with open('data/con_print.ini', 'w') as conf:
         config_object.write(conf)
+
+# +++++++++++++++ ZPL PRINT FUNCTIONS +++++++++++++++
+
+# ========== QR Code Print (QRPrint) ==========
+# 3x parameter = (qr)Just QR code + (z)Quantity + (hl)log
+# 4x parameters = (a)1 line of text + (qr)QR code + (z)Quantity + (hl)log
+# 5x parameters = (a,b)2 lines of text + (qr)QR code + (z)Quantity + (hl)log
+
+def QRPrint(qr,z,hl):
+    printing = "^XA" # Start of label
+    printing += "^LH15,0" # Label Home | position of start of label
+    printing += "^FO10,10" # Position of QR code
+    printing += "^BQN,2,4" # QR Initiator | last number is magnification/size
+    printing += "^FDQA" # Field Initiator
+    printing += str(qr) # QR Entry
+    printing += "^FS" # end of field
+    printing += "^PQ" # Print quantity
+    printing += str(z) # Selected quantity
+    printing += "^XZ" # End of label
+    to_print(printing,hl)
+
+def QRPrint(a,qr,z,hl):
+    printing = "^XA" # Start of label
+    printing += "^LH15,0" # Label Home | position of start of label
+    printing += "^CF0,120" # Fontname and height and width
+    printing += "FO10,10" # Poisition of text
+    printing += "^FD" # Field Initiator
+    printing += a # text line 1
+    printing += "^FS" # end of field
+    printing += "^FO400,10" # Position of QR code
+    printing += "^BQN,2,4" # QR Initiator | last number is magnification/size
+    printing += "^FDQA" # Field Initiator (QA is added for QR codes)
+    printing += str(qr) # QR Entry
+    printing += "^FS" # end of field
+    printing += "^PQ" # Print quantity
+    printing += str(z) # Selected quantity
+    printing += "^XZ" # End of label
+    to_print(printing,hl)
+
+def QRPrint(a,b,qr,z,hl):
+    printing = "^XA" # Start of label
+    printing += "^LH15,0" # Label Home | position of start of label
+    printing += "^CF0,60" # Fontname and height and width
+    printing += "FO10,10" # Poisition of text
+    printing += "^FD" # Field Initiator
+    printing += a # text line 1
+    printing += "^FS" # end of field
+    printing += "FO10,80" # Poisition of text
+    printing += "^FD" # Field Initiator
+    printing += b # text line 2
+    printing += "^FS" # end of field
+    printing += "^FO400,10" # Position of QR code
+    printing += "^BQN,2,4" # QR Initiator | last number is magnification/size
+    printing += "^FDQA" # Field Initiator (QA is added for QR codes)
+    printing += str(qr) # QR Entry
+    printing += "^FS" # end of field
+    printing += "^PQ" # Print quantity
+    printing += str(z) # Selected quantity
+    printing += "^XZ" # End of label
+    to_print(printing,hl)
+
+# ========== Simple text print (txtPrint) ==========
+# 3x parameter = (a)1 line of text + (z)Quantity + (hl)log
+# 4x parameters = (a,b)2 lines of text + (z)Quantity + (hl)log
+
+def txtPrint(a,z,hl):
+    printing = "^XA" # Start of label
+    printing += "^LH15,0" # Label Home | position of start of label
+    printing += "^CF0,120" # Fontname and height and width
+    printing += "FO10,10" # Poisition of text
+    printing += "^FD" # Field Initiator
+    printing += a # text line 1
+    printing += "^FS" # end of field
+    printing += "^PQ" # Print quantity
+    printing += str(z) # Selected quantity
+    printing += "^XZ" # End of label
+    to_print(printing,hl)
+
+def txtPrint(a,b,z,hl):
+    printing = "^XA" # Start of label
+    printing += "^LH15,0" # Label Home | position of start of label
+    printing += "^CF0,60" # Fontname and height and width
+    printing += "FO10,10" # Poisition of text
+    printing += "^FD" # Field Initiator
+    printing += a # text line 1
+    printing += "^FS" # end of field
+    printing += "FO10,80" # Poisition of text
+    printing += "^FD" # Field Initiator
+    printing += b # text line 2
+    printing += "^FS" # end of field
+    printing += "^PQ" # Print quantity
+    printing += str(z) # Selected quantity
+    printing += "^XZ" # End of label
+    to_print(printing,hl)
+
+# ========== BarCodePrint (BCPrint) ==========
+# 4x parameters = (sa)serial or asset + (bc)barcode + (z)Quantity + (hl)log
+
+def BCPrint(sa,bc,z,hl):
+    printing = "^XA" # Start of label
+    printing += "^LH15,0" # Label Home | position of start of label
+    printing += "^FO1,20" # Field position
+    printing += "^AsN,25,25" # Font to use for this field | font, orientation, height, width
+    printing += "^FD" # Field initiator
+    printing += sa # Serial or asset tag
+    printing += "^FS" # end of field
+    printing += "^FO3,60" # Position of Barcode code
+    printing += "^B3N,N,100,Y,N" # Barcode Initiator | orientation, checkDigit, height, line, lineAbove
+    printing += "^FDQA" # Field Initiator
+    printing += str(bc) # Barcode Entry
+    printing += "^FS" # end of field
+    printing += "^PQ" # Print quantity
+    printing += str(z) # Selected quantity
+    printing += "^XZ" # End of label
+    to_print(printing,hl)
+
+# ========== to_print ==========
+# 2x parameters = zpl code + log
+
+def to_print(zyx, log):
+    host = str(cfg.printer_select.get())
+    if host == "local":
+        host = str(cfg.local_print.get())
+    print_me = bytes(zyx, 'utf-8')
+    try:
+        if "LPT" in host:
+            sys.stdout = open(host, 'a')
+            print(print_me)
+            sys.stdout = sys.__stdout__
+            history(log)
+            clear_all()
+            return
+        else:
+            mysocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+            mysocket.connect((host, cfg.port)) #connecting to host
+            mysocket.send(print_me)
+            mysocket.close() #closing connection
+            history(log)
+            return
+    except:
+        con_error()
+        return
