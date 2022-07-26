@@ -1,21 +1,17 @@
 # imports.... so many imports 
 import os
-import re
 import subprocess
 import sys
 import tkinter as tk
 from tkinter import *
 from tkinter import messagebox
-# from tkinter import filedialog
 from tkinter.ttk import Notebook
-# import socket
 from PIL import Image, ImageTk
-from time import sleep
 from configparser import ConfigParser
 import tkinter.scrolledtext as tkscrolled
 
-root = tk.Tk()
-root.title("Config printing app")
+self = tk.Tk()
+self.title("Config printing app")
 
 w = 780 # width for the Tk root
 h = 520 # height for the Tk root
@@ -23,8 +19,8 @@ h = 520 # height for the Tk root
 # =========== Position window in centre ===========
 
 # get screen width and height
-ws = root.winfo_screenwidth() # width of the screen
-hs = root.winfo_screenheight() # height of the screen
+ws = self.winfo_screenwidth() # width of the screen
+hs = self.winfo_screenheight() # height of the screen
 
 # calculate x and y coordinates for the Tk root window
 x = (ws/2) - (w/2)
@@ -32,11 +28,10 @@ y = (hs/2) - (h/2)
 
 # set the dimensions of the screen 
 # and where it is placed
-root.geometry('%dx%d+%d+%d' % (w, h, x, y))
-root.resizable(False,False)
+self.geometry('%dx%d+%d+%d' % (w, h, x, y))
+self.resizable(False,False)
 
 import cfg
-from conFuncs import clear_auto, help_me, con_update, set_print, set_tag, clear_group_text, print_group_text, clear_range, print_range, return_key, open_file, QRPrint, txtPrint, BCPrint, to_print
 
 # ============ Variables ============
 
@@ -75,7 +70,7 @@ def resource_path(relative_path):
 # header is further split into 3 sections = frametop1, frametop2, frametop3
 # Body is split into 2x1 = frame1, frame2
 
-frametop = tk.Frame(root,
+frametop = tk.Frame(self,
                     height=100,
                     width=780)
 frametop.pack(side=TOP, fill=X, expand=False)
@@ -96,12 +91,12 @@ frametop2 = tk.Frame(frametop,
 frametop2.pack(side=RIGHT)
 frametop2.place(relx=0.25, y=15)
 
-frame1 = tk.Frame(root,
+frame1 = tk.Frame(self,
                 height=490,
                 width=200)
 frame1.pack(padx=10, pady=10, anchor=W, fill=Y, expand=False, side=LEFT)
 
-frame2 = Notebook (root, 
+frame2 = Notebook (self, 
                     height=470,
                     width=680,)
 frame2.pack(padx=10,pady=10, anchor=E, fill=BOTH, expand=True, side=RIGHT)
@@ -139,11 +134,13 @@ tab4a.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10, fill=BOTH)
 tab4b.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
 tab4c.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10, fill=BOTH)
 
+from conFuncs import clear_auto, help_me, con_update, set_print, set_tag, clear_group_text, print_group_text, clear_range, print_range, return_key, open_file, QRPrint, txtPrint, BCPrint, to_print, print_auto
+
 # # ============ Side menu commands ============
 # # definitions required for the buttons on the left side menu to function
 
 def reset(): # stop and restart app. Can be disabled for final release
-    root.destroy()
+    self.destroy()
     subprocess.call([sys.executable, os.path.realpath(__file__)] + sys.argv[1:])
 
 # def set_tag(): # Change between asset tag and serial number. Sets colour of entry box as an added hint for which is selected. Disable range tabs in serial number mode.
@@ -191,7 +188,7 @@ def reset(): # stop and restart app. Can be disabled for final release
 
 
 def set_config(): # additional window with extra info such as print log
-    config_box = Toplevel(root)
+    config_box = Toplevel(self)
     config_box.title("Settings and about")
     config_box.overrideredirect(True)
 
@@ -202,8 +199,8 @@ def set_config(): # additional window with extra info such as print log
     h = 500 # height for the Tk root
 
     # get screen width and height
-    ws = root.winfo_screenwidth() # width of the screen
-    hs = root.winfo_screenheight() # height of the screen
+    ws = self.winfo_screenwidth() # width of the screen
+    hs = self.winfo_screenheight() # height of the screen
 
     # calculate x and y coordinates for the Tk root window
     x = (ws/2) + (400)
@@ -460,74 +457,74 @@ def set_config(): # additional window with extra info such as print log
 #         con_error()
 #         return
 
-# ============ Auto Range (Experimental)============
+# # ============ Auto Range (Experimental)============
 
-def print_auto():
-    if cfg.auto_1.get() == "" or cfg.auto_2.get() == "":
-        return
-    if cfg.auto_1.get() == cfg.auto_2.get():
-        messagebox.showerror("Error", "Error, that's the same tag twice")
-        return
-    auto_prefix1 = ""
-    auto_start = ""
-    auto_suffix1 = "" 
-    auto_prefix2 = ""
-    auto_end = ""
-    auto_suffix2 = ""
-    auto_range_split1 = re.split("(\d+)", cfg.auto_1.get())
-    auto_range_split2 = re.split("(\d+)", cfg.auto_2.get())
-    if len(cfg.auto_1.get()) != len(cfg.auto_2.get()) or len(auto_range_split1) != len(auto_range_split2):
-        messagebox.showerror("Error", "Error, tags don't match")
-        return
-    y = 0
-    z = 0
-    for x in auto_range_split1: #cycles through however many splits exist in the first split
-        if auto_range_split1[y] != auto_range_split2[y]:
-            z = y + 1
-            auto_start = auto_range_split1[y]
-            auto_end = auto_range_split2[y]
-            for x in auto_range_split1[z:]:
-                try:
-                    if auto_range_split1[z] == auto_range_split2[z]:
-                        auto_suffix1 += x
-                        auto_suffix2 += x
-                        z+=1
-                    else:
-                        messagebox.showerror("Error", "Problem determining the suffix")
-                        return
-                except:
-                    break
-            break
-        elif auto_range_split1[y] == auto_range_split2[y]:
-            auto_prefix1 += x
-            auto_prefix2 += x
-        y+=1
-    if auto_prefix1 != auto_prefix2:
-        messagebox.showerror("Error", "Error detected in the prefix. \nPlease check and try again")
-        return
-    elif auto_suffix1 != auto_suffix2:
-        messagebox.showerror("Error", "Error detected in the suffix. \nPlease check and try again")
-        return
-    else:
-        total_print = 1 + int(auto_end) - int(auto_start)
-        if total_print <= 0:
-            messagebox.showerror("Error", "Please sure you have the first and last tags the correct way around")
-            return
-        answer = messagebox.askyesno("Question","This will print " + str(total_print) + " labels.\nDo you wish to continue?")
-        if answer == True:
-            lead_zeros = len(auto_end)
-            prefixed = str(auto_prefix1).upper()
-            suffixed = str(auto_suffix1).upper()
-            for x in range(int(auto_start), int(auto_end)+1):
-                y = str(x).zfill(lead_zeros)
-                xyz = ("^XA^LH15,0^FO1,20^AsN,25,25^FDDevice Asset Tag^FS^FO03,60^B3N,N,100,Y,N^FD" + prefixed + y + suffixed + "^FS^XZ")
-                log = prefixed + y + suffixed
-                to_print(xyz ,log)
-                sleep(0.7)
-            clear_auto()
-        else:
-            messagebox.showinfo("","Printing has been aborted")
-            return
+# def print_auto():
+#     if cfg.auto_1.get() == "" or cfg.auto_2.get() == "":
+#         return
+#     if cfg.auto_1.get() == cfg.auto_2.get():
+#         messagebox.showerror("Error", "Error, that's the same tag twice")
+#         return
+#     auto_prefix1 = ""
+#     auto_start = ""
+#     auto_suffix1 = "" 
+#     auto_prefix2 = ""
+#     auto_end = ""
+#     auto_suffix2 = ""
+#     auto_range_split1 = re.split("(\d+)", cfg.auto_1.get())
+#     auto_range_split2 = re.split("(\d+)", cfg.auto_2.get())
+#     if len(cfg.auto_1.get()) != len(cfg.auto_2.get()) or len(auto_range_split1) != len(auto_range_split2):
+#         messagebox.showerror("Error", "Error, tags don't match")
+#         return
+#     y = 0
+#     z = 0
+#     for x in auto_range_split1: #cycles through however many splits exist in the first split
+#         if auto_range_split1[y] != auto_range_split2[y]:
+#             z = y + 1
+#             auto_start = auto_range_split1[y]
+#             auto_end = auto_range_split2[y]
+#             for x in auto_range_split1[z:]:
+#                 try:
+#                     if auto_range_split1[z] == auto_range_split2[z]:
+#                         auto_suffix1 += x
+#                         auto_suffix2 += x
+#                         z+=1
+#                     else:
+#                         messagebox.showerror("Error", "Problem determining the suffix")
+#                         return
+#                 except:
+#                     break
+#             break
+#         elif auto_range_split1[y] == auto_range_split2[y]:
+#             auto_prefix1 += x
+#             auto_prefix2 += x
+#         y+=1
+#     if auto_prefix1 != auto_prefix2:
+#         messagebox.showerror("Error", "Error detected in the prefix. \nPlease check and try again")
+#         return
+#     elif auto_suffix1 != auto_suffix2:
+#         messagebox.showerror("Error", "Error detected in the suffix. \nPlease check and try again")
+#         return
+#     else:
+#         total_print = 1 + int(auto_end) - int(auto_start)
+#         if total_print <= 0:
+#             messagebox.showerror("Error", "Please sure you have the first and last tags the correct way around")
+#             return
+#         answer = messagebox.askyesno("Question","This will print " + str(total_print) + " labels.\nDo you wish to continue?")
+#         if answer == True:
+#             lead_zeros = len(auto_end)
+#             prefixed = str(auto_prefix1).upper()
+#             suffixed = str(auto_suffix1).upper()
+#             for x in range(int(auto_start), int(auto_end)+1):
+#                 y = str(x).zfill(lead_zeros)
+#                 xyz = ("^XA^LH15,0^FO1,20^AsN,25,25^FDDevice Asset Tag^FS^FO03,60^B3N,N,100,Y,N^FD" + prefixed + y + suffixed + "^FS^XZ")
+#                 log = prefixed + y + suffixed
+#                 to_print(xyz ,log)
+#                 sleep(0.7)
+#             clear_auto()
+#         else:
+#             messagebox.showinfo("","Printing has been aborted")
+#             return
 
 # ============ Config Parser ============
 
@@ -885,5 +882,5 @@ try:
     set_tag()
 except:
     pass
-root.bind('<Return>', return_key)
-root.mainloop()
+self.bind('<Return>', return_key)
+self.mainloop()

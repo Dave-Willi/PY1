@@ -1,7 +1,13 @@
+from socket import socket
 import cfg
 import subprocess
 import sys
+import re
+from time import sleep
 from tkinter import filedialog, messagebox
+import tkinter as tk
+
+root = tk.Tk()
 
 # ============ Side menu commands ============
 # definitions required for the buttons on the left side menu to function
@@ -9,33 +15,33 @@ from tkinter import filedialog, messagebox
 def set_tag(): # Change between asset tag and serial number. Sets colour of entry box as an added hint for which is selected. Disable range tabs in serial number mode.
     if cfg.tag_select.get() == 0:
         cfg.asset_type.set("Asset Tag :")
-        frame2.tab(2, state="normal")
-        frame2.tab(3, state="normal")
+        root.frame2.tab(2, state="normal")
+        root.frame2.tab(3, state="normal")
         bg_col = "#eef"
     elif cfg.tag_select.get() == 1:
         cfg.asset_type.set("Serial Number :")
-        frame2.tab(2, state="disabled")
-        frame2.tab(3, state="disabled")
+        root.frame2.tab(2, state="disabled")
+        root.frame2.tab(3, state="disabled")
         bg_col = "#fee"
     try:
-        single_entry.config(bg=bg_col)
-        group_entry.config(bg=bg_col)
-        if flag_1 == 1:
-            mezz_print_button.configure(state=DISABLED)
-            config_print_button.configure(state=NORMAL)
-        elif flag_1 == 2:
-            config_print_button.configure(state=DISABLED)
-            mezz_print_button.configure(state=NORMAL)
-        elif flag_1 == 0:
-            mezz_print_button.configure(state=NORMAL)
-            config_print_button.configure(state=NORMAL)
+        root.single_entry.config(bg=bg_col)
+        root.group_entry.config(bg=bg_col)
+        if cfg.flag_1 == 1:
+            root.mezz_print_button.configure(state=DISABLED)
+            root.config_print_button.configure(state=NORMAL)
+        elif cfg.flag_1 == 2:
+            root.config_print_button.configure(state=DISABLED)
+            root.mezz_print_button.configure(state=NORMAL)
+        elif cfg.flag_1 == 0:
+            root.mezz_print_button.configure(state=NORMAL)
+            root.config_print_button.configure(state=NORMAL)
     except:
         pass
     con_update()
 
 def help_me(): # Set custom help dialog boxes for each page/tab
-    tab_name = frame2.select()
-    tab_index = frame2.index(tab_name)
+    tab_name = root.frame2.select()
+    tab_index = root.rame2.index(tab_name)
     if tab_index == 0:
         messagebox.showinfo("Singles","Enter a tag into the box and press enter.\nYour scanner should do this automatically")
     if tab_index == 1:
@@ -55,31 +61,31 @@ def help_me(): # Set custom help dialog boxes for each page/tab
 def return_key(event = None):
 
     tab_name = frame2.select()
-    tab_index = frame2.index(tab_name)
+    tab_index = root.frame2.index(tab_name)
     if tab_index == 0: # single tags
-        if single_entry.get() != "":
+        if root.single_entry.get() != "":
             tag_type = cfg.asset_type.get()
-            zplMessage = single_entry.get()
+            zplMessage = root.single_entry.get()
             xyz = ("^XA^LH15,0^FO1,20^AsN,25,25^FDDevice " + tag_type + "^FS^FO03,60^B3N,N,100,Y,N^FD" + zplMessage + "^FS^XZ")
             log = zplMessage
             to_print(xyz ,log)
-            single_entry.delete(0, END)
-            single_entry.focus()
+            root.single_entry.delete(0, END)
+            root.single_entry.focus()
             return
         else:
-            single_entry.focus()
+            root.single_entry.focus()
             return
     if tab_index == 1: # group tags
-        if group_entry.get() == "":
+        if root.group_entry.get() == "":
             return
-        if len(group_textbox.get("1.0",END)) == 1:
-            group_textbox.insert("end", group_entry.get().upper())
-            group_entry.delete(0, END)
-            group_entry.focus()
+        if len(root.group_textbox.get("1.0",END)) == 1:
+            root.group_textbox.insert("end", root.group_entry.get().upper())
+            root.group_entry.delete(0, END)
+            root.group_entry.focus()
         else:
-            group_textbox.insert("end", (", " + group_entry.get().upper()))
-            group_entry.delete(0, END)
-            group_entry.focus()
+            root.group_textbox.insert("end", (", " + root.group_entry.get().upper()))
+            root.group_entry.delete(0, END)
+            root.group_entry.focus()
 
 # ============ Command definitions ============
 # miscellaneous defined commands
@@ -121,16 +127,16 @@ def history(log): # writes to history log file
 def open_file(): # opens selected file for group textbox insertion
     File1 = filedialog.askopenfilename()
     File2 = open(File1, "r")
-    group_textbox.insert("1.0", File2.read())
+    root.group_textbox.insert("1.0", File2.read())
     File2.close()  # Make sure you close the file when done
 
 def clear_group_text(): # clears the group tab text box
-    group_textbox.delete("1.0", END)
+    root.group_textbox.delete("1.0", END)
 
 def print_group_text(): # print the group text box
-    if group_textbox.get("1.0", END) == "\n":
+    if root.group_textbox.get("1.0", END) == "\n":
         return
-    group_text = group_textbox.get("1.0", END)
+    group_text = root.group_textbox.get("1.0", END)
     group_text = re.split(", |\n| ",group_text) # split and parse the text box into a list
     try:
         while True:
@@ -159,14 +165,14 @@ def print_group_text(): # print the group text box
 
 
 def clear_range():
-    range_entry2.delete(0, END)
-    range_entry3.delete(0, END)
+    root.range_entry2.delete(0, END)
+    root.range_entry3.delete(0, END)
     cfg.range_start.set(0)
     cfg.range_end.set(0)
 
 def clear_auto():
-    auto_entry1.delete(0, END)
-    auto_entry2.delete(0, END)
+    root.auto_entry1.delete(0, END)
+    root.auto_entry2.delete(0, END)
     
 def print_range():
     total_print = 1 + int(cfg.range_end.get()) - int(cfg.range_start.get())
@@ -196,7 +202,7 @@ def clear_all():
 
 def con_update():
     #Read config.ini file
-    config_object = ConfigParser()
+    config_object = root.ConfigParser()
     config_object.read("data/con_print.ini")
     #Get the PRINTER section
     printer = config_object["PRINTER"]
@@ -208,7 +214,7 @@ def con_update():
     #Update the tag
     tag["tag_select"] = str(cfg.tag_select.get())
     flag = config_object["FLAGS"]
-    flag["flag_1"] = str(flag_1)
+    flag["flag_1"] = str(root.flag_1)
 
     #Write changes back to file
     with open('data/con_print.ini', 'w') as conf:
@@ -355,3 +361,72 @@ def to_print(zyx, log):
     except:
         con_error()
         return
+
+# ============ Auto Range (Experimental)============
+
+def print_auto():
+    if cfg.auto_1.get() == "" or cfg.auto_2.get() == "":
+        return
+    if cfg.auto_1.get() == cfg.auto_2.get():
+        messagebox.showerror("Error", "Error, that's the same tag twice")
+        return
+    auto_prefix1 = ""
+    auto_start = ""
+    auto_suffix1 = "" 
+    auto_prefix2 = ""
+    auto_end = ""
+    auto_suffix2 = ""
+    auto_range_split1 = re.split("(\d+)", cfg.auto_1.get())
+    auto_range_split2 = re.split("(\d+)", cfg.auto_2.get())
+    if len(cfg.auto_1.get()) != len(cfg.auto_2.get()) or len(auto_range_split1) != len(auto_range_split2):
+        messagebox.showerror("Error", "Error, tags don't match")
+        return
+    y = 0
+    z = 0
+    for x in auto_range_split1: #cycles through however many splits exist in the first split
+        if auto_range_split1[y] != auto_range_split2[y]:
+            z = y + 1
+            auto_start = auto_range_split1[y]
+            auto_end = auto_range_split2[y]
+            for x in auto_range_split1[z:]:
+                try:
+                    if auto_range_split1[z] == auto_range_split2[z]:
+                        auto_suffix1 += x
+                        auto_suffix2 += x
+                        z+=1
+                    else:
+                        messagebox.showerror("Error", "Problem determining the suffix")
+                        return
+                except:
+                    break
+            break
+        elif auto_range_split1[y] == auto_range_split2[y]:
+            auto_prefix1 += x
+            auto_prefix2 += x
+        y+=1
+    if auto_prefix1 != auto_prefix2:
+        messagebox.showerror("Error", "Error detected in the prefix. \nPlease check and try again")
+        return
+    elif auto_suffix1 != auto_suffix2:
+        messagebox.showerror("Error", "Error detected in the suffix. \nPlease check and try again")
+        return
+    else:
+        total_print = 1 + int(auto_end) - int(auto_start)
+        if total_print <= 0:
+            messagebox.showerror("Error", "Please sure you have the first and last tags the correct way around")
+            return
+        answer = messagebox.askyesno("Question","This will print " + str(total_print) + " labels.\nDo you wish to continue?")
+        if answer == True:
+            lead_zeros = len(auto_end)
+            prefixed = str(auto_prefix1).upper()
+            suffixed = str(auto_suffix1).upper()
+            for x in range(int(auto_start), int(auto_end)+1):
+                y = str(x).zfill(lead_zeros)
+                xyz = ("^XA^LH15,0^FO1,20^AsN,25,25^FDDevice Asset Tag^FS^FO03,60^B3N,N,100,Y,N^FD" + prefixed + y + suffixed + "^FS^XZ")
+                log = prefixed + y + suffixed
+                to_print(xyz ,log)
+                sleep(0.7)
+            clear_auto()
+        else:
+            messagebox.showinfo("","Printing has been aborted")
+            return
