@@ -4,11 +4,13 @@ import subprocess
 import sys
 import tkinter as tk
 from tkinter import *
-from tkinter import messagebox
+from tkinter import messagebox, filedialog
 from tkinter.ttk import Notebook
 from PIL import Image, ImageTk
 from configparser import ConfigParser
 import tkinter.scrolledtext as tkscrolled
+import re
+from time import sleep
 
 self = tk.Tk()
 self.title("Config printing app")
@@ -16,7 +18,9 @@ self.title("Config printing app")
 w = 780 # width for the Tk root
 h = 520 # height for the Tk root
 
-# =========== Position window in centre ===========
+# ==========================================
+# =========== 1. Position window ===========
+# ==========================================
 
 # get screen width and height
 ws = self.winfo_screenwidth() # width of the screen
@@ -32,8 +36,9 @@ self.geometry('%dx%d+%d+%d' % (w, h, x, y))
 self.resizable(False,False)
 
 import cfg
-
-# ============ Variables ============
+# ==========================================
+# ================ Variables ===============
+# ==========================================
 
 # range_prefix = tk.StringVar(None, "")
 # range_suffix = tk.StringVar(None, "")
@@ -60,12 +65,18 @@ def resource_path(relative_path):
 
     return os.path.join(base_path, relative_path)
 
-# ============ Printer Initial Selection ============
+# ==========================================
+# ====== Printer Initial Selection =========
+# ==========================================
 
 # host = str(printer_select.get())
 # port = 9100
 
-# ============ Primary Frames ============
+
+# ==========================================
+# ============ Primary Frames ==============
+# ==========================================
+
 # frametop = header
 # header is further split into 3 sections = frametop1, frametop2, frametop3
 # Body is split into 2x1 = frame1, frame2
@@ -105,7 +116,10 @@ frame1.grid_rowconfigure((0,1,2,5,6,7,9,10), weight=1)
 frame1.grid_rowconfigure((3,4,8), weight=8)
 frame1.grid_columnconfigure(0, weight=1)
 
-# ============ Tabs ============
+
+# ==========================================
+# ================= Tabs ===================
+# ==========================================
 # additional frames created inside tabs for formatting
 
 tab1 = tk.Frame(frame2) # singles
@@ -134,57 +148,60 @@ tab4a.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10, fill=BOTH)
 tab4b.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
 tab4c.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10, fill=BOTH)
 
-from conFuncs import clear_auto, help_me, con_update, set_print, set_tag, clear_group_text, print_group_text, clear_range, print_range, return_key, open_file, QRPrint, txtPrint, BCPrint, to_print, print_auto
+from conFuncs import set_print, QRPrint, txtPrint, BCPrint, to_print, print_auto
 
-# # ============ Side menu commands ============
-# # definitions required for the buttons on the left side menu to function
+
+# ==========================================
+# =========== Side menu commands ===========
+# ==========================================
+# definitions required for the buttons on the left side menu to function
 
 def reset(): # stop and restart app. Can be disabled for final release
     self.destroy()
     subprocess.call([sys.executable, os.path.realpath(__file__)] + sys.argv[1:])
 
-# def set_tag(): # Change between asset tag and serial number. Sets colour of entry box as an added hint for which is selected. Disable range tabs in serial number mode.
-#     if cfg.tag_select.get() == 0:
-#         cfg.asset_type.set("Asset Tag :")
-#         frame2.tab(2, state="normal")
-#         frame2.tab(3, state="normal")
-#         bg_col = "#eef"
-#     elif cfg.tag_select.get() == 1:
-#         cfg.asset_type.set("Serial Number :")
-#         frame2.tab(2, state="disabled")
-#         frame2.tab(3, state="disabled")
-#         bg_col = "#fee"
-#     try:
-#         single_entry.config(bg=bg_col)
-#         group_entry.config(bg=bg_col)
-#         if flag_1 == 1:
-#             mezz_print_button.configure(state=DISABLED)
-#             config_print_button.configure(state=NORMAL)
-#         elif flag_1 == 2:
-#             config_print_button.configure(state=DISABLED)
-#             mezz_print_button.configure(state=NORMAL)
-#         elif flag_1 == 0:
-#             mezz_print_button.configure(state=NORMAL)
-#             config_print_button.configure(state=NORMAL)
-#     except:
-#         pass
-#     con_update()
+def set_tag(): # Change between asset tag and serial number. Sets colour of entry box as an added hint for which is selected. Disable range tabs in serial number mode.
+    if cfg.tag_select.get() == 0:
+        cfg.asset_type.set("Asset Tag :")
+        frame2.tab(2, state="normal")
+        frame2.tab(3, state="normal")
+        bg_col = "#eef"
+    elif cfg.tag_select.get() == 1:
+        cfg.asset_type.set("Serial Number :")
+        frame2.tab(2, state="disabled")
+        frame2.tab(3, state="disabled")
+        bg_col = "#fee"
+    try:
+        single_entry.config(bg=bg_col)
+        group_entry.config(bg=bg_col)
+        if flag_1 == 1:
+            mezz_print_button.configure(state=DISABLED)
+            config_print_button.configure(state=NORMAL)
+        elif flag_1 == 2:
+            config_print_button.configure(state=DISABLED)
+            mezz_print_button.configure(state=NORMAL)
+        elif flag_1 == 0:
+            mezz_print_button.configure(state=NORMAL)
+            config_print_button.configure(state=NORMAL)
+    except:
+        pass
+    con_update()
 
-# def help_me(): # Set custom help dialog boxes for each page/tab
-#     tab_name = frame2.select()
-#     tab_index = frame2.index(tab_name)
-#     if tab_index == 0:
-#         messagebox.showinfo("Singles","Enter a tag into the box and press enter.\nYour scanner should do this automatically")
-#     if tab_index == 1:
-#         messagebox.showinfo("Groups","Enter as many tags as you like into the box below. You can enter them directly or via the entry box. If you have a list of tags saved in a file you can load it directly from there")
-#     if tab_index == 2:
-#         messagebox.showinfo("Range","The prefix is the part of the tag which is the same for all of the tags and comes before the number. The suffix is the same but it comes after the number")
-#     if tab_index == 3:
-#         messagebox.showinfo("Range (Auto)","Simply scan the first and last tag and it will print those plus any in between")
-#     if tab_index == 4:
-#         messagebox.showinfo("Customer Labels","For printing labels that are unique to a customer")
-#     if tab_index == 5:
-#         messagebox.showinfo("Reports","Quickly and easily report one of the listed issues to the leadership team")
+def help_me(): # Set custom help dialog boxes for each page/tab
+    tab_name = frame2.select()
+    tab_index = frame2.index(tab_name)
+    if tab_index == 0:
+        messagebox.showinfo("Singles","Enter a tag into the box and press enter.\nYour scanner should do this automatically")
+    if tab_index == 1:
+        messagebox.showinfo("Groups","Enter as many tags as you like into the box below. You can enter them directly or via the entry box. If you have a list of tags saved in a file you can load it directly from there")
+    if tab_index == 2:
+        messagebox.showinfo("Range","The prefix is the part of the tag which is the same for all of the tags and comes before the number. The suffix is the same but it comes after the number")
+    if tab_index == 3:
+        messagebox.showinfo("Range (Auto)","Simply scan the first and last tag and it will print those plus any in between")
+    if tab_index == 4:
+        messagebox.showinfo("Customer Labels","For printing labels that are unique to a customer")
+    if tab_index == 5:
+        messagebox.showinfo("Reports","Quickly and easily report one of the listed issues to the leadership team")
 
 
 def set_config(): # additional window with extra info such as print log
@@ -216,7 +233,10 @@ def set_config(): # additional window with extra info such as print log
 
     # Fill the config window with stuff
 
-    # =========== Display config file contents ===========
+    # ==========================================
+    # ====== Display config file contents ======
+    # ==========================================
+
     label2 = tk.Label(config_box,
                     text="Settings saved in the config file")
     label2.pack(side=TOP)                    
@@ -238,7 +258,9 @@ def set_config(): # additional window with extra info such as print log
         kill_me()
         set_config()
 
-    # =========== Display last 100 tags printed from log file ===========
+    # =======================================================
+    # ===== Display last 100 tags printed from log file =====
+    # =======================================================
 
     label3 = tk.Label(config_box,
                     text="The last 1000 tags you printed")
@@ -261,272 +283,151 @@ def set_config(): # additional window with extra info such as print log
         kill_me()
         set_config()
 
-    # =========== short about info ===========
+    # ==========================================
+    # =========== short about info =============
+    # ==========================================
+
     # attaches to bottom of window, items placed here are bottom to top
     Label(config_box, text="©Dave Williams 2022").pack(side=BOTTOM)
     Label(config_box, text="CDW Logo ©CDW 2022").pack(side=BOTTOM)
     Label(config_box, text="Created for the exclusive use in\nconfig at the NDC in Rugby").pack(side=BOTTOM)
 
 
-# # ============ What to do when the enter key is pressed ============
-# # Currently only applies to single and group tags
+# ====================================================
+# ===== What to do when the enter key is pressed =====
+# ====================================================
+# Currently only applies to single and group tags
 
-# def return_key(event = None):
+def return_key(event = None):
 
-#     tab_name = frame2.select()
-#     tab_index = frame2.index(tab_name)
-#     if tab_index == 0: # single tags
-#         if single_entry.get() != "":
-#             tag_type = cfg.asset_type.get()
-#             zplMessage = single_entry.get()
-#             xyz = ("^XA^LH15,0^FO1,20^AsN,25,25^FDDevice " + tag_type + "^FS^FO03,60^B3N,N,100,Y,N^FD" + zplMessage + "^FS^XZ")
-#             log = zplMessage
-#             to_print(xyz ,log)
-#             single_entry.delete(0, END)
-#             single_entry.focus()
-#             return
-#         else:
-#             single_entry.focus()
-#             return
-#     if tab_index == 1: # group tags
-#         if group_entry.get() == "":
-#             return
-#         if len(group_textbox.get("1.0",END)) == 1:
-#             group_textbox.insert("end", group_entry.get().upper())
-#             group_entry.delete(0, END)
-#             group_entry.focus()
-#         else:
-#             group_textbox.insert("end", (", " + group_entry.get().upper()))
-#             group_entry.delete(0, END)
-#             group_entry.focus()
+    tab_name = frame2.select()
+    tab_index = frame2.index(tab_name)
+    if tab_index == 0: # single tags
+        if single_entry.get() != "":
+            tag_type = cfg.asset_type.get()
+            zplMessage = single_entry.get()
+            log = zplMessage
+            BCPrint(tag_type,zplMessage,1,log)
+            single_entry.delete(0, END)
+            single_entry.focus()
+            return
+        else:
+            single_entry.focus()
+            return
+    if tab_index == 1: # group tags
+        if group_entry.get() == "":
+            return
+        if len(group_textbox.get("1.0",END)) == 1:
+            group_textbox.insert("end", group_entry.get().upper())
+            group_entry.delete(0, END)
+            group_entry.focus()
+        else:
+            group_textbox.insert("end", (", " + group_entry.get().upper()))
+            group_entry.delete(0, END)
+            group_entry.focus()
 
-# # ============ Command definitions ============
-# # miscellaneous defined commands
+# ==========================================
+# ========= Command definitions ============
+# ==========================================
+# miscellaneous defined commands
 
-# def quit(): # simple shutdown of program
-#     sys.exit()
+def open_file(): # opens selected file for group textbox insertion
+    File1 = filedialog.askopenfilename()
+    File2 = open(File1, "r")
+    group_textbox.insert("1.0", File2.read())
+    File2.close()  # Make sure you close the file when done
 
-# def con_error(): # connection error
-#     print("Print error")
+def clear_group_text(): # clears the group tab text box
+    group_textbox.delete("1.0", END)
 
-# def set_print(): # attempt to map printers
-#     answer = messagebox.askyesno("Question", "Attempt to map network printers?")
-#     if answer == True:
-#         subprocess.call(r'net use lpt1: /delete',shell=True)
-#         subprocess.call(r'net use lpt7: /delete',shell=True)
-#         subprocess.call(r'net use lpt1 \\10.151.53.22\rug-cfg-zebra-01 /persistent:yes /USER:config\config.engineer homebuild',shell=True)
-#         subprocess.call(r'net use lpt7 \\10.151.53.22\rug-cfg-zebra-07 /persistent:yes /USER:config\config.engineer homebuild',shell=True)
-#     else:
-#         return
-
-# def history(log): # writes to history log file
-#     file = open("data\logs.txt", "a")
-#     file.close()
-#     with open("data\logs.txt", "r") as history_orig:
-#         save = history_orig.read().upper()
-#     with open("data\logs.txt", "w") as history_orig:
-#         history_orig.write(str(log).upper())
-#         history_orig.write("\n")
-#         history_orig.write(save)
-#     N = 1000 # number of lines you want to keep
-#     with open("data\logs.txt","r+") as f:
-#         data = f.readlines()
-#         if len(data) > N: data = data[0:N]
-#         f.seek(0)
-#         f.writelines(data)
-#         f.truncate()
-#     return
-
-# def Open(): # opens selected file for group textbox insertion
-#     File1 = filedialog.askopenfilename()
-#     File2 = open(File1, "r")
-#     group_textbox.insert("1.0", File2.read())
-#     File2.close()  # Make sure you close the file when done
-
-# def clear_group_text(): # clears the group tab text box
-#     group_textbox.delete("1.0", END)
-
-# def print_group_text(): # print the group text box
-#     if group_textbox.get("1.0", END) == "\n":
-#         return
-#     group_text = group_textbox.get("1.0", END)
-#     group_text = re.split(", |\n| ",group_text) # split and parse the text box into a list
-#     try:
-#         while True:
-#             group_text.remove("")
-#     except ValueError:
-#         pass
-#     total_print = len(group_text)
-#     if total_print <= 0:
-#         messagebox.showerror("Error", "Nothing to print")
-#         return
-#     answer = messagebox.askyesno("Question","This will print " + str(total_print) + " labels.\nDo you wish to continue?")
-#     if answer == True:
-#         for x in (group_text):
-#             if x == "":
-#                 continue
-#             tag_type = cfg.asset_type.get()
-#             y = x
-#             xyz = ("^XA^LH15,0^FO1,20^AsN,25,25^FDDevice " + tag_type + "^FS^FO03,60^B3N,N,100,Y,N^FD" + y + "^FS^XZ")
-#             log = y
-#             to_print(xyz ,log)
-#             sleep(0.7)
-#         clear_group_text()
-#         return
-#     else:
-#         messagebox.showinfo("","Printing has been aborted")
+def print_group_text(): # print the group text box
+    if group_textbox.get("1.0", END) == "\n":
+        return
+    group_text = group_textbox.get("1.0", END)
+    group_text = re.split(", |\n| ",group_text) # split and parse the text box into a list
+    try:
+        while True:
+            group_text.remove("")
+    except ValueError:
+        pass
+    total_print = len(group_text)
+    if total_print <= 0:
+        messagebox.showerror("Error", "Nothing to print")
+        return
+    answer = messagebox.askyesno("Question","This will print " + str(total_print) + " labels.\nDo you wish to continue?")
+    if answer == True:
+        for x in (group_text):
+            if x == "":
+                continue
+            tag_type = cfg.asset_type.get()
+            y = x
+            log = y
+            BCPrint(tag_type,y,1,log)
+            sleep(0.7) # sending the commands too quickly will have some disappear.. probably
+        clear_group_text()
+        return
+    else:
+        messagebox.showinfo("","Printing has been aborted")
 
 
-# def clear_range():
-#     range_entry2.delete(0, END)
-#     range_entry3.delete(0, END)
-#     cfg.range_start.set(0)
-#     cfg.range_end.set(0)
+def clear_range():
+    range_entry2.delete(0, END)
+    range_entry3.delete(0, END)
+    cfg.range_start.set(0)
+    cfg.range_end.set(0)
 
-# def clear_auto():
-#     auto_entry1.delete(0, END)
-#     auto_entry2.delete(0, END)
+def clear_auto():
+    auto_entry1.delete(0, END)
+    auto_entry2.delete(0, END)
     
-# def print_range():
-#     total_print = 1 + int(cfg.range_end.get()) - int(cfg.range_start.get())
-#     if total_print <= 0:
-#         messagebox.showerror("Error", "Please sure you have the start and end numbers the correct way around")
-#         return
-#     answer = messagebox.askyesno("Question","This will print " + str(total_print) + " labels.\nDo you wish to continue?")
-#     if answer == True:
-#         lead_zeros = max(len(cfg.range_end.get()), len(cfg.range_start.get()))
-#         prefixed = str(cfg.range_prefix.get()).upper()
-#         suffixed = str(cfg.range_suffix.get()).upper()
-#         for x in range(int(cfg.range_start.get()), int(cfg.range_end.get())+1):
-#             y = str(x).zfill(lead_zeros)
-#             xyz = ("^XA^LH15,0^FO1,20^AsN,25,25^FDDevice Asset Tag^FS^FO03,60^B3N,N,100,Y,N^FD" + prefixed + y + suffixed + "^FS^XZ")
-#             log = prefixed + y + suffixed
-#             to_print(xyz, log)
-#             sleep(0.7)    
-#         clear_range()
-#     else:
-#         messagebox.showinfo("","Printing has been aborted")
-#         return
+def print_range():
+    total_print = 1 + int(cfg.range_end.get()) - int(cfg.range_start.get())
+    if total_print <= 0:
+        messagebox.showerror("Error", "Please sure you have the start and end numbers the correct way around")
+        return
+    answer = messagebox.askyesno("Question","This will print " + str(total_print) + " labels.\nDo you wish to continue?")
+    if answer == True:
+        lead_zeros = max(len(cfg.range_end.get()), len(cfg.range_start.get())) # Use the longer of the two number to determine leading zeros
+        prefixed = str(cfg.range_prefix.get()).upper() # prefix entry, converted to upper case
+        suffixed = str(cfg.range_suffix.get()).upper() # suffix entry, converted to lower case
+        for x in range(int(cfg.range_start.get()), int(cfg.range_end.get())+1):
+            y = str(x).zfill(lead_zeros)
+            log = prefixed + y + suffixed
+            BCPrint("Asset Tag",log,1,log)
+            sleep(0.7)    
+        clear_range()
+    else:
+        messagebox.showinfo("","Printing has been aborted")
+        return
 
-# def clear_all():
-#     clear_auto()
-#     clear_group_text()
-#     clear_range()
+def clear_all():
+    clear_auto()
+    clear_group_text()
+    clear_range()
 
-# def con_update():
-#     #Read config.ini file
-#     config_object = ConfigParser()
-#     config_object.read("data/con_print.ini")
-#     #Get the PRINTER section
-#     printer = config_object["PRINTER"]
-#     #Update the printer
-#     printer["printer_select"] = cfg.printer_select.get()
-#     printer["local_print"] = cfg.local_print.get()
-#     #Get the TAG-TYPE section
-#     tag = config_object["TAG-TYPE"]
-#     #Update the tag
-#     tag["tag_select"] = str(cfg.tag_select.get())
-#     flag = config_object["FLAGS"]
-#     flag["flag_1"] = str(flag_1)
+def con_update():
+    #Read config.ini file
+    config_object = ConfigParser()
+    config_object.read("data/con_print.ini")
+    #Get the PRINTER section
+    printer = config_object["PRINTER"]
+    #Update the printer
+    printer["printer_select"] = cfg.printer_select.get()
+    printer["local_print"] = cfg.local_print.get()
+    #Get the TAG-TYPE section
+    tag = config_object["TAG-TYPE"]
+    #Update the tag
+    tag["tag_select"] = str(cfg.tag_select.get())
+    flag = config_object["FLAGS"]
+    flag["flag_1"] = str(flag_1)
 
-#     #Write changes back to file
-#     with open('data/con_print.ini', 'w') as conf:
-#         config_object.write(conf)
+    #Write changes back to file
+    with open('data/con_print.ini', 'w') as conf:
+        config_object.write(conf)
 
-# def to_print(zyx, log):
-#     host = str(printer_select.get())
-#     if host == "local":
-#         host = str(local_print.get())
-#     print_me = bytes(zyx, 'utf-8')
-#     try:
-#         if "LPT" in host:
-#             sys.stdout = open(host, 'a')
-#             print(print_me)
-#             sys.stdout = sys.__stdout__
-#             history(log)
-#             clear_all()
-#             return
-#         else:
-#             mysocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-#             mysocket.connect((host, port)) #connecting to host
-#             mysocket.send(print_me)
-#             mysocket.close() #closing connection
-#             history(log)
-#             return
-#     except:
-#         con_error()
-#         return
-
-# # ============ Auto Range (Experimental)============
-
-# def print_auto():
-#     if cfg.auto_1.get() == "" or cfg.auto_2.get() == "":
-#         return
-#     if cfg.auto_1.get() == cfg.auto_2.get():
-#         messagebox.showerror("Error", "Error, that's the same tag twice")
-#         return
-#     auto_prefix1 = ""
-#     auto_start = ""
-#     auto_suffix1 = "" 
-#     auto_prefix2 = ""
-#     auto_end = ""
-#     auto_suffix2 = ""
-#     auto_range_split1 = re.split("(\d+)", cfg.auto_1.get())
-#     auto_range_split2 = re.split("(\d+)", cfg.auto_2.get())
-#     if len(cfg.auto_1.get()) != len(cfg.auto_2.get()) or len(auto_range_split1) != len(auto_range_split2):
-#         messagebox.showerror("Error", "Error, tags don't match")
-#         return
-#     y = 0
-#     z = 0
-#     for x in auto_range_split1: #cycles through however many splits exist in the first split
-#         if auto_range_split1[y] != auto_range_split2[y]:
-#             z = y + 1
-#             auto_start = auto_range_split1[y]
-#             auto_end = auto_range_split2[y]
-#             for x in auto_range_split1[z:]:
-#                 try:
-#                     if auto_range_split1[z] == auto_range_split2[z]:
-#                         auto_suffix1 += x
-#                         auto_suffix2 += x
-#                         z+=1
-#                     else:
-#                         messagebox.showerror("Error", "Problem determining the suffix")
-#                         return
-#                 except:
-#                     break
-#             break
-#         elif auto_range_split1[y] == auto_range_split2[y]:
-#             auto_prefix1 += x
-#             auto_prefix2 += x
-#         y+=1
-#     if auto_prefix1 != auto_prefix2:
-#         messagebox.showerror("Error", "Error detected in the prefix. \nPlease check and try again")
-#         return
-#     elif auto_suffix1 != auto_suffix2:
-#         messagebox.showerror("Error", "Error detected in the suffix. \nPlease check and try again")
-#         return
-#     else:
-#         total_print = 1 + int(auto_end) - int(auto_start)
-#         if total_print <= 0:
-#             messagebox.showerror("Error", "Please sure you have the first and last tags the correct way around")
-#             return
-#         answer = messagebox.askyesno("Question","This will print " + str(total_print) + " labels.\nDo you wish to continue?")
-#         if answer == True:
-#             lead_zeros = len(auto_end)
-#             prefixed = str(auto_prefix1).upper()
-#             suffixed = str(auto_suffix1).upper()
-#             for x in range(int(auto_start), int(auto_end)+1):
-#                 y = str(x).zfill(lead_zeros)
-#                 xyz = ("^XA^LH15,0^FO1,20^AsN,25,25^FDDevice Asset Tag^FS^FO03,60^B3N,N,100,Y,N^FD" + prefixed + y + suffixed + "^FS^XZ")
-#                 log = prefixed + y + suffixed
-#                 to_print(xyz ,log)
-#                 sleep(0.7)
-#             clear_auto()
-#         else:
-#             messagebox.showinfo("","Printing has been aborted")
-#             return
-
-# ============ Config Parser ============
+# ==========================================
+# ============== Config Parser =============
+# ==========================================
 
 try:
     os.makedirs("data", exist_ok=True)
@@ -559,16 +460,19 @@ except:
         "flag_1": cfg.flag_1}
     with open('data/con_print.ini', 'w') as conf:
         config_object.write(conf)
-    
-# ============ Customer label codes ============
+
+# ==========================================    
+# ========= Customer label codes ===========
+# ==========================================
 
 def BBC():
     answer = messagebox.askyesno("Question","This will print " + str(cfg.cust_quantity.get()) + " BBC labels.\nDo you wish to continue?")
     if answer == True:
         y = str(cfg.cust_quantity.get())
-        xyz = ("^XA^LRY^FO10,10^GB195,203,195^FS^FO225,10^GB195,203,195^FS^FO440,10^GB195,203,195^FS^FO50,37^CFG,180^FDB^FS^FO260,37^FDB^FS^FO470,37^FDC^PQ" + y + "^FS^XZ")
+        # xyz = ("^XA^LRY^FO10,10^GB195,203,195^FS^FO225,10^GB195,203,195^FS^FO440,10^GB195,203,195^FS^FO50,37^CFG,180^FDB^FS^FO260,37^FDB^FS^FO470,37^FDC^PQ" + y + "^FS^XZ")
         log = ("**BBC Tag** x" + y)
-        to_print(xyz ,log)
+        txtPrint(y,log,"BBC","Sucks ass")
+        # to_print(xyz ,log)
         return
     else:
         messagebox.showinfo("","Printing has been aborted")
@@ -578,9 +482,8 @@ def ebay_mac():
     answer = messagebox.askyesno("Question","This will print " + str(cfg.cust_quantity.get()) + " MAC QR\nCode label for eBay\nDo you wish to continue?")
     if answer == True:
         y = str(cfg.cust_quantity.get())
-        xyz = ("^XA^FX^CF0,60^FO10,10^FDeBay QR Code^FS^FO10,75^FDfor MAC^FS^FO420,5^BQN,2,4^FDQA,www.youtube.com/watch?v=dQw4w9WgXcQ^FS^PQ" + y + "^XZ")
         log = ("**Ebay MAC QR tag** x" + y)
-        to_print(xyz ,log)
+        QRPrint("Hello world",y,log,"eBay MAC","QR Code")
         return
     else:
         messagebox.showinfo("","Printing has been aborted")
@@ -590,15 +493,16 @@ def ebay_PC():
     answer = messagebox.askyesno("Question","This will print " + str(cfg.cust_quantity.get()) + " MAC QR\nCode label for eBay\nDo you wish to continue?")
     if answer == True:
         y = str(cfg.cust_quantity.get())
-        xyz = ("^XA^FX^CF0,60^FO10,10^FDeBay QR Code^FS^FO10,75^FDfor PC^FS^FO420,5^BQN,2,4^FDQA,www.youtube.com/watch?v=KMYN4djSq7o^PQ" + y + "^FS^XZ")
         log = ("**Ebay PC QR tag** x" + y)
-        to_print(xyz ,log)
+        QRPrint("Bo Derek was here",y,log,"eBay PC","QR Code")
         return
     else:
         messagebox.showinfo("","Printing has been aborted")
         return
 
-# ============ Title header ============
+# ==========================================
+# =============== Title header =============
+# ==========================================
 
 try:
     logo_img = ImageTk.PhotoImage(Image.open("data/CDW_Logo.png").resize((100, 60)))
@@ -616,7 +520,9 @@ try:
 except:
     cog = tk.Button(master=frametop3, text="...", font=("Helvetica",14), command=set_config).pack()
 
-# ============ Settings panel (frame1a) ============
+# ==========================================
+# ======= Settings panel (frame1a) =========
+# ==========================================
 
 printer_label = tk.Label(master=frame1,
                             text="Select printer:")
@@ -676,7 +582,9 @@ exit_button = tk.Button(master=frame1,
                     command=quit)
 exit_button.grid(row=10, sticky=EW)
 
-# ============ Single Tab (tab1) ============
+# ==========================================
+# =========== Single Tab (tab1) ============
+# ==========================================
 
 tab1.grid_columnconfigure((0,1,2,3),weight=1)
 tab1.grid_rowconfigure((0,1,2,3),weight=1)
@@ -694,7 +602,9 @@ single_descript = tk.Label(master=tab1,
                         fg="blue")
 single_descript.grid(row=1, column=1, columnspan=2, sticky=N)
 
-# ============ Groups Tab (tab2) ============
+# ==========================================
+# =========== Groups Tab (tab2) ============
+# ==========================================
 
 group_label1 = tk.Label(master=tab2,
                         font=12,
@@ -729,7 +639,9 @@ group_load.pack(side=LEFT, padx=(0,100))
 group_textbox = tkscrolled.ScrolledText(master=tab2, wrap=WORD)
 group_textbox.pack(side=BOTTOM, fill=BOTH, expand=True, padx=5, pady=5)
 
+# ==========================================
 # ============ Range Tab (tab3) ============
+# ==========================================
 
 range_label1 = tk.Label(master=tab3a,
                         font=12,
@@ -779,7 +691,9 @@ range_print = tk.Button(master=tab3a,
                         command=print_range)
 range_print.grid(row=5, column=1, pady=(20,0), padx=40, sticky=W)
 
-# ============ Range-Auto Tab (tab4) ============
+# ==========================================
+# ========= Range-Auto Tab (tab4) ==========
+# ==========================================
 
 auto_label1 = tk.Label(master=tab4a,
                         text="Scan the first tag in the range")
@@ -813,7 +727,9 @@ warn_label = tk.Label(master=tab4c,
                         fg="dark red")
 warn_label.pack(side=TOP, padx=40, pady=40)
 
-# ============ Customer label Tab (tab5) ============
+# ==========================================
+# ======== Customer label Tab (tab5) =======
+# ==========================================
 
 print_quantity_label = tk.Label(master=tab5,
                             font=12,
@@ -840,7 +756,9 @@ ebay_pc_button = tk.Button(master=tab5,
                         command=ebay_PC)
 ebay_pc_button.grid(row=4, column=0, pady=10, padx= 10)
 
-# ============ Reports Tab (tab6) ============
+# ==========================================
+# ========== Reports Tab (tab6) ============
+# ==========================================
 
 tab6a = tk.Frame(master=tab6)
 tab6a.pack(pady=20)
@@ -876,7 +794,9 @@ ports_alert = tk.Button(master=tab6b,
                         text="Report port")
 ports_alert.grid(row=2, column=2)
 
-# ============ Start up the routine ============
+# ==========================================
+# ========= Start up the routine ===========
+# ==========================================
 
 try:
     set_tag()
