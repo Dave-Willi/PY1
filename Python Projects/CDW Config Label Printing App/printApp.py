@@ -148,7 +148,7 @@ tab4a.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10, fill=BOTH)
 tab4b.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
 tab4c.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10, fill=BOTH)
 
-from conFuncs import set_print, QRPrint, txtPrint, BCPrint, to_print, print_auto
+from conFuncs import set_print, QRPrint, txtPrint, BCPrint, to_print, print_auto, cust_print
 
 
 # ==========================================
@@ -306,8 +306,7 @@ def return_key(event = None):
         if single_entry.get() != "":
             tag_type = cfg.asset_type.get()
             zplMessage = single_entry.get()
-            log = zplMessage
-            BCPrint(tag_type,zplMessage,1,log)
+            BCPrint(zplMessage,1,zplMessage,tag_type)
             single_entry.delete(0, END)
             single_entry.focus()
             return
@@ -361,8 +360,7 @@ def print_group_text(): # print the group text box
                 continue
             tag_type = cfg.asset_type.get()
             y = x
-            log = y
-            BCPrint(tag_type,y,1,log)
+            BCPrint(y,1,y,tag_type)
             sleep(0.7) # sending the commands too quickly will have some disappear.. probably
         clear_group_text()
         return
@@ -393,7 +391,7 @@ def print_range():
         for x in range(int(cfg.range_start.get()), int(cfg.range_end.get())+1):
             y = str(x).zfill(lead_zeros)
             log = prefixed + y + suffixed
-            BCPrint("Asset Tag",log,1,log)
+            BCPrint(log,1,log,"Asset Tag")
             sleep(0.7)    
         clear_range()
     else:
@@ -464,6 +462,16 @@ except:
 # ==========================================    
 # ========= Customer label codes ===========
 # ==========================================
+
+# def cust_print(type,txt,hist):
+#     quant = str(cfg.cust_quantity.get())
+#     try:
+#         if type == 0:
+#             txtPrint(quant,hist,txt)
+#         elif type == 1:
+#             QRPrint(quant,hist,txt)
+#         elif type == 2:
+#             BCPrint(quant,hist,txt)
 
 def BBC():
     answer = messagebox.askyesno("Question","This will print " + str(cfg.cust_quantity.get()) + " BBC labels.\nDo you wish to continue?")

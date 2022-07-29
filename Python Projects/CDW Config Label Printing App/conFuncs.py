@@ -1,5 +1,4 @@
 import socket
-import cfg
 import subprocess
 import sys
 from tkinter import messagebox
@@ -46,11 +45,9 @@ def history(log): # writes to history log file
 # +++++++++++++++ ZPL PRINT FUNCTIONS +++++++++++++++
 
 # ========== QR Code Print (QRPrint) ==========
-# 3x parameter = (qr)Just QR code + (z)Quantity + (hl)log
-# 4x parameters = (qr)QR code + (z)Quantity + (hl)log + (a)1 line of text
-# 5x parameters = (qr)QR code + (z)Quantity + (hl)log + (a,b)2 lines of text
+# x parameters = (code) QR code + (quant)Quantity + (hist)log + (*more) optional lines of text
 
-def QRPrint(qr,z,hl,*more):
+def QRPrint(code,quant,hist,*more):
     try:
         a = more[0]
     except:
@@ -73,19 +70,18 @@ def QRPrint(qr,z,hl,*more):
     printing += "^FO400,10" # Position of QR code
     printing += "^BQN,2,4" # QR Initiator | last number is magnification/size
     printing += "^FDQA" # Field Initiator (QA is added for QR codes)
-    printing += str(qr) # QR Entry
+    printing += str(code) # QR Entry
     printing += "^FS" # end of field
     printing += "^PQ" # Print quantity
-    printing += str(z) # Selected quantity
+    printing += str(quant) # Selected quantity
     printing += "^XZ" # End of label
     print(printing)
-    to_print(printing,hl)
+    to_print(printing,hist)
 
 # ========== Simple text print (txtPrint) ==========
-# 3x parameter = (a)1 line of text + (z)Quantity + (hl)log
-# 4x parameters = (a,b)2 lines of text + (z)Quantity + (hl)log
+# x parameters = (quant)Quantity + (hist)log, (*more)1 or more lines of text
 
-def txtPrint(z,hl,*more):
+def txtPrint(quant,hist,*more):
     try:
         a = more[0]
     except:
@@ -106,14 +102,14 @@ def txtPrint(z,hl,*more):
     printing += b # text line 2
     printing += "^FS" # end of field
     printing += "^PQ" # Print quantity
-    printing += str(z) # Selected quantity
+    printing += str(quant) # Selected quantity
     printing += "^XZ" # End of label
-    to_print(printing,hl)
+    to_print(printing,hist)
 
 # ========== BarCodePrint (BCPrint) ==========
-# 4x parameters = (sa)serial or asset + (bc)barcode + (z)Quantity + (hl)log
+# 4x parameters = (code)barcode + (quant)Quantity + (hist)log + (sa)serial or asset
 
-def BCPrint(sa,bc,z,hl):
+def BCPrint(code,quant,hist,sa):
     printing = "^XA" # Start of label
     printing += "^LH15,0" # Label Home | position of start of label
     printing += "^FO1,20" # Field position
@@ -125,12 +121,12 @@ def BCPrint(sa,bc,z,hl):
     printing += "^FO3,60" # Position of Barcode code
     printing += "^B3N,N,100,Y,N" # Barcode Initiator | orientation, checkDigit, height, line, lineAbove
     printing += "^FD" # Field Initiator
-    printing += str(bc) # Barcode Entry
+    printing += str(code) # Barcode Entry
     printing += "^FS" # end of field
     printing += "^PQ" # Print quantity
-    printing += str(z) # Selected quantity (normally 1 for barcodes)
+    printing += str(quant) # Selected quantity (normally 1 for barcodes)
     printing += "^XZ" # End of label
-    to_print(printing,hl)
+    to_print(printing,hist)
 
 # ========== to_print ==========
 # 2x parameters = zpl code + log
@@ -225,3 +221,22 @@ def print_auto():
         else:
             messagebox.showinfo("","Printing has been aborted")
             return
+
+def cust_print(type,hist,code,txt):
+    quant = str(cfg.cust_quantity.get())
+    answer = messagebox.askyesno("Question","This will print " + quant + " of the selected labels.\nDo you wish to continue?")
+    if answer == True:
+        try:
+            if type == 0:
+                txtPrint(quant,hist,txt)
+            elif type == 1:
+                QRPrint(code,quant,hist,txt)
+            elif type == 2:
+                BCPrint(txt,quant,hist,code)
+        except:
+            pass
+    else:
+        messagebox.showinfo("","Printing has been aborted")
+        return
+
+import cfg
