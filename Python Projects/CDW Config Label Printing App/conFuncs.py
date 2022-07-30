@@ -67,7 +67,7 @@ def QRPrint(code,quant,hist,*more):
     printing += "^FD" # Field Initiator
     printing += b # text line 2
     printing += "^FS" # end of field
-    printing += "^FO400,10" # Position of QR code
+    printing += "^FO380,10" # Position of QR code
     printing += "^BQN,2,4" # QR Initiator | last number is magnification/size
     printing += "^FDQA" # Field Initiator (QA is added for QR codes)
     printing += str(code) # QR Entry
