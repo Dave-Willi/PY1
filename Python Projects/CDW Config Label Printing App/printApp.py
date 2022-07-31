@@ -148,7 +148,7 @@ tab4a.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10, fill=BOTH)
 tab4b.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
 tab4c.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10, fill=BOTH)
 
-from conFuncs import set_print, QRPrint, txtPrint, BCPrint, to_print, print_auto, cust_print
+from conFuncs import set_print, BCPrint, print_auto, BBC, ebay_mac, ebay_PC
 
 
 # ==========================================
@@ -460,53 +460,32 @@ except:
         config_object.write(conf)
 
 # ==========================================    
-# ========= Customer label codes ===========
+# ======= Customer label functions =========
 # ==========================================
+#
+# cust_print = 4x parameters (label type, what to save in log, label code to print, text to print)
+# label type = 0 plain text label e.g. (0,"plain tag","","Hello World")
+# label type = 1 QR code label e.g. (1,"label","https://www.label.com","Hello Earth")
+# label type = 2 BarCode label e.g. (2,"Stripes","F1355SV","Asset Tag")
+# for barcode labels the 'txt' parameter needs either "Serial Number" or "Asset Tag"
+#
 
-# def cust_print(type,txt,hist):
-#     quant = str(cfg.cust_quantity.get())
-#     try:
-#         if type == 0:
-#             txtPrint(quant,hist,txt)
-#         elif type == 1:
-#             QRPrint(quant,hist,txt)
-#         elif type == 2:
-#             BCPrint(quant,hist,txt)
+# def BBC():
+#     y = str(cfg.cust_quantity.get())
+#     log = ("*BBC Tag* x" + y)
+#     cust_print(0,log,"Bob","BBC")
 
-def BBC():
-    answer = messagebox.askyesno("Question","This will print " + str(cfg.cust_quantity.get()) + " BBC labels.\nDo you wish to continue?")
-    if answer == True:
-        y = str(cfg.cust_quantity.get())
-        # xyz = ("^XA^LRY^FO10,10^GB195,203,195^FS^FO225,10^GB195,203,195^FS^FO440,10^GB195,203,195^FS^FO50,37^CFG,180^FDB^FS^FO260,37^FDB^FS^FO470,37^FDC^PQ" + y + "^FS^XZ")
-        log = ("**BBC Tag** x" + y)
-        txtPrint(y,log,"BBC","Sucks ass")
-        # to_print(xyz ,log)
-        return
-    else:
-        messagebox.showinfo("","Printing has been aborted")
-        return
+# def ebay_mac():
+#     y = str(cfg.cust_quantity.get())
+#     log = ("**Ebay MAC QR tag** x" + y)
+#     cust_print(1,log,"Hello world","eBay MAC","QR Code")
 
-def ebay_mac():
-    answer = messagebox.askyesno("Question","This will print " + str(cfg.cust_quantity.get()) + " MAC QR\nCode label for eBay\nDo you wish to continue?")
-    if answer == True:
-        y = str(cfg.cust_quantity.get())
-        log = ("**Ebay MAC QR tag** x" + y)
-        QRPrint("Hello world",y,log,"eBay MAC","QR Code")
-        return
-    else:
-        messagebox.showinfo("","Printing has been aborted")
-        return
 
-def ebay_PC():
-    answer = messagebox.askyesno("Question","This will print " + str(cfg.cust_quantity.get()) + " MAC QR\nCode label for eBay\nDo you wish to continue?")
-    if answer == True:
-        y = str(cfg.cust_quantity.get())
-        log = ("**Ebay PC QR tag** x" + y)
-        QRPrint("Bo Derek was here",y,log,"eBay PC","QR Code")
-        return
-    else:
-        messagebox.showinfo("","Printing has been aborted")
-        return
+# def ebay_PC():
+#     y = str(cfg.cust_quantity.get())
+#     log = ("**Ebay PC QR tag** x" + y)
+#     cust_print(1,log,"Bo Derek was here","eBay PC","QR Code")
+
 
 # ==========================================
 # =============== Title header =============
