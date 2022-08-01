@@ -4,6 +4,9 @@ import sys
 from tkinter import messagebox
 import re
 from time import sleep
+import win32print
+import win32ui
+from PIL import Image, ImageWin
 
 # ============ Command definitions ============
 # miscellaneous defined commands
@@ -117,6 +120,43 @@ def BCPrint(code,quant,hist,sa):
     printing += "^XZ" # End of label
     to_print(printing,hist)
 
+# ========== Image Print (imgPrint) ==========
+# 3x parameters = (code)image filename + (quant)Quantity + (hist)log
+
+def imgPrint(code,quant,hist):
+
+    # read the image
+    im = Image.open(code)
+    # look at the dimensions
+    size = im.size
+    # calculate ratio x/y
+    ratio = size[0] / size[1]
+    # determine whether to apply ratio to height or width and do so
+    if (180 * ratio) > 500:
+        newsize = (500, round(500/ratio))
+    else:
+        newsize = (round(180*ratio),180)
+    # rezise image to fit on label
+    pic = im.resize(newsize)
+    # show image
+    pic.show()
+    # figure out how to print it instead!!!!
+
+    printer_name = win32print.GetDefaultPrinter ()
+    
+    hDC = win32ui.CreateDC ()
+    hDC.CreatePrinterDC (printer_name)
+
+    hDC.StartDoc (code)
+    hDC.StartPage ()
+
+    dib = ImageWin.Dib (pic)
+    dib.draw (hDC.GetHandleOutput (), (0,0,newsize[0],newsize[1]))
+
+    hDC.EndPage ()
+    hDC.EndDoc ()
+    hDC.DeleteDC ()
+
 # ========== to_print ==========
 # 2x parameters = zpl code + log
 
@@ -217,16 +257,15 @@ def cust_print(type,hist,code,*txt):
     if answer == True:
         try:
             if type == 0:
-                print("Type 0")
                 txtPrint(quant,hist,*txt)
             elif type == 1:
-                print("Type 1")
                 QRPrint(code,quant,hist,*txt)
             elif type == 2:
-                print("Type 2")
                 BCPrint(code,quant,hist,*txt)
+            elif type == 3:
+                imgPrint(code,quant,hist)
         except:
-            print("Failed")
+            return
     else:
         messagebox.showinfo("","Printing has been aborted")
         return
@@ -235,28 +274,28 @@ def cust_print(type,hist,code,*txt):
 # ======= Customer label functions =========
 # ==========================================
 #
-# cust_print = 4x parameters (label type, what to save in log, label code to print, text to print)
+# cust_print = 4x parameters (label type, what to save in log, label code to print, optional text to print)
 # label type = 0 plain text label e.g. (0,"plain tag","","Hello World")
 # label type = 1 QR code label e.g. (1,"label","https://www.label.com","Hello Earth")
 # label type = 2 BarCode label e.g. (2,"Stripes","F1355SV","Asset Tag")
+# label type = 3 Image print e.g. (3,"Pretty picture","img.png")
 # for barcode labels the 'txt' parameter needs either "Serial Number" or "Asset Tag"
 #
 
 def BBC():
     y = str(cfg.cust_quantity.get())
     log = ("*BBC Tag* x" + y)
-    cust_print(0,log,"Bob","BBC","WW totally WWWWW WWW WWW WWW")
+    cust_print(3,log,"Python Projects/CDW Config Label Printing App/bbc.png")
 
 def ebay_mac():
     y = str(cfg.cust_quantity.get())
     log = ("*Ebay MAC QR tag* x" + y)
     cust_print(1,log,"Hello world","eBay MAC","QR Code")
 
-
 def ebay_PC():
     y = str(cfg.cust_quantity.get())
     log = ("*Ebay PC QR tag* x" + y)
     cust_print(1,log,"Bo Derek was here","eBay PC","QR Code")
 
-# Import cfg last
+# Import cfg last!!
 import cfg
