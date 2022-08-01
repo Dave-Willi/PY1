@@ -4,6 +4,9 @@ import sys
 from tkinter import messagebox
 import re
 from time import sleep
+import win32print
+import win32ui
+from PIL import Image, ImageWin
 
 # ============ Command definitions ============
 # miscellaneous defined commands
@@ -28,9 +31,9 @@ def history(log): # writes to history log file
     file = open("data\logs.txt", "a")
     file.close()
     with open("data\logs.txt", "r") as history_orig:
-        save = history_orig.read().upper()
+        save = history_orig.read()
     with open("data\logs.txt", "w") as history_orig:
-        history_orig.write(str(log).upper())
+        history_orig.write(str(log))
         history_orig.write("\n")
         history_orig.write(save)
     N = 1000 # number of lines you want to keep
@@ -44,64 +47,57 @@ def history(log): # writes to history log file
 
 # +++++++++++++++ ZPL PRINT FUNCTIONS +++++++++++++++
 
+# text formatting function
+# Label is 200 dots high (actually larger but buffer for misaligned labels allows for less bad labels)
+
+def txt_import(*more):
+    # try:
+    #     print(*more)
+    #     print(type(*more))
+    #     print(more)
+    #     print(type(more))
+    # except:
+    #     pass
+    sub_total = len(more)
+    index = 0
+    font_size_max = max(more, key=len)
+    txt_length = len(font_size_max)
+    font_size = min(round(180/(sub_total)),round(650/txt_length),60)
+    txt_printing = ""
+    for x in (more):
+        txt_printing += "^CF0," + str(font_size)
+        txt_printing += "^FO10," + str((10+(font_size*index)))
+        txt_printing += "^FD"
+        txt_printing += str(x)
+        txt_printing += "^FS"
+        index += 1
+    return(txt_printing)
+
+
 # ========== QR Code Print (QRPrint) ==========
 # x parameters = (code) QR code + (quant)Quantity + (hist)log + (*more) optional lines of text
 
 def QRPrint(code,quant,hist,*more):
-    try:
-        a = more[0]
-    except:
-        a = ""
-    try:
-        b = more[1]
-    except:
-        b = ""
     printing = "^XA" # Start of label
     printing += "^LH15,0" # Label Home | position of start of label
-    printing += "^CF0,60" # Fontname and height and width
-    printing += "^FO10,10" # Poisition of text
-    printing += "^FD" # Field Initiator
-    printing += a # text line 1
-    printing += "^FS" # end of field
-    printing += "^FO10,75" # Poisition of text
-    printing += "^FD" # Field Initiator
-    printing += b # text line 2
-    printing += "^FS" # end of field
-    printing += "^FO400,10" # Position of QR code
+    printing += txt_import(*more)
+    printing += "^FO380,10" # Position of QR code
     printing += "^BQN,2,4" # QR Initiator | last number is magnification/size
-    printing += "^FDQA" # Field Initiator (QA is added for QR codes)
+    printing += "^FDQA," # Field Initiator (QA is added for QR codes)
     printing += str(code) # QR Entry
     printing += "^FS" # end of field
     printing += "^PQ" # Print quantity
     printing += str(quant) # Selected quantity
     printing += "^XZ" # End of label
-    print(printing)
     to_print(printing,hist)
 
 # ========== Simple text print (txtPrint) ==========
 # x parameters = (quant)Quantity + (hist)log, (*more)1 or more lines of text
 
 def txtPrint(quant,hist,*more):
-    try:
-        a = more[0]
-    except:
-        a = ""
-    try:
-        b = more[1]
-    except:
-        b = ""
     printing = "^XA" # Start of label
     printing += "^LH15,0" # Label Home | position of start of label
-    printing += "^CF0,60" # Fontname and height and width
-    printing += "^FO10,10" # Poisition of text
-    printing += "^FD" # Field Initiator
-    printing += a # text line 1
-    printing += "^FS" # end of field
-    printing += "^FO10,80" # Poisition of text
-    printing += "^FD" # Field Initiator
-    printing += b # text line 2
-    printing += "^FS" # end of field
-    printing += "^PQ" # Print quantity
+    printing += txt_import(*more)
     printing += str(quant) # Selected quantity
     printing += "^XZ" # End of label
     to_print(printing,hist)
@@ -127,6 +123,45 @@ def BCPrint(code,quant,hist,sa):
     printing += str(quant) # Selected quantity (normally 1 for barcodes)
     printing += "^XZ" # End of label
     to_print(printing,hist)
+
+# ========== Image Print (imgPrint) ==========
+# 3x parameters = (code)image filename + (quant)Quantity + (hist)log
+
+def imgPrint(code,quant,hist):
+
+    # read the image
+    im = Image.open(code)
+    # look at the dimensions
+    size = im.size
+    # calculate ratio x/y
+    ratio = size[0] / size[1]
+    # determine whether to apply ratio to height or width and do so
+    if (180 * ratio) > 500:
+        newsize = (500, round(500/ratio))
+    else:
+        newsize = (round(180*ratio),180)
+    # rezise image to fit on label
+    pic = im.resize(newsize)
+    # show image
+    pic.show()
+    # figure out how to print it instead!!!!
+
+    # the below sends 1 byte to the printer?! It's a zpl emulator so it might be ignoring it
+
+    printer_name = win32print.GetDefaultPrinter ()
+    
+    hDC = win32ui.CreateDC ()
+    hDC.CreatePrinterDC (printer_name)
+
+    hDC.StartDoc (code)
+    hDC.StartPage ()
+
+    dib = ImageWin.Dib (pic)
+    dib.draw (hDC.GetHandleOutput (), (0,0,newsize[0],newsize[1]))
+
+    hDC.EndPage ()
+    hDC.EndDoc ()
+    hDC.DeleteDC ()
 
 # ========== to_print ==========
 # 2x parameters = zpl code + log
@@ -222,30 +257,51 @@ def print_auto():
             messagebox.showinfo("","Printing has been aborted")
             return
 
-def cust_print(type,hist,code,txt):
+def cust_print(type,hist,code,*txt):
     quant = str(cfg.cust_quantity.get())
-    answer = messagebox.askyesno("Question","This will print " + quant + " of the selected labels.\nDo you wish to continue?")
+    answer = messagebox.askyesno("Question","This will print " + hist + " labels.\nDo you wish to continue?")
     if answer == True:
         try:
             if type == 0:
-                txtPrint(quant,hist,txt)
+                txtPrint(quant,hist,*txt)
             elif type == 1:
-                QRPrint(code,quant,hist,txt)
+                QRPrint(code,quant,hist,*txt)
             elif type == 2:
-                BCPrint(txt,quant,hist,code)
+                BCPrint(code,quant,hist,*txt)
+            elif type == 3:
+                imgPrint(code,quant,hist)
         except:
-            pass
+            return
     else:
         messagebox.showinfo("","Printing has been aborted")
         return
 
-def imgPrint(imgFile,hist):
-    quant = str(cfg.cust_quantity.get())
-    answer = messagebox.askyesno("Question","This will print " + quant + " of the selected labels.\nDo you wish to continue?")
-    if answer == True:
-        try:
-            pass
-        except:
-            pass
+# ==========================================    
+# ======= Customer label functions =========
+# ==========================================
+#
+# cust_print = 4x parameters (label type, what to save in log, label code to print, optional text to print)
+# label type = 0 plain text label e.g. (0,"plain tag","","Hello World")
+# label type = 1 QR code label e.g. (1,"label","https://www.label.com","Hello Earth")
+# label type = 2 BarCode label e.g. (2,"Stripes","F1355SV","Asset Tag")
+# label type = 3 Image print e.g. (3,"Pretty picture","img.png")
+# for barcode labels the 'txt' parameter needs either "Serial Number" or "Asset Tag"
+#
 
+def BBC():
+    y = str(cfg.cust_quantity.get())
+    log = ("*BBC Tag* x" + y)
+    cust_print(3,log,"Python Projects/CDW Config Label Printing App/bbc.png")
+
+def ebay_mac():
+    y = str(cfg.cust_quantity.get())
+    log = ("*Ebay MAC QR tag* x" + y)
+    cust_print(1,log,"Hello world","eBay MAC","QR Code")
+
+def ebay_PC():
+    y = str(cfg.cust_quantity.get())
+    log = ("*Ebay PC QR tag* x" + y)
+    cust_print(1,log,"Bo Derek was here","eBay PC","QR Code")
+
+# Import cfg last!!
 import cfg
