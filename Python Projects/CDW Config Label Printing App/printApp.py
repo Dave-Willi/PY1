@@ -134,12 +134,16 @@ tab4b = tk.Frame(tab4)
 tab4c = tk.Frame(tab4)
 tab5 = tk.Frame(frame2) # customer labels
 tab6 = tk.Frame(frame2) # reports
+tab7 = tk.Frame(frame2) # custom labels
+tab7a = tk.Frame(tab7)
+tab7b = tk.Frame(tab7)
 frame2.add(tab1, text = "Singles")
 frame2.add(tab2, text = "Groups")
 frame2.add(tab3, text = "Range")
 frame2.add(tab4, text = "Range (Auto)")
 frame2.add(tab5, text = "Customer Labels")
 frame2.add(tab6, text = "Reports")
+frame2.add(tab7, text = "Custom Labels")
 
 tab2a.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
 tab2b.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
@@ -147,8 +151,11 @@ tab3a.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
 tab4a.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10, fill=BOTH)
 tab4b.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
 tab4c.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10, fill=BOTH)
+tab7a.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
+tab7b.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
 
-from conFuncs import set_print, BCPrint, print_auto, BBC, ebay_mac, ebay_PC
+
+from conFuncs import set_print, BCPrint, print_auto, BBC, ebay_mac, ebay_PC, txtPrint, QRPrint
 
 
 # ==========================================
@@ -402,6 +409,25 @@ def clear_all():
     clear_auto()
     clear_group_text()
     clear_range()
+
+def clear_custom_qr(): # clears the group tab text box
+    custom_qr.delete(0, END)
+
+def clear_custom():
+    custom_qr.delete(0, END)
+    custom_textbox.delete("1.0", END)
+
+def print_custom_one(): # print the group text box
+    customtxt = list("")
+    txt = custom_textbox.get("1.0", END)
+    for line in txt.split("\n"):
+        customtxt += line.strip().split(" ")
+    # txt = re.split("\n",txt)
+    qr = custom_qr.get()
+    if qr == "":
+        txtPrint(1,"*custom text label*",tuple(customtxt))
+    else:
+        QRPrint(qr,1,"*custom QR label*",tuple(customtxt))
 
 def con_update():
     #Read config.ini file
@@ -780,6 +806,46 @@ port_entry.grid(row=1, column=2)
 ports_alert = tk.Button(master=tab6b,
                         text="Report port")
 ports_alert.grid(row=2, column=2)
+
+# ==========================================
+# =========== Custom Tab (tab7) ============
+# ==========================================
+
+custom_label1 = tk.Label(master=tab7,
+                        font=12,
+                        fg="blue",
+                        text="Print the label below:")
+custom_label1.pack()
+
+custom_label = tk.Label(master=tab7a,
+                        textvariable=cfg.asset_type)
+custom_label.pack(side=LEFT, pady=(20,0))
+
+custom_qr = tk.Entry(master=tab7a, bg=cfg.bg_col)
+custom_qr.pack(side=LEFT, padx=10, pady=(20,0))
+
+custom_clear = tk.Button(master=tab7b,
+                        text="Clear QR Code",
+                        command=clear_custom_qr)
+custom_clear.pack(side=LEFT)
+
+custom_print = tk.Button(master=tab7b,
+                        text="Print one",
+                        command=print_custom_one)
+custom_print.pack(side=LEFT, padx=100)
+
+custom_load = tk.Button(master=tab7b,
+                        text="Clear all",
+                        command=clear_custom)
+custom_load.pack(side=LEFT, padx=(0,100))
+
+
+
+custom_textbox = tkscrolled.ScrolledText(master=tab7,
+                                        wrap=WORD,
+                                        width=60,
+                                        height=10)
+custom_textbox.pack(side=TOP, padx=5, pady=30)
 
 # ==========================================
 # ========= Start up the routine ===========

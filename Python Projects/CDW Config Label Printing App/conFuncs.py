@@ -51,14 +51,18 @@ def history(log): # writes to history log file
 # Label is 200 dots high (actually larger but buffer for misaligned labels allows for less bad labels)
 
 def txt_import(*more):
+    # try:
+    #     print(*more)
+    #     print(type(*more))
+    #     print(more)
+    #     print(type(more))
+    # except:
+    #     pass
     sub_total = len(more)
     index = 0
-    print("font_size_max")
     font_size_max = max(more, key=len)
     txt_length = len(font_size_max)
-    font_size = min(round(180/(sub_total)),round(650/txt_length))
-    print("font size")
-    print(font_size)
+    font_size = min(round(180/(sub_total)),round(650/txt_length),60)
     txt_printing = ""
     for x in (more):
         txt_printing += "^CF0," + str(font_size)
@@ -141,6 +145,8 @@ def imgPrint(code,quant,hist):
     # show image
     pic.show()
     # figure out how to print it instead!!!!
+
+    # the below sends 1 byte to the printer?! It's a zpl emulator so it might be ignoring it
 
     printer_name = win32print.GetDefaultPrinter ()
     
