@@ -239,4 +239,13 @@ def cust_print(type,hist,code,txt):
         messagebox.showinfo("","Printing has been aborted")
         return
 
+def imgPrint(imgFile,hist):
+    quant = str(cfg.cust_quantity.get())
+    answer = messagebox.askyesno("Question","This will print " + quant + " of the selected labels.\nDo you wish to continue?")
+    if answer == True:
+        try:
+            pass
+        except:
+            pass
+
 import cfg
