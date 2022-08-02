@@ -137,6 +137,7 @@ tab6 = tk.Frame(frame2) # reports
 tab7 = tk.Frame(frame2) # custom labels
 tab7a = tk.Frame(tab7)
 tab7b = tk.Frame(tab7)
+tab7c = tk.Frame(tab7)
 frame2.add(tab1, text = "Singles")
 frame2.add(tab2, text = "Groups")
 frame2.add(tab3, text = "Range")
@@ -153,6 +154,7 @@ tab4b.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
 tab4c.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10, fill=BOTH)
 tab7a.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
 tab7b.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
+tab7c.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
 
 
 from conFuncs import set_print, BCPrint, print_auto, BBC, ebay_mac, ebay_PC, txtPrint, QRPrint
@@ -417,17 +419,39 @@ def clear_custom():
     custom_qr.delete(0, END)
     custom_textbox.delete("1.0", END)
 
-def print_custom_one(): # print the group text box
-    customtxt = list("")
+def print_custom_one(): # print one custom label
+    customtxt = ()
     txt = custom_textbox.get("1.0", END)
-    for line in txt.split("\n"):
-        customtxt += line.strip().split(" ")
-    # txt = re.split("\n",txt)
+    txt = re.split(", |\n",txt)
+    for x in (txt):
+        if x == "":
+            continue
+        customtxt += (x,)
     qr = custom_qr.get()
     if qr == "":
-        txtPrint(1,"*custom text label*",tuple(customtxt))
+        txtPrint(1,"*custom text label*",*customtxt)
     else:
-        QRPrint(qr,1,"*custom QR label*",tuple(customtxt))
+        QRPrint(qr,1,"*custom QR label*",*customtxt)
+
+def print_custom_many(): # print many custom labels
+    quant = str(cfg.custom_quantity.get())
+    answer = messagebox.askyesno("Question","This will print " + quant + " labels.\nDo you wish to continue?")
+    if answer == True:
+        customtxt = ()
+        txt = custom_textbox.get("1.0", END)
+        txt = re.split(", |\n",txt)
+        for x in (txt):
+            if x == "":
+                continue
+            customtxt += (x,)
+        qr = custom_qr.get()
+        if qr == "":
+            txtPrint(quant,"*custom text label*",*customtxt)
+        else:
+            QRPrint(qr,quant,"*custom QR label*",*customtxt)
+    else:
+        messagebox.showinfo("","Printing has been aborted")
+        return
 
 def con_update():
     #Read config.ini file
@@ -484,34 +508,6 @@ except:
         "flag_1": cfg.flag_1}
     with open('data/con_print.ini', 'w') as conf:
         config_object.write(conf)
-
-# ==========================================    
-# ======= Customer label functions =========
-# ==========================================
-#
-# cust_print = 4x parameters (label type, what to save in log, label code to print, text to print)
-# label type = 0 plain text label e.g. (0,"plain tag","","Hello World")
-# label type = 1 QR code label e.g. (1,"label","https://www.label.com","Hello Earth")
-# label type = 2 BarCode label e.g. (2,"Stripes","F1355SV","Asset Tag")
-# for barcode labels the 'txt' parameter needs either "Serial Number" or "Asset Tag"
-#
-
-# def BBC():
-#     y = str(cfg.cust_quantity.get())
-#     log = ("*BBC Tag* x" + y)
-#     cust_print(0,log,"Bob","BBC")
-
-# def ebay_mac():
-#     y = str(cfg.cust_quantity.get())
-#     log = ("**Ebay MAC QR tag** x" + y)
-#     cust_print(1,log,"Hello world","eBay MAC","QR Code")
-
-
-# def ebay_PC():
-#     y = str(cfg.cust_quantity.get())
-#     log = ("**Ebay PC QR tag** x" + y)
-#     cust_print(1,log,"Bo Derek was here","eBay PC","QR Code")
-
 
 # ==========================================
 # =============== Title header =============
@@ -650,7 +646,7 @@ group_load.pack(side=LEFT, padx=(0,100))
 
 
 group_textbox = tkscrolled.ScrolledText(master=tab2, wrap=WORD)
-group_textbox.pack(side=BOTTOM, fill=BOTH, expand=True, padx=5, pady=5)
+group_textbox.pack(side=BOTTOM, fill=BOTH, expand=True, padx=30, pady=(5,20))
 
 # ==========================================
 # ============ Range Tab (tab3) ============
@@ -807,39 +803,57 @@ ports_alert = tk.Button(master=tab6b,
                         text="Report port")
 ports_alert.grid(row=2, column=2)
 
+label_6b = tk.Label(master=tab6b,
+                    text="Nothing works on this page yet so don't waste your time",
+                    font=38,
+                    fg="red")
+label_6b.grid(row=5, column=0, columnspan=4, rowspan=2)
+
 # ==========================================
 # =========== Custom Tab (tab7) ============
 # ==========================================
 
-custom_label1 = tk.Label(master=tab7,
+custom_label1 = tk.Label(master=tab7a,
                         font=12,
                         fg="blue",
                         text="Print the label below:")
-custom_label1.pack()
+custom_label1.pack(side=TOP)
 
 custom_label = tk.Label(master=tab7a,
-                        textvariable=cfg.asset_type)
+                        text="QR Code: ")
 custom_label.pack(side=LEFT, pady=(20,0))
 
-custom_qr = tk.Entry(master=tab7a, bg=cfg.bg_col)
+custom_qr = tk.Entry(master=tab7a,
+                    width=70)
 custom_qr.pack(side=LEFT, padx=10, pady=(20,0))
 
 custom_clear = tk.Button(master=tab7b,
                         text="Clear QR Code",
                         command=clear_custom_qr)
-custom_clear.pack(side=LEFT)
+custom_clear.pack(side=LEFT, padx=(40,0))
 
 custom_print = tk.Button(master=tab7b,
                         text="Print one",
                         command=print_custom_one)
-custom_print.pack(side=LEFT, padx=100)
+custom_print.pack(side=LEFT, padx=40)
+
+custom_print_many = tk.Button(master=tab7b,
+                        text="Print many",
+                        command=print_custom_many)
+custom_print_many.pack(side=LEFT, padx=0)
 
 custom_load = tk.Button(master=tab7b,
                         text="Clear all",
                         command=clear_custom)
-custom_load.pack(side=LEFT, padx=(0,100))
+custom_load.pack(side=LEFT, padx=40)
 
+custom_quantity_label = tk.Label(master=tab7c,
+                            text="Print quantity")
+custom_quantity_label.pack(padx=10, side=LEFT)
 
+custom_quantity = tk.Spinbox(master=tab7c, from_=1, to=9999,
+                            textvariable=cfg.custom_quantity)
+custom_quantity.pack(padx=10, side=LEFT)
 
 custom_textbox = tkscrolled.ScrolledText(master=tab7,
                                         wrap=WORD,

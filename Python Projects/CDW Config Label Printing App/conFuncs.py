@@ -51,18 +51,16 @@ def history(log): # writes to history log file
 # Label is 200 dots high (actually larger but buffer for misaligned labels allows for less bad labels)
 
 def txt_import(*more):
-    # try:
-    #     print(*more)
-    #     print(type(*more))
-    #     print(more)
-    #     print(type(more))
-    # except:
-    #     pass
+    if len(more) == 0:
+        return ""
     sub_total = len(more)
     index = 0
-    font_size_max = max(more, key=len)
-    txt_length = len(font_size_max)
-    font_size = min(round(180/(sub_total)),round(650/txt_length),60)
+    try:
+        font_size_max = max(more, key=len)
+        txt_length = len(font_size_max)
+        font_size = min(round(180/(sub_total)),round(750/txt_length),60)
+    except:
+        font_size = min(round(180/(sub_total)),60)
     txt_printing = ""
     for x in (more):
         txt_printing += "^CF0," + str(font_size)
@@ -73,14 +71,16 @@ def txt_import(*more):
         index += 1
     return(txt_printing)
 
-
 # ========== QR Code Print (QRPrint) ==========
 # x parameters = (code) QR code + (quant)Quantity + (hist)log + (*more) optional lines of text
 
 def QRPrint(code,quant,hist,*more):
     printing = "^XA" # Start of label
     printing += "^LH15,0" # Label Home | position of start of label
-    printing += txt_import(*more)
+    try:
+        printing += txt_import(*more)
+    except:
+        printing += txt_import(more)
     printing += "^FO380,10" # Position of QR code
     printing += "^BQN,2,4" # QR Initiator | last number is magnification/size
     printing += "^FDQA," # Field Initiator (QA is added for QR codes)
@@ -97,7 +97,10 @@ def QRPrint(code,quant,hist,*more):
 def txtPrint(quant,hist,*more):
     printing = "^XA" # Start of label
     printing += "^LH15,0" # Label Home | position of start of label
-    printing += txt_import(*more)
+    try:
+        printing += txt_import(*more)
+    except:
+        printing += txt_import(more)
     printing += str(quant) # Selected quantity
     printing += "^XZ" # End of label
     to_print(printing,hist)
@@ -248,10 +251,8 @@ def print_auto():
             suffixed = str(auto_suffix1).upper()
             for x in range(int(auto_start), int(auto_end)+1):
                 y = str(x).zfill(lead_zeros)
-                # xyz = ("^XA^LH15,0^FO1,20^AsN,25,25^FDDevice Asset Tag^FS^FO03,60^B3N,N,100,Y,N^FD" + prefixed + y + suffixed + "^FS^XZ")
                 log = prefixed + y + suffixed
                 BCPrint("Asset Tag",log,1,log)
-                # to_print(xyz ,log)
                 sleep(0.7)
         else:
             messagebox.showinfo("","Printing has been aborted")
