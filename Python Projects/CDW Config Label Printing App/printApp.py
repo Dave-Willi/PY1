@@ -157,7 +157,7 @@ tab7b.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
 tab7c.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
 
 
-from conFuncs import set_print, BCPrint, print_auto, BBC, ebay_mac, ebay_PC, txtPrint, QRPrint
+from conFuncs import quit, set_print, BCPrint, print_auto, BBC, ebay_mac, ebay_PC, txtPrint, QRPrint
 
 
 # ==========================================
