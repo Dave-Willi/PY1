@@ -81,8 +81,8 @@ def QRPrint(code,quant,hist,*more):
         printing += txt_import(*more)
     except:
         printing += txt_import(more)
-    printing += "^FO380,10" # Position of QR code
-    printing += "^BQN,2,4" # QR Initiator | last number is magnification/size
+    printing += "^FO" + str(cfg.qr_pos) +",10" # Position of QR code
+    printing += "^BQN,2," + str(cfg.qr_mag) # QR Initiator | last number is magnification/size
     printing += "^FDQA," # Field Initiator (QA is added for QR codes)
     printing += str(code) # QR Entry
     printing += "^FS" # end of field
@@ -292,7 +292,7 @@ def cust_print(type,hist,code,*txt):
 def BBC():
     y = str(cfg.cust_quantity.get())
     log = ("*BBC Tag* x" + y)
-    cust_print(3,log,"Python Projects/CDW Config Label Printing App/bbc.png")
+    cust_print(3,log,"data/bbc.png")
 
 def ebay_mac():
     y = str(cfg.cust_quantity.get())

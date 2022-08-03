@@ -136,6 +136,8 @@ tab5 = tk.Frame(frame2) # customer labels
 tab6 = tk.Frame(frame2) # reports
 tab7 = tk.Frame(frame2) # custom labels
 tab7a = tk.Frame(tab7)
+tab7aa = tk.Frame(tab7)
+tab7ab = tk.Frame(tab7)
 tab7b = tk.Frame(tab7)
 tab7c = tk.Frame(tab7)
 frame2.add(tab1, text = "Singles")
@@ -153,6 +155,8 @@ tab4a.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10, fill=BOTH)
 tab4b.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
 tab4c.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10, fill=BOTH)
 tab7a.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
+tab7aa.pack(anchor=CENTER, expand=False, side=TOP)
+tab7ab.pack(anchor=CENTER, expand=False, side=TOP)
 tab7b.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
 tab7c.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
 
@@ -199,27 +203,16 @@ def set_tag(): # Change between asset tag and serial number. Sets colour of entr
 def help_me(): # Set custom help dialog boxes for each page/tab
     tab_name = frame2.select()
     tab_index = frame2.index(tab_name)
-    if tab_index == 0:
-        messagebox.showinfo("Singles","Enter a tag into the box and press enter.\nYour scanner should do this automatically")
-    if tab_index == 1:
-        messagebox.showinfo("Groups","Enter as many tags as you like into the box below. You can enter them directly or via the entry box. If you have a list of tags saved in a file you can load it directly from there")
-    if tab_index == 2:
-        messagebox.showinfo("Range","The prefix is the part of the tag which is the same for all of the tags and comes before the number. The suffix is the same but it comes after the number")
-    if tab_index == 3:
-        messagebox.showinfo("Range (Auto)","Simply scan the first and last tag and it will print those plus any in between")
-    if tab_index == 4:
-        messagebox.showinfo("Customer Labels","For printing labels that are unique to a customer")
-    if tab_index == 5:
-        messagebox.showinfo("Reports","Quickly and easily report one of the listed issues to the leadership team")
+    set_config(tab_index)
 
 
-def set_config(): # additional window with extra info such as print log
-    config_box = Toplevel(self)
-    config_box.title("Settings and about")
-    config_box.overrideredirect(True)
+def set_config(tab=""): # additional window with extra info such as print log
+    omni_box = Toplevel(self)
+    omni_box.title("Settings and about")
+    omni_box.overrideredirect(True)
 
     def kill_me(): # closes the extra window
-        config_box.destroy()
+        omni_box.destroy()
 
     w = 300 # width for the Tk root
     h = 500 # height for the Tk root
@@ -234,72 +227,115 @@ def set_config(): # additional window with extra info such as print log
 
     # set the dimensions of the screen 
     # and where it is placed
-    config_box.geometry('%dx%d+%d+%d' % (w, h, x, y))
+    omni_box.geometry('%dx%d+%d+%d' % (w, h, x, y))
 
     # Close config window on lose focus
-    config_box.focus_force()
-    config_box.bind('<FocusOut>', lambda x:kill_me())
+    omni_box.focus_force()
+    omni_box.bind('<FocusOut>', lambda x:kill_me())
 
     # Fill the config window with stuff
+    if tab == "":
+        # ==========================================
+        # ====== Display config file contents ======
+        # ==========================================
 
-    # ==========================================
-    # ====== Display config file contents ======
-    # ==========================================
+        label2 = tk.Label(omni_box,
+                        text="Settings saved in the config file")
+        label2.pack(side=TOP)                    
 
-    label2 = tk.Label(config_box,
-                    text="Settings saved in the config file")
-    label2.pack(side=TOP)                    
+        config_text = tk.Text(omni_box, wrap=WORD, width=34, height=7, state=DISABLED)
+        config_text.pack(side=TOP, padx=5, pady=(0,10))
 
-    config_text = tk.Text(config_box, wrap=WORD, width=34, height=7, state=DISABLED)
-    config_text.pack(side=TOP, padx=5, pady=(0,10))
+        try: # If the file doesn't exist 
+            File1 = "data/con_print.ini"
+            File2 = open(File1, "r")
+            config_text.config(state=NORMAL)
+            config_text.insert("1.0", File2.read())
+            config_text.config(state=DISABLED)
+            File2.close()
+        except: # create a fresh file and restart the config window in one smooth action
+            File1 = "data/con_print.ini"
+            File2 = open(File1, "w")
+            File2.close()
+            kill_me()
+            set_config()
 
-    try: # If the file doesn't exist 
-        File1 = "data/con_print.ini"
-        File2 = open(File1, "r")
-        config_text.config(state=NORMAL)
-        config_text.insert("1.0", File2.read())
-        config_text.config(state=DISABLED)
-        File2.close()
-    except: # create a fresh file and restart the config window in one smooth action
-        File1 = "data/con_print.ini"
-        File2 = open(File1, "w")
-        File2.close()
-        kill_me()
-        set_config()
+        # =======================================================
+        # ===== Display last 100 tags printed from log file =====
+        # =======================================================
 
-    # =======================================================
-    # ===== Display last 100 tags printed from log file =====
-    # =======================================================
+        label3 = tk.Label(omni_box,
+                        text="The last 1000 tags you printed")
+        label3.pack(side=TOP)  
 
-    label3 = tk.Label(config_box,
-                    text="The last 1000 tags you printed")
-    label3.pack(side=TOP)  
+        log_text = tkscrolled.ScrolledText(omni_box, wrap=WORD, width=32, height=15, state=DISABLED)
+        log_text.pack(side=TOP, padx=5)
 
-    log_text = tkscrolled.ScrolledText(config_box, wrap=WORD, width=32, height=15, state=DISABLED)
-    log_text.pack(side=TOP, padx=5)
+        try: # If the file doesn't exist 
+            File1 = "data/logs.txt"
+            File2 = open(File1, "r")
+            log_text.config(state=NORMAL)
+            log_text.insert("1.0", File2.read())
+            log_text.config(state=DISABLED)
+            File2.close()
+        except: # create a fresh file and restart the config window in one smooth action
+            File1 = "data/logs.txt"
+            File2 = open(File1, "w")
+            File2.close()
+            kill_me()
+            set_config()
 
-    try: # If the file doesn't exist 
-        File1 = "data/logs.txt"
-        File2 = open(File1, "r")
-        log_text.config(state=NORMAL)
-        log_text.insert("1.0", File2.read())
-        log_text.config(state=DISABLED)
-        File2.close()
-    except: # create a fresh file and restart the config window in one smooth action
-        File1 = "data/logs.txt"
-        File2 = open(File1, "w")
-        File2.close()
-        kill_me()
-        set_config()
+    if tab == 0: # singles tab
+        label1 = tk.Label(master=omni_box,
+                        text="Singles Tags")
+        label1.pack()
+
+    if tab == 1: # groups tab
+        label1 = tk.Label(master=omni_box,
+                        text="Groups Tags")
+        label1.pack()
+
+    if tab == 2: # Range tab
+        label1 = tk.Label(master=omni_box,
+                        text="Range Tags")
+        label1.pack()
+        try:
+            canvas = Canvas(omni_box, width = 250, height = 400)
+            canvas.pack()
+            cfg.range_image = ImageTk.PhotoImage(Image.open("data/range_helper.jpg").resize((200,380)))
+            canvas.create_image(20, 20, anchor=NW, image=cfg.range_image)
+        except:
+            logo_text = tk.Label(omni_box, text="Image file is missing", font=("Helvetica",20))
+            logo_text.pack()
+
+    if tab == 3: # Range (auto) tab
+        label1 = tk.Label(master=omni_box,
+                        text="Range (Auto) Tags")
+        label1.pack()
+
+    if tab == 4: # customer labels tab
+        label1 = tk.Label(master=omni_box,
+                        text="Customer Tags")
+        label1.pack()
+
+    if tab == 5: # reports tab
+        label1 = tk.Label(master=omni_box,
+                        text="Reports")
+        label1.pack()
+
+    if tab == 6: # custom labels tab
+        label1 = tk.Label(master=omni_box,
+                        text="Custom Tags")
+        label1.pack()
 
     # ==========================================
     # =========== short about info =============
     # ==========================================
 
-    # attaches to bottom of window, items placed here are bottom to top
-    Label(config_box, text="©Dave Williams 2022").pack(side=BOTTOM)
-    Label(config_box, text="CDW Logo ©CDW 2022").pack(side=BOTTOM)
-    Label(config_box, text="Created for the exclusive use in\nconfig at the NDC in Rugby").pack(side=BOTTOM)
+    # attaches to bottom of window, items placed here are bottom to top i.e. reverse order
+    Label(omni_box, text="©Dave Williams 2022").pack(side=BOTTOM)
+    Label(omni_box, text="CDW Logo ©CDW 2022").pack(side=BOTTOM)
+    Label(omni_box, text="Created for the exclusive use in\nconfig at the NDC in Rugby").pack(side=BOTTOM)
 
 
 # ====================================================
@@ -414,12 +450,17 @@ def clear_all():
 
 def clear_custom_qr(): # clears the group tab text box
     custom_qr.delete(0, END)
+    slide1.set(380)
+    slide2.set(4)
 
 def clear_custom():
-    custom_qr.delete(0, END)
+    clear_custom_qr()
     custom_textbox.delete("1.0", END)
 
 def print_custom_one(): # print one custom label
+    cfg.qr_pos = slide1.get()
+    cfg.qr_mag = slide2.get()
+    print(cfg.qr_pos)
     customtxt = ()
     txt = custom_textbox.get("1.0", END)
     txt = re.split(", |\n",txt)
@@ -434,6 +475,8 @@ def print_custom_one(): # print one custom label
         QRPrint(qr,1,"*custom QR label*",*customtxt)
 
 def print_custom_many(): # print many custom labels
+    cfg.qr_pos = slide1.get()
+    cfg.qr_mag = slide2.get()
     quant = str(cfg.custom_quantity.get())
     answer = messagebox.askyesno("Question","This will print " + quant + " labels.\nDo you wish to continue?")
     if answer == True:
@@ -827,6 +870,22 @@ custom_qr = tk.Entry(master=tab7a,
                     width=70)
 custom_qr.pack(side=LEFT, padx=10, pady=(20,0))
 
+slide1_label = tk.Label(master=tab7aa,
+                        text="QR position: ")
+slide1_label.pack(side=LEFT)
+
+slide1 = Scale(tab7aa, from_=200, to=400, orient=HORIZONTAL)
+slide1.set(cfg.qr_pos)
+slide1.pack(side=LEFT)
+
+slide2 = Scale(tab7aa, from_=1, to=10, orient=HORIZONTAL)
+slide2.set(cfg.qr_mag)
+slide2.pack(side=RIGHT)
+
+slide2_label = tk.Label(master=tab7aa,
+                        text="QR size: ")
+slide2_label.pack(side=RIGHT)
+
 custom_clear = tk.Button(master=tab7b,
                         text="Clear QR Code",
                         command=clear_custom_qr)
@@ -859,7 +918,7 @@ custom_textbox = tkscrolled.ScrolledText(master=tab7,
                                         wrap=WORD,
                                         width=60,
                                         height=10)
-custom_textbox.pack(side=TOP, padx=5, pady=30)
+custom_textbox.pack(side=TOP, padx=5, pady=(10,30))
 
 # ==========================================
 # ========= Start up the routine ===========
