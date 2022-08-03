@@ -1,9 +1,11 @@
+from random import randint
 import socket
 import subprocess
 import sys
 from tkinter import messagebox
 import re
 from time import sleep
+from playsound import playsound
 # import win32print
 # import win32ui
 from PIL import Image, ImageWin
@@ -12,6 +14,12 @@ from PIL import Image, ImageWin
 # miscellaneous defined commands
 
 def quit(): # simple shutdown of program
+    play = randint(0, 10)
+    if play == 5:
+        playsound('data/8d82b5_Pacman_Dies_Sound_Effect.mp3',False)
+    if play == 10:
+        playsound('data/8d82b5_New_Super_Mario_Bros_Death_Sound_Effect.mp3',False)
+    print(play)
     sys.exit()
 
 def con_error(): # connection error
@@ -252,7 +260,7 @@ def print_auto():
             for x in range(int(auto_start), int(auto_end)+1):
                 y = str(x).zfill(lead_zeros)
                 log = prefixed + y + suffixed
-                BCPrint("Asset Tag",log,1,log)
+                BCPrint(log,1,log,"Asset Tag")
                 sleep(0.7)
         else:
             messagebox.showinfo("","Printing has been aborted")

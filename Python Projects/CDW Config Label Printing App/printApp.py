@@ -145,7 +145,7 @@ frame2.add(tab2, text = "Groups")
 frame2.add(tab3, text = "Range")
 frame2.add(tab4, text = "Range (Auto)")
 frame2.add(tab5, text = "Customer Labels")
-frame2.add(tab6, text = "Reports")
+frame2.add(tab6, text = "Reports", state=DISABLED)
 frame2.add(tab7, text = "Custom Labels")
 
 tab2a.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
@@ -864,17 +864,17 @@ custom_label1.pack(side=TOP)
 
 custom_label = tk.Label(master=tab7a,
                         text="QR Code: ")
-custom_label.pack(side=LEFT, pady=(20,0))
+custom_label.pack(side=LEFT, pady=(10,0))
 
 custom_qr = tk.Entry(master=tab7a,
                     width=70)
-custom_qr.pack(side=LEFT, padx=10, pady=(20,0))
+custom_qr.pack(side=LEFT, padx=10, pady=(10,0))
 
 slide1_label = tk.Label(master=tab7aa,
                         text="QR position: ")
 slide1_label.pack(side=LEFT)
 
-slide1 = Scale(tab7aa, from_=200, to=400, orient=HORIZONTAL)
+slide1 = Scale(tab7aa, from_=200, to=400, orient=HORIZONTAL, length=250)
 slide1.set(cfg.qr_pos)
 slide1.pack(side=LEFT)
 
