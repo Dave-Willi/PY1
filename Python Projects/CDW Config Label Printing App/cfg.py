@@ -17,6 +17,9 @@ auto_2 = tk.StringVar(None)
 bg_col = str("white")
 xyz = str(" ")
 flag_1 = int(1)
+range_image = ""
+qr_pos = 380
+qr_mag = 4
 
 # ============ Printer Initial Selection ============
 
