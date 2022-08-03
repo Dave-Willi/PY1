@@ -4,8 +4,8 @@ import sys
 from tkinter import messagebox
 import re
 from time import sleep
-import win32print
-import win32ui
+# import win32print
+# import win32ui
 from PIL import Image, ImageWin
 
 # ============ Command definitions ============
