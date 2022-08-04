@@ -1,3 +1,29 @@
+asdfeasdg
+3
+2
+1
+0
+1
+1
+1
+asdg
+asdgf
+zxgvf
+3
+2
+1
+0
+zsdf
+3
+2
+1
+0
+3
+2
+1
+ASDF3AS
+ASDF2AS
+ASDF1AS
 *custom QR label*
 *custom text label*
 *custom QR label*
