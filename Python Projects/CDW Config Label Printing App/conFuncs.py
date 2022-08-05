@@ -6,19 +6,19 @@ from tkinter import messagebox
 import re
 from time import sleep
 from playsound import playsound
-# import win32print
-# import win32ui
+import win32print
+import win32ui
 from PIL import Image, ImageWin
 
 # ============ Command definitions ============
 # miscellaneous defined commands
 
 def quit(): # simple shutdown of program
-    play = randint(0, 10)
+    play = randint(0, 20)
     if play == 5:
-        playsound('data/8d82b5_Pacman_Dies_Sound_Effect.mp3',False)
+        playsound('data/8d82b52.mp3')
     if play == 10:
-        playsound('data/8d82b5_New_Super_Mario_Bros_Death_Sound_Effect.mp3',False)
+        playsound('data/8d82b51.mp3')
     print(play)
     sys.exit()
 

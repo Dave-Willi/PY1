@@ -284,49 +284,29 @@ def set_config(tab=""): # additional window with extra info such as print log
             File2.close()
             kill_me()
             set_config()
-
-    if tab == 0: # singles tab
-        label1 = tk.Label(master=omni_box,
-                        text="Singles Tags")
-        label1.pack()
-
-    if tab == 1: # groups tab
-        label1 = tk.Label(master=omni_box,
-                        text="Groups Tags")
-        label1.pack()
-
-    if tab == 2: # Range tab
-        label1 = tk.Label(master=omni_box,
-                        text="Range Tags")
-        label1.pack()
+    else:
         try:
-            canvas = Canvas(omni_box, width = 250, height = 400)
+            canvas = Canvas(omni_box, width = 300, height = 400)
             canvas.pack()
-            cfg.range_image = ImageTk.PhotoImage(Image.open("data/range_helper.jpg").resize((200,380)))
-            canvas.create_image(20, 20, anchor=NW, image=cfg.range_image)
+            if tab == 0: # singles tab
+                cfg.range_image = ImageTk.PhotoImage(Image.open("data/single_helper.jpg").resize((300,400)))
+            if tab == 1: # groups tab
+                cfg.range_image = ImageTk.PhotoImage(Image.open("data/groups_helper.jpg").resize((300,400)))
+            if tab == 2: # Range tab
+                cfg.range_image = ImageTk.PhotoImage(Image.open("data/range_helper.jpg").resize((300,400)))
+            if tab == 3: # Range (auto) tab
+                cfg.range_image = ImageTk.PhotoImage(Image.open("data/range_auto_helper.jpg").resize((300,400)))
+            if tab == 4: # customer labels tab
+                cfg.range_image = ImageTk.PhotoImage(Image.open("data/cust_helper.jpg").resize((300,400)))
+            if tab == 5: # reports tab
+                cfg.range_image = ImageTk.PhotoImage(Image.open("data/reports_helper.jpg").resize((300,400)))
+            if tab == 6: # custom labels tab
+                cfg.range_image = ImageTk.PhotoImage(Image.open("data/custom_helper.jpg").resize((300,400)))
+            
+            canvas.create_image(0, 0, anchor=NW, image=cfg.range_image)
         except:
-            logo_text = tk.Label(omni_box, text="Image file is missing", font=("Helvetica",20))
-            logo_text.pack()
-
-    if tab == 3: # Range (auto) tab
-        label1 = tk.Label(master=omni_box,
-                        text="Range (Auto) Tags")
-        label1.pack()
-
-    if tab == 4: # customer labels tab
-        label1 = tk.Label(master=omni_box,
-                        text="Customer Tags")
-        label1.pack()
-
-    if tab == 5: # reports tab
-        label1 = tk.Label(master=omni_box,
-                        text="Reports")
-        label1.pack()
-
-    if tab == 6: # custom labels tab
-        label1 = tk.Label(master=omni_box,
-                        text="Custom Tags")
-        label1.pack()
+            logo_text = tk.Label(omni_box, text="Image is missing", font=("Helvetica",16))
+            logo_text.pack(side=TOP)
 
     # ==========================================
     # =========== short about info =============
@@ -344,7 +324,6 @@ def set_config(tab=""): # additional window with extra info such as print log
 # Currently only applies to single and group tags
 
 def return_key(event = None):
-
     tab_name = frame2.select()
     tab_index = frame2.index(tab_name)
     if tab_index == 0: # single tags
@@ -639,7 +618,8 @@ exit_button.grid(row=10, sticky=EW)
 # ==========================================
 
 tab1.grid_columnconfigure((0,1,2,3),weight=1)
-tab1.grid_rowconfigure((0,1,2,3),weight=1)
+tab1.grid_rowconfigure((0,1,2),weight=1)
+tab1.grid_rowconfigure((3),weight=3)
 
 single_label = tk.Label(master=tab1,
                         textvariable=cfg.asset_type)
@@ -648,11 +628,14 @@ single_label.grid(row=0, column=1, sticky=E)
 single_entry = tk.Entry(master=tab1, bg=cfg.bg_col)
 single_entry.grid(row=0, column=2, sticky=W, padx=10)
 
+single_btn = tk.Button(master=tab1, text="Print", width=10, command=return_key)
+single_btn.grid(row=1, column=1, columnspan=2, sticky=N)
+
 single_descript = tk.Label(master=tab1,
                         text="This will print a single label",
                         font=12,
                         fg="blue")
-single_descript.grid(row=1, column=1, columnspan=2, sticky=N)
+single_descript.grid(row=2, column=1, columnspan=2, sticky=N)
 
 # ==========================================
 # =========== Groups Tab (tab2) ============
@@ -673,12 +656,14 @@ group_entry.pack(side=LEFT, padx=10, pady=(20,0))
 
 group_clear = tk.Button(master=tab2b,
                         text="Clear",
-                        command=clear_group_text)
+                        command=clear_group_text,
+                        width=10)
 group_clear.pack(side=LEFT)
 
 group_print = tk.Button(master=tab2b,
                         text="Print",
-                        command=print_group_text)
+                        command=print_group_text,
+                        width=10)
 group_print.pack(side=LEFT, padx=100)
 
 group_load = tk.Button(master=tab2b,
@@ -735,12 +720,14 @@ range_entry5.grid(row=4, column=1)
 
 range_clear = tk.Button(master=tab3a,
                         text="Clear",
-                        command=clear_range)
+                        command=clear_range,
+                        width=10)
 range_clear.grid(row=5, column=0, pady=(20,0), padx=40, sticky=E)
 
 range_print = tk.Button(master=tab3a,
                         text="Print",
-                        command=print_range)
+                        command=print_range,
+                        width=10)
 range_print.grid(row=5, column=1, pady=(20,0), padx=40, sticky=W)
 
 # ==========================================
@@ -765,12 +752,14 @@ auto_entry2.pack()
 
 auto_clear = tk.Button(master=tab4b,
                         text="Clear",
-                        command=clear_auto)
+                        command=clear_auto,
+                        width=10)
 auto_clear.grid(row=0, column=1, padx=10)
 
 auto_print = tk.Button(master=tab4b,
                         text="Print",
-                        command=print_auto)
+                        command=print_auto,
+                        width=10)
 auto_print.grid(row=0, column=2, padx=10)
 
 warn_label = tk.Label(master=tab4c,
@@ -795,17 +784,20 @@ print_quantity.grid(row=0, column=1, pady=10, padx= 10)
 
 bbc_button = tk.Button(master=tab5,
                         text="BBC",
-                        command=BBC)
+                        command=BBC,
+                        width=15)
 bbc_button.grid(row=2, column=0, pady=10, padx= 10)
 
 ebay_mac_button = tk.Button(master=tab5,
                         text="eBay Mac QR Code",
-                        command=ebay_mac)
+                        command=ebay_mac,
+                        width=15)
 ebay_mac_button.grid(row=3, column=0, pady=10, padx= 10)
 
 ebay_pc_button = tk.Button(master=tab5,
                         text="eBay PC QR Code",
-                        command=ebay_PC)
+                        command=ebay_PC,
+                        width=15)
 ebay_pc_button.grid(row=4, column=0, pady=10, padx= 10)
 
 # ==========================================
@@ -888,22 +880,26 @@ slide2_label.pack(side=RIGHT)
 
 custom_clear = tk.Button(master=tab7b,
                         text="Clear QR Code",
-                        command=clear_custom_qr)
+                        command=clear_custom_qr,
+                        width=15)
 custom_clear.pack(side=LEFT, padx=(40,0))
 
 custom_print = tk.Button(master=tab7b,
                         text="Print one",
-                        command=print_custom_one)
+                        command=print_custom_one,
+                        width=10)
 custom_print.pack(side=LEFT, padx=40)
 
 custom_print_many = tk.Button(master=tab7b,
                         text="Print many",
-                        command=print_custom_many)
+                        command=print_custom_many,
+                        width=10)
 custom_print_many.pack(side=LEFT, padx=0)
 
 custom_load = tk.Button(master=tab7b,
                         text="Clear all",
-                        command=clear_custom)
+                        command=clear_custom,
+                        width=10)
 custom_load.pack(side=LEFT, padx=40)
 
 custom_quantity_label = tk.Label(master=tab7c,
