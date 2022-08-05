@@ -15,9 +15,9 @@ from PIL import Image, ImageWin
 
 def quit(): # simple shutdown of program
     play = randint(0, 20)
-    if play == 5:
+    if play == 1:
         playsound('data/8d82b52.mp3')
-    if play == 10:
+    if play == 2:
         playsound('data/8d82b51.mp3')
     print(play)
     sys.exit()
