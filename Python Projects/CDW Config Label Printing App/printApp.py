@@ -19,7 +19,7 @@ w = 780 # width for the Tk root
 h = 520 # height for the Tk root
 
 # ==========================================
-# =========== 1. Position window ===========
+# ============ Position window =============
 # ==========================================
 
 # get screen width and height
@@ -35,7 +35,11 @@ y = (hs/2) - (h/2)
 self.geometry('%dx%d+%d+%d' % (w, h, x, y))
 self.resizable(False,False)
 
+# ***************************************************************
+# cfg holds global variables. Must import AFTER initiating window
+# ***************************************************************
 import cfg
+
 # ==========================================
 # ================ Variables ===============
 # ==========================================
@@ -160,7 +164,9 @@ tab7ab.pack(anchor=CENTER, expand=False, side=TOP)
 tab7b.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
 tab7c.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
 
-
+# **********************************************
+# import external functions after setting frames
+# **********************************************
 from conFuncs import quit, set_print, BCPrint, print_auto, BBC, ebay_mac, ebay_PC, txtPrint, QRPrint
 
 
@@ -302,7 +308,6 @@ def set_config(tab=""): # additional window with extra info such as print log
                 cfg.range_image = ImageTk.PhotoImage(Image.open("data/reports_helper.jpg").resize((300,400)))
             if tab == 6: # custom labels tab
                 cfg.range_image = ImageTk.PhotoImage(Image.open("data/custom_helper.jpg").resize((300,400)))
-            
             canvas.create_image(0, 0, anchor=NW, image=cfg.range_image)
         except:
             logo_text = tk.Label(omni_box, text="Image is missing", font=("Helvetica",16))
@@ -915,6 +920,32 @@ custom_textbox = tkscrolled.ScrolledText(master=tab7,
                                         width=60,
                                         height=10)
 custom_textbox.pack(side=TOP, padx=5, pady=(10,30))
+
+# =====================================
+# ==== Generate external file list ====
+# =====================================
+# Step 1, add list of files, include short description, '\n' on end to input new line
+files = ""
+files += "data/8d82b51.mp3           # misc audio file\n"
+files += "data/8d82b52.mp3           # misc audio file\n"
+files += "data/bbc.png               # to print the BBC logo\n"
+files += "data/CDW_Logo.png          # display CDW logo in app\n"
+files += "data/cogwheel.png          # settings icon in app\n"
+files += "data/custom_helper.jpg     # Help image for custom tab (300x400)\n"
+files += "data/groups_helper.jpg     # Help image for groups tab (300x400)\n"
+files += "data/range_auto_helper.jpg # Help image for range auto tab (300x400)\n"
+files += "data/range_helper.jpg      # Help image for range tab (300x400)\n"
+files += "data/single_helper.jpg     # Help image for singles tab (300x400)\n"
+files += "data/cust_helper.jpg       # Help image for customer tab (300x400)\n"
+files += "data/reports_helper.jpg    # Help image for reports tab (300x400)\n"
+# Step 2, name your file
+file_list = "data/filelist.txt"
+# Step 3, Open file. "w" sets file to be freshly overwritten
+File1 = open(file_list, "w")
+# Step 4, Save list of files to newly opened file
+File1.write(files)
+# Step 5, close file
+File1.close()
 
 # ==========================================
 # ========= Start up the routine ===========
