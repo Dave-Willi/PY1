@@ -1,3 +1,9 @@
+# pip installs used by this script, incomplete
+# playsound 1.22
+# pillow
+# pywin32
+# configparser
+
 # imports.... so many imports 
 import os
 import subprocess
