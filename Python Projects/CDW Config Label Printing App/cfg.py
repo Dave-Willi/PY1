@@ -1,13 +1,13 @@
 import tkinter as tk
 
-# ============ Variables ============
+# ============ Global Variables ============
 
 range_prefix = tk.StringVar(None, "")
 range_suffix = tk.StringVar(None, "")
 range_start = tk.StringVar(None, "0")
 range_end = tk.StringVar(None, "0")
 printer_select = tk.StringVar(None, "LPT1")
-local_print = tk.StringVar(None, "192.168.8.100")
+local_print = tk.StringVar(None, "127.0.0.1")
 tag_select = tk.IntVar(value=0)
 asset_type = tk.StringVar(None, "Asset Tag :")
 cust_quantity = tk.IntVar(None)
@@ -18,8 +18,8 @@ bg_col = str("white")
 xyz = str(" ")
 flag_1 = int(1)
 range_image = ""
-qr_pos = 380
-qr_mag = 4
+qr_pos = 380 # default QR code position on the X axis
+qr_mag = 4 # default QR magnification. range is 1-10
 
 # ============ Printer Initial Selection ============
 

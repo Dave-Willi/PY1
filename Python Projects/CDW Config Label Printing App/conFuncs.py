@@ -6,19 +6,19 @@ from tkinter import messagebox
 import re
 from time import sleep
 from playsound import playsound
-# import win32print
-# import win32ui
+import win32print
+import win32ui
 from PIL import Image, ImageWin
 
 # ============ Command definitions ============
 # miscellaneous defined commands
 
 def quit(): # simple shutdown of program
-    play = randint(0, 10)
-    if play == 5:
-        playsound('data/8d82b5_Pacman_Dies_Sound_Effect.mp3',False)
-    if play == 10:
-        playsound('data/8d82b5_New_Super_Mario_Bros_Death_Sound_Effect.mp3',False)
+    play = randint(0, 20)
+    if play == 1:
+        playsound('data/8d82b52.mp3')
+    if play == 2:
+        playsound('data/8d82b51.mp3')
     print(play)
     sys.exit()
 
@@ -154,10 +154,10 @@ def imgPrint(code,quant,hist):
     # rezise image to fit on label
     pic = im.resize(newsize)
     # show image
-    pic.show()
+    pic.show() # displays the resized image in the default viewer
     # figure out how to print it instead!!!!
 
-    # the below sends 1 byte to the printer?! It's a zpl emulator so it might be ignoring it
+    # the below sends 1 byte to the printer?! It's a zpl emulator so it might be ignoring it?
 
     printer_name = win32print.GetDefaultPrinter ()
     
@@ -179,20 +179,25 @@ def imgPrint(code,quant,hist):
 
 def to_print(zyx, log):
     host = str(cfg.printer_select.get())
-    if host == "local":
-        host = str(cfg.local_print.get())
     print_me = bytes(zyx, 'utf-8')
     try:
-        if "LPT" in host:
-            sys.stdout = open(host, 'a')
-            sys.stdout = sys.__stdout__
-            history(log)
-            return
-        else:
+        if host == "local":
+            host = str(cfg.local_print.get())
             mysocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
             mysocket.connect((host, cfg.port)) #connecting to host
             mysocket.send(print_me)
             mysocket.close() #closing connection
+            history(log)
+            return
+        else:
+            chisel = open(host, "w")
+            chisel.write(print_me)
+            chisel.close()
+
+            # sys.stdout = open(host, 'w')
+            # print(print_me)
+            # sys.stdout.close()
+            # sys.stdout = sys.__stdout__
             history(log)
             return
     except:
