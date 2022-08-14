@@ -154,10 +154,9 @@ def imgPrint(code,quant,hist):
     # rezise image to fit on label
     pic = im.resize(newsize)
     # show image
-    pic.show() # displays the resized image in the default viewer
-    # figure out how to print it instead!!!!
+    # pic.show() # displays the resized image in the default viewer
 
-    # the below sends 1 byte to the printer?! It's a zpl emulator so it might be ignoring it?
+    # the below sends 1 byte to the zpl emulator printer?! It's a zpl emulator so it might be ignoring it?
 
     printer_name = win32print.GetDefaultPrinter ()
     
@@ -179,9 +178,9 @@ def imgPrint(code,quant,hist):
 
 def to_print(zyx, log):
     host = str(cfg.printer_select.get())
-    print_me = bytes(zyx, 'utf-8')
     try:
         if host == "local":
+            print_me = bytes(zyx, 'utf-8')
             host = str(cfg.local_print.get())
             mysocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
             mysocket.connect((host, cfg.port)) #connecting to host
@@ -190,17 +189,14 @@ def to_print(zyx, log):
             history(log)
             return
         else:
+            print_me = zyx
             chisel = open(host, "w")
             chisel.write(print_me)
             chisel.close()
-
-            # sys.stdout = open(host, 'w')
-            # print(print_me)
-            # sys.stdout.close()
-            # sys.stdout = sys.__stdout__
             history(log)
             return
-    except:
+    except Exception as e:
+        print(e)
         con_error()
         return
 

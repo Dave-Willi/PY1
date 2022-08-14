@@ -1,5 +1,5 @@
 # pip installs used by this script, incomplete
-# playsound 1.22
+# playsound 1.2.2
 # pillow
 # pywin32
 # configparser
@@ -448,9 +448,15 @@ def clear_custom():
     custom_textbox.delete("1.0", END)
 
 def print_custom_one(): # print one custom label
+    print_custom(1)
+    
+def print_custom_many(): # print many custom labels
+    quant = str(cfg.custom_quantity.get())
+    print_custom(quant)
+
+def print_custom(quant):
     cfg.qr_pos = slide1.get()
     cfg.qr_mag = slide2.get()
-    print(cfg.qr_pos)
     customtxt = ()
     txt = custom_textbox.get("1.0", END)
     txt = re.split(", |\n",txt)
@@ -459,32 +465,18 @@ def print_custom_one(): # print one custom label
             continue
         customtxt += (x,)
     qr = custom_qr.get()
-    if qr == "":
-        txtPrint(1,"*custom text label*",*customtxt)
-    else:
-        QRPrint(qr,1,"*custom QR label*",*customtxt)
-
-def print_custom_many(): # print many custom labels
-    cfg.qr_pos = slide1.get()
-    cfg.qr_mag = slide2.get()
-    quant = str(cfg.custom_quantity.get())
-    answer = messagebox.askyesno("Question","This will print " + quant + " labels.\nDo you wish to continue?")
-    if answer == True:
-        customtxt = ()
-        txt = custom_textbox.get("1.0", END)
-        txt = re.split(", |\n",txt)
-        for x in (txt):
-            if x == "":
-                continue
-            customtxt += (x,)
-        qr = custom_qr.get()
+    if quant == 1:
         if qr == "":
-            txtPrint(quant,"*custom text label*",*customtxt)
+            txtPrint(1,"*custom text label*",*customtxt)
         else:
-            QRPrint(qr,quant,"*custom QR label*",*customtxt)
+            QRPrint(qr,1,"*custom QR label*",*customtxt)
     else:
-        messagebox.showinfo("","Printing has been aborted")
-        return
+        answer = messagebox.askyesno("Question","This will print " + quant + " labels.\nDo you wish to continue?")
+        if answer == True:
+            if qr == "":
+                txtPrint(quant,"*custom text label*",*customtxt)
+            else:
+                QRPrint(qr,quant,"*custom QR label*",*customtxt)
 
 def con_update():
     #Read config.ini file
