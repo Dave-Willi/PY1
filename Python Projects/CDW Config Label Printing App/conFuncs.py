@@ -1,3 +1,4 @@
+from logging import exception
 from random import randint
 import socket
 import subprocess
@@ -154,9 +155,10 @@ def imgPrint(code,quant,hist):
     # rezise image to fit on label
     pic = im.resize(newsize)
     # show image
-    # pic.show() # displays the resized image in the default viewer
+    pic.show() # displays the resized image in the default viewer
+    # figure out how to print it instead!!!!
 
-    # the below sends 1 byte to the zpl emulator printer?! It's a zpl emulator so it might be ignoring it?
+    # the below sends 1 byte to the printer?! It's a zpl emulator so it might be ignoring it?
 
     printer_name = win32print.GetDefaultPrinter ()
     
@@ -178,9 +180,9 @@ def imgPrint(code,quant,hist):
 
 def to_print(zyx, log):
     host = str(cfg.printer_select.get())
+    print_me = bytes(zyx, 'utf-8')
     try:
         if host == "local":
-            print_me = bytes(zyx, 'utf-8')
             host = str(cfg.local_print.get())
             mysocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
             mysocket.connect((host, cfg.port)) #connecting to host
@@ -189,14 +191,22 @@ def to_print(zyx, log):
             history(log)
             return
         else:
-            print_me = zyx
-            chisel = open(host, "w")
-            chisel.write(print_me)
-            chisel.close()
-            history(log)
+            try:
+                chisel = open(host, "w")
+                print("1")
+                chisel.write(zyx)
+                print("2")
+                chisel.close()
+                print("3")
+                # sys.stdout = open(host, 'w')
+                # print(print_me)
+                # sys.stdout.close()
+                # sys.stdout = sys.__stdout__
+                history(log)
+            except Exception as e:
+                print(e)
             return
-    except Exception as e:
-        print(e)
+    except:
         con_error()
         return
 
