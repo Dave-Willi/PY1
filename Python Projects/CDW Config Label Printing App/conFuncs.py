@@ -1,12 +1,11 @@
-from logging import exception
 from random import randint
+from playsound import playsound
 import socket
 import subprocess
 import sys
 from tkinter import messagebox
 import re
 from time import sleep
-from playsound import playsound
 import win32print
 import win32ui
 from PIL import Image, ImageWin
@@ -16,11 +15,11 @@ from PIL import Image, ImageWin
 
 def quit(): # simple shutdown of program
     play = randint(0, 20)
+    print(play)
     if play == 1:
         playsound('data/8d82b52.mp3')
     if play == 2:
         playsound('data/8d82b51.mp3')
-    print(play)
     sys.exit()
 
 def con_error(): # connection error
@@ -310,12 +309,14 @@ def BBC():
 def ebay_mac():
     y = str(cfg.cust_quantity.get())
     log = ("*Ebay MAC QR tag* x" + y)
-    cust_print(1,log,"https://azwusenduserguidestorage.blob.core.windows.net/slef-setup-guide/Setup%20Assistant%20-%20Mac.pdf?sp=r&st=2021-07-21T20:03:19Z&se=2022-07-22T04:03:19Z&spr=https&sv=2020-08-04&sr=b&sig=asYaBWQoH1%2FpMQx348TdCyRw6A%2BU8LvqWObiQXSkK4I%3D","eBay MAC","QR Code")
+    qrcode = "https://azwusenduserguidestorage.blob.core.windows.net/slef-setup-guide/Setup%20Assistant%20-%20Mac.pdf?sp=r&st=2021-07-21T20:03:19Z&se=2022-07-22T04:03:19Z&spr=https&sv=2020-08-04&sr=b&sig=asYaBWQoH1%2FpMQx348TdCyRw6A%2BU8LvqWObiQXSkK4I%3D"
+    cust_print(1,log,qrcode,"eBay MAC","QR Code")
 
 def ebay_PC():
     y = str(cfg.cust_quantity.get())
     log = ("*Ebay PC QR tag* x" + y)
-    cust_print(1,log,"https://azwusenduserguidestorage.blob.core.windows.net/slef-setup-guide/Setup%20Assistant%20-%20Windows%20PC.pdf?sp=r&st=2021-07-21T20:04:59Z&se=2022-07-22T04:04:59Z&spr=https&sv=2020-08-04&sr=b&sig=UPuaJt%2BZmcqrG%2BqEx5WNPpGp7BInx0gdsaXQlg%2Be4c8%3D","eBay PC","QR Code")
+    qrcode = "https://azwusenduserguidestorage.blob.core.windows.net/slef-setup-guide/Setup%20Assistant%20-%20Windows%20PC.pdf?sp=r&st=2021-07-21T20:04:59Z&se=2022-07-22T04:04:59Z&spr=https&sv=2020-08-04&sr=b&sig=UPuaJt%2BZmcqrG%2BqEx5WNPpGp7BInx0gdsaXQlg%2Be4c8%3D"
+    cust_print(1,log,qrcode,"eBay PC","QR Code")
 
 # Import cfg last!!
 import cfg
