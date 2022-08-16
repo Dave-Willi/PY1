@@ -46,27 +46,8 @@ self.resizable(False,False)
 # ***************************************************************
 import cfg
 
-# ==========================================
-# ================ Variables ===============
-# ==========================================
-
-# range_prefix = tk.StringVar(None, "")
-# range_suffix = tk.StringVar(None, "")
-# range_start = tk.StringVar(None, "0")
-# range_end = tk.StringVar(None, "0")
-# printer_select = tk.StringVar(None, "LPT1")
-# local_print = tk.StringVar(None, "192.168.8.100")
-# tag_select = tk.IntVar(value=0)
-# asset_type = tk.StringVar(None, "Asset Tag :")
-# cust_quantity = tk.IntVar(None)
-# auto_1 = tk.StringVar(None)
-# auto_2 = tk.StringVar(None)
-# bg_col = str("white")
-# xyz = str(" ")
-# flag_1 = int(1)
-
 def resource_path(relative_path):
-    """ Get absolute path to resource, works for dev and for PyInstaller """
+    # Get absolute path to resource, works for dev and for PyInstaller
     try:
         # PyInstaller creates a temp folder and stores path in _MEIPASS
         base_path = sys._MEIPASS
@@ -74,14 +55,6 @@ def resource_path(relative_path):
         base_path = os.path.abspath(".")
 
     return os.path.join(base_path, relative_path)
-
-# ==========================================
-# ====== Printer Initial Selection =========
-# ==========================================
-
-# host = str(printer_select.get())
-# port = 9100
-
 
 # ==========================================
 # ============ Primary Frames ==============
@@ -439,8 +412,8 @@ def clear_all():
 
 def clear_custom_qr(): # clears the group tab text box
     custom_qr.delete(0, END)
-    slide1.set(380)
-    slide2.set(4)
+    slide1.set(340)
+    slide2.set(2)
 
 def clear_custom():
     clear_custom_qr()
