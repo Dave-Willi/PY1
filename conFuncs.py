@@ -14,7 +14,6 @@ from PIL import Image, ImageWin
 
 def quit(): # simple shutdown of program
     play = randint(0, 20)
-    print(play)
     if play == 1:
         playsound('data/8d82b52.mp3')
     if play == 2:
@@ -22,7 +21,7 @@ def quit(): # simple shutdown of program
     sys.exit()
 
 def con_error(): # connection error
-    print("Print error")
+    messagebox.showerror("Print Error","Something went wrong with your print request")
 
 def set_print(): # attempt to map printers
     answer = messagebox.askyesno("Question", "Attempt to map network printers?")
@@ -179,7 +178,6 @@ def imgPrint(code,quant,hist):
 
 def to_print(zyx, log):
     host = str(cfg.printer_select.get())
-    print_me = bytes(zyx, 'utf-8')
     try:
         chisel = open(host, "w")
         chisel.write(zyx)
@@ -187,6 +185,7 @@ def to_print(zyx, log):
         history(log)
     except Exception as e:
         print(e)
+        con_error()
     return
 
 # ============ Auto Range (Experimental)============
@@ -195,7 +194,7 @@ def print_auto():
     if cfg.auto_1.get() == "" or cfg.auto_2.get() == "":
         return
     if cfg.auto_1.get() == cfg.auto_2.get():
-        messagebox.showerror("Error", "Error, that's the same tag twice")
+        messagebox.showerror("Error", "That's the same tag twice")
         return
     auto_prefix1 = ""
     auto_start = ""
@@ -206,7 +205,7 @@ def print_auto():
     auto_range_split1 = re.split("(\d+)", cfg.auto_1.get())
     auto_range_split2 = re.split("(\d+)", cfg.auto_2.get())
     if len(cfg.auto_1.get()) != len(cfg.auto_2.get()) or len(auto_range_split1) != len(auto_range_split2):
-        messagebox.showerror("Error", "Error, tags don't match")
+        messagebox.showerror("Error", "Tags don't match")
         return
     y = 0
     z = 0
