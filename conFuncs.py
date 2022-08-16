@@ -82,7 +82,7 @@ def txt_import(*more):
 
 def QRPrint(code,quant,hist,*more):
     printing = "^XA" # Start of label
-    printing += "^LH15,0" # Label Home | position of start of label
+    printing += "^LH15,20" # Label Home | position of start of label
     try:
         printing += txt_import(*more)
     except:
@@ -102,7 +102,7 @@ def QRPrint(code,quant,hist,*more):
 
 def txtPrint(quant,hist,*more):
     printing = "^XA" # Start of label
-    printing += "^LH15,0" # Label Home | position of start of label
+    printing += "^LH15,30" # Label Home | position of start of label
     try:
         printing += txt_import(*more)
     except:
@@ -116,7 +116,7 @@ def txtPrint(quant,hist,*more):
 
 def BCPrint(code,quant,hist,sa):
     printing = "^XA" # Start of label
-    printing += "^LH15,0" # Label Home | position of start of label
+    printing += "^LH15,20" # Label Home | position of start of label
     printing += "^FO1,20" # Field position
     printing += "^ASN,25,25" # Font to use for this field | font, orientation, height, width
     printing += "^FD" # Field initiator
@@ -167,7 +167,7 @@ def imgPrint(code,quant,hist):
     hDC.StartPage ()
 
     dib = ImageWin.Dib (pic)
-    dib.draw (hDC.GetHandleOutput (), (0,0,newsize[0],newsize[1]))
+    dib.draw (hDC.GetHandleOutput (), (0,35,newsize[0],newsize[1]+35))
 
     hDC.EndPage ()
     hDC.EndDoc ()

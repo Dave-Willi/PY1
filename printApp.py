@@ -289,7 +289,7 @@ def return_key(event = None):
     if tab_index == 0: # single tags
         if single_entry.get() != "":
             tag_type = cfg.asset_type.get()
-            zplMessage = single_entry.get()
+            zplMessage = (single_entry.get().upper())
             BCPrint(zplMessage,1,zplMessage,tag_type)
             single_entry.delete(0, END)
             single_entry.focus()
@@ -326,7 +326,7 @@ def clear_group_text(): # clears the group tab text box
 def print_group_text(): # print the group text box
     if group_textbox.get("1.0", END) == "\n":
         return
-    group_text = group_textbox.get("1.0", END)
+    group_text = (group_textbox.get("1.0", END).upper())
     group_text = re.split(", |\n| ",group_text) # split and parse the text box into a list
     try:
         while True:
@@ -388,7 +388,7 @@ def clear_all():
 
 def clear_custom_qr(): # clears the group tab text box
     custom_qr.delete(0, END)
-    slide1.set(340)
+    slide1.set(320)
     slide2.set(2)
 
 def clear_custom():

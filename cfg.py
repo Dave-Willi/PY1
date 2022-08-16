@@ -18,7 +18,7 @@ bg_col = str("white")
 xyz = str(" ")
 flag_1 = int(1)
 range_image = ""
-qr_pos = 340 # default QR code position on the X axis
+qr_pos = 320 # default QR code position on the X axis
 qr_mag = 2 # default QR magnification. range is 1-10
 
 # ============ Printer Initial Selection ============
