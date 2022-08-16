@@ -439,8 +439,8 @@ def clear_all():
 
 def clear_custom_qr(): # clears the group tab text box
     custom_qr.delete(0, END)
-    slide1.set(380)
-    slide2.set(4)
+    slide1.set(340)
+    slide2.set(2)
 
 def clear_custom():
     clear_custom_qr()

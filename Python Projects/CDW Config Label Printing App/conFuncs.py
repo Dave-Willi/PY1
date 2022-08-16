@@ -72,7 +72,7 @@ def txt_import(*more):
         font_size = min(round(180/(sub_total)),60)
     txt_printing = ""
     for x in (more):
-        txt_printing += "^CF0," + str(font_size)
+        txt_printing += "^A0N," + str(font_size)
         txt_printing += "^FO10," + str((10+(font_size*index)))
         txt_printing += "^FD"
         txt_printing += str(x)
@@ -121,13 +121,14 @@ def BCPrint(code,quant,hist,sa):
     printing = "^XA" # Start of label
     printing += "^LH15,0" # Label Home | position of start of label
     printing += "^FO1,20" # Field position
-    printing += "^AsN,25,25" # Font to use for this field | font, orientation, height, width
+    printing += "^ASN,25,25" # Font to use for this field | font, orientation, height, width
     printing += "^FD" # Field initiator
     printing += "Device "
     printing += sa # Serial or asset tag
     printing += "^FS" # end of field
     printing += "^FO3,60" # Position of Barcode code
-    printing += "^B3N,N,100,Y,N" # Barcode Initiator | orientation, checkDigit, height, line, lineAbove
+    printing += "^BCN,100,Y,N" # Barcode 'Code 128 Type' Initiator | orientation, height, line, lineAbove
+    # printing += "^B3N,N,100,Y,N" # Barcode 'Code 39 Type' Initiator | orientation, checkDigit, height, line, lineAbove
     printing += "^FD" # Field Initiator
     printing += str(code) # Barcode Entry
     printing += "^FS" # end of field
@@ -193,15 +194,8 @@ def to_print(zyx, log):
         else:
             try:
                 chisel = open(host, "w")
-                print("1")
                 chisel.write(zyx)
-                print("2")
                 chisel.close()
-                print("3")
-                # sys.stdout = open(host, 'w')
-                # print(print_me)
-                # sys.stdout.close()
-                # sys.stdout = sys.__stdout__
                 history(log)
             except Exception as e:
                 print(e)
@@ -316,12 +310,12 @@ def BBC():
 def ebay_mac():
     y = str(cfg.cust_quantity.get())
     log = ("*Ebay MAC QR tag* x" + y)
-    cust_print(1,log,"Hello world","eBay MAC","QR Code")
+    cust_print(1,log,"https://azwusenduserguidestorage.blob.core.windows.net/slef-setup-guide/Setup%20Assistant%20-%20Mac.pdf?sp=r&st=2021-07-21T20:03:19Z&se=2022-07-22T04:03:19Z&spr=https&sv=2020-08-04&sr=b&sig=asYaBWQoH1%2FpMQx348TdCyRw6A%2BU8LvqWObiQXSkK4I%3D","eBay MAC","QR Code")
 
 def ebay_PC():
     y = str(cfg.cust_quantity.get())
     log = ("*Ebay PC QR tag* x" + y)
-    cust_print(1,log,"Bo Derek was here","eBay PC","QR Code")
+    cust_print(1,log,"https://azwusenduserguidestorage.blob.core.windows.net/slef-setup-guide/Setup%20Assistant%20-%20Windows%20PC.pdf?sp=r&st=2021-07-21T20:04:59Z&se=2022-07-22T04:04:59Z&spr=https&sv=2020-08-04&sr=b&sig=UPuaJt%2BZmcqrG%2BqEx5WNPpGp7BInx0gdsaXQlg%2Be4c8%3D","eBay PC","QR Code")
 
 # Import cfg last!!
 import cfg
