@@ -220,31 +220,7 @@ def set_config(tab=""): # additional window with extra info such as print log
 
     # Fill the config window with stuff
     if tab == "":
-        # ==========================================
-        # ====== Display config file contents ======
-        # ==========================================
-
-        # label2 = tk.Label(omni_box,
-        #                 text="Settings saved in the config file")
-        # label2.pack(side=TOP)                    
-
-        # config_text = tk.Text(omni_box, wrap=WORD, width=34, height=7, state=DISABLED)
-        # config_text.pack(side=TOP, padx=5, pady=(0,10))
-
-        # try: # If the file doesn't exist 
-        #     File1 = "data/con_print.ini"
-        #     File2 = open(File1, "r")
-        #     config_text.config(state=NORMAL)
-        #     config_text.insert("1.0", File2.read())
-        #     config_text.config(state=DISABLED)
-        #     File2.close()
-        # except: # create a fresh file and restart the config window in one smooth action
-        #     File1 = "data/con_print.ini"
-        #     File2 = open(File1, "w")
-        #     File2.close()
-        #     kill_me()
-        #     set_config()
-
+        
         # =======================================================
         # ===== Display last 100 tags printed from log file =====
         # =======================================================

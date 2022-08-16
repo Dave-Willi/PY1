@@ -154,7 +154,7 @@ def imgPrint(code,quant,hist):
     # rezise image to fit on label
     pic = im.resize(newsize)
     # show image
-    pic.show() # displays the resized image in the default viewer
+    # pic.show() # displays the resized image in the default viewer
     # figure out how to print it instead!!!!
 
     # the below sends 1 byte to the printer?! It's a zpl emulator so it might be ignoring it?
