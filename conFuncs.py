@@ -94,6 +94,7 @@ def QRPrint(code,quant,hist,*more):
     printing += "^FS" # end of field
     printing += "^PQ" # Print quantity
     printing += str(quant) # Selected quantity
+    printing += "^BQ,,3"
     printing += "^XZ" # End of label
     to_print(printing,hist)
 
@@ -159,19 +160,21 @@ def imgPrint(code,quant,hist):
     # the below sends 1 byte to the printer?! It's a zpl emulator so it might be ignoring it?
 
     printer_name = win32print.GetDefaultPrinter ()
-    
-    hDC = win32ui.CreateDC ()
-    hDC.CreatePrinterDC (printer_name)
+    for x in range(quant):
+        hDC = win32ui.CreateDC ()
+        hDC.CreatePrinterDC (printer_name)
 
-    hDC.StartDoc (code)
-    hDC.StartPage ()
+        hDC.StartDoc (code)
+        hDC.StartPage ()
 
-    dib = ImageWin.Dib (pic)
-    dib.draw (hDC.GetHandleOutput (), (0,35,newsize[0],newsize[1]+35))
+        dib = ImageWin.Dib (pic)
+        dib.draw (hDC.GetHandleOutput (), (0,35,newsize[0],newsize[1]+35))
 
-    hDC.EndPage ()
-    hDC.EndDoc ()
-    hDC.DeleteDC ()
+        hDC.EndPage ()
+        hDC.EndDoc ()
+        hDC.DeleteDC ()
+    else:
+        history(hist)
 
 # ========== to_print ==========
 # 2x parameters = zpl code + log
@@ -250,7 +253,7 @@ def print_auto():
                 y = str(x).zfill(lead_zeros)
                 log = prefixed + y + suffixed
                 BCPrint(log,1,log,"Asset Tag")
-                sleep(0.7)
+                sleep(0.3)
         else:
             messagebox.showinfo("","Printing has been aborted")
             return

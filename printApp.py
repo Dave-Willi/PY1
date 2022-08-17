@@ -1,4 +1,6 @@
-# pip installs used by this script, incomplete
+############
+# pip installs used by this script
+############
 # playsound 1.2.2
 # pillow
 # pywin32
@@ -345,7 +347,7 @@ def print_group_text(): # print the group text box
             tag_type = cfg.asset_type.get()
             y = x
             BCPrint(y,1,y,tag_type)
-            sleep(0.7) # sending the commands too quickly will have some disappear.. probably
+            sleep(0.3) # sending the commands too quickly will have some disappear.. probably
         clear_group_text()
         return
     else:
@@ -375,7 +377,7 @@ def print_range():
             y = str(x).zfill(lead_zeros)
             log = prefixed + y + suffixed
             BCPrint(log,1,log,"Asset Tag")
-            sleep(0.7)    
+            sleep(0.3)
         clear_range()
     else:
         messagebox.showinfo("","Printing has been aborted")
