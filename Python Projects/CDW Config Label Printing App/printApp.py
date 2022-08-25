@@ -1,17 +1,20 @@
-# pip installs used by this script, incomplete
-# playsound 1.2.2
+############
+# pip installs used by this script
+############
+# playsound 1.2.2 (newer versions are broken!)
 # pillow
 # pywin32
 # configparser
 
 # imports.... so many imports 
+
 import os
 import subprocess
 import sys
 import tkinter as tk
 from tkinter import *
 from tkinter import messagebox, filedialog
-from tkinter.ttk import Notebook
+from tkinter.ttk import Notebook, Style
 from PIL import Image, ImageTk
 from configparser import ConfigParser
 import tkinter.scrolledtext as tkscrolled
@@ -21,8 +24,8 @@ from time import sleep
 self = tk.Tk()
 self.title("Config printing app")
 
-w = 780 # width for the Tk root
-h = 520 # height for the Tk root
+w = 1080 # width for the Tk root
+h = 720 # height for the Tk root
 
 # ==========================================
 # ============ Position window =============
@@ -40,6 +43,10 @@ y = (hs/2) - (h/2)
 # and where it is placed
 self.geometry('%dx%d+%d+%d' % (w, h, x, y))
 self.resizable(False,False)
+
+self.iconphoto(False, tk.PhotoImage(file='data/CDW_icon.png'))
+# Set default font style for MOST widgets, don't not effect notebook tabs and maybe more
+self.option_add( "*font", "aerial 14" )
 
 # ***************************************************************
 # cfg holds global variables. Must import AFTER initiating window
@@ -65,7 +72,7 @@ def resource_path(relative_path):
 # Body is split into 2x1 = frame1, frame2
 
 frametop = tk.Frame(self,
-                    height=100,
+                    height=120,
                     width=780)
 frametop.pack(side=TOP, fill=X, expand=False)
 
@@ -100,6 +107,20 @@ frame1.grid_rowconfigure((3,4,8), weight=8)
 frame1.grid_columnconfigure(0, weight=1)
 
 
+# Creates a style for use on the notebook tabs
+Mysky = "#DCF0F2"
+Myyellow = "#F2C88B"
+style = Style()
+style.theme_create( "dummy", parent="alt", settings={
+        "TNotebook": {"configure": {"tabmargins": [2, 5, 2, 0] } },
+        "TNotebook.Tab": {
+            "configure": {"padding": [5, 1], "background": Mysky,
+                            "font":("aerial",12)},
+            "map":       {"background": [("selected", Myyellow)],
+                          "expand": [("selected", [1, 1, 1, 0])], } } } )
+style.theme_use("dummy")
+
+
 # ==========================================
 # ================= Tabs ===================
 # ==========================================
@@ -123,13 +144,13 @@ tab7aa = tk.Frame(tab7)
 tab7ab = tk.Frame(tab7)
 tab7b = tk.Frame(tab7)
 tab7c = tk.Frame(tab7)
-frame2.add(tab1, text = "Singles")
-frame2.add(tab2, text = "Groups")
-frame2.add(tab3, text = "Range")
-frame2.add(tab4, text = "Range (Auto)")
-frame2.add(tab5, text = "Customer Labels")
-frame2.add(tab6, text = "Reports", state=DISABLED)
-frame2.add(tab7, text = "Custom Labels")
+frame2.add(tab1, text = "     Singles     ")
+frame2.add(tab2, text = "     Groups      ")
+frame2.add(tab3, text = "     Range       ")
+frame2.add(tab4, text = "   Range (Auto)  ")
+frame2.add(tab5, text = " Customer Labels ")
+# frame2.add(tab6, text = "     Reports     ", state=DISABLED)
+frame2.add(tab7, text = "  Custom Labels  ")
 
 tab2a.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
 tab2b.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
@@ -146,7 +167,7 @@ tab7c.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
 # **********************************************
 # import external functions after setting frames
 # **********************************************
-from conFuncs import quit, set_print, BCPrint, print_auto, BBC, ebay_mac, ebay_PC, txtPrint, QRPrint
+from conFuncs import quit, set_print, BCPrint, print_auto, BBC, ebay_mac, ebay_PC, txtPrint, QRPrint, ctrl_p
 
 
 # ==========================================
@@ -199,15 +220,15 @@ def set_config(tab=""): # additional window with extra info such as print log
     def kill_me(): # closes the extra window
         omni_box.destroy()
 
-    w = 300 # width for the Tk root
-    h = 500 # height for the Tk root
+    w = 350 # width for the Tk root
+    h = 740 # height for the Tk root
 
     # get screen width and height
     ws = self.winfo_screenwidth() # width of the screen
     hs = self.winfo_screenheight() # height of the screen
 
     # calculate x and y coordinates for the Tk root window
-    x = (ws/2) + (400)
+    x = (ws/2) + (550)
     y = (hs/2) - (h/2)
 
     # set the dimensions of the screen 
@@ -220,31 +241,7 @@ def set_config(tab=""): # additional window with extra info such as print log
 
     # Fill the config window with stuff
     if tab == "":
-        # ==========================================
-        # ====== Display config file contents ======
-        # ==========================================
-
-        label2 = tk.Label(omni_box,
-                        text="Settings saved in the config file")
-        label2.pack(side=TOP)                    
-
-        config_text = tk.Text(omni_box, wrap=WORD, width=34, height=7, state=DISABLED)
-        config_text.pack(side=TOP, padx=5, pady=(0,10))
-
-        try: # If the file doesn't exist 
-            File1 = "data/con_print.ini"
-            File2 = open(File1, "r")
-            config_text.config(state=NORMAL)
-            config_text.insert("1.0", File2.read())
-            config_text.config(state=DISABLED)
-            File2.close()
-        except: # create a fresh file and restart the config window in one smooth action
-            File1 = "data/con_print.ini"
-            File2 = open(File1, "w")
-            File2.close()
-            kill_me()
-            set_config()
-
+        
         # =======================================================
         # ===== Display last 100 tags printed from log file =====
         # =======================================================
@@ -253,7 +250,7 @@ def set_config(tab=""): # additional window with extra info such as print log
                         text="The last 1000 tags you printed")
         label3.pack(side=TOP)  
 
-        log_text = tkscrolled.ScrolledText(omni_box, wrap=WORD, width=32, height=15, state=DISABLED)
+        log_text = tkscrolled.ScrolledText(omni_box, wrap=WORD, width=32, height=24, state=DISABLED)
         log_text.pack(side=TOP, padx=5)
 
         try: # If the file doesn't exist 
@@ -313,7 +310,7 @@ def return_key(event = None):
     if tab_index == 0: # single tags
         if single_entry.get() != "":
             tag_type = cfg.asset_type.get()
-            zplMessage = single_entry.get()
+            zplMessage = (single_entry.get().upper())
             BCPrint(zplMessage,1,zplMessage,tag_type)
             single_entry.delete(0, END)
             single_entry.focus()
@@ -350,7 +347,7 @@ def clear_group_text(): # clears the group tab text box
 def print_group_text(): # print the group text box
     if group_textbox.get("1.0", END) == "\n":
         return
-    group_text = group_textbox.get("1.0", END)
+    group_text = (group_textbox.get("1.0", END).upper())
     group_text = re.split(", |\n| ",group_text) # split and parse the text box into a list
     try:
         while True:
@@ -369,7 +366,7 @@ def print_group_text(): # print the group text box
             tag_type = cfg.asset_type.get()
             y = x
             BCPrint(y,1,y,tag_type)
-            sleep(0.7) # sending the commands too quickly will have some disappear.. probably
+            sleep(0.3) # sending the commands too quickly will have some disappear.. probably
         clear_group_text()
         return
     else:
@@ -399,7 +396,7 @@ def print_range():
             y = str(x).zfill(lead_zeros)
             log = prefixed + y + suffixed
             BCPrint(log,1,log,"Asset Tag")
-            sleep(0.7)    
+            sleep(0.3)
         clear_range()
     else:
         messagebox.showinfo("","Printing has been aborted")
@@ -462,7 +459,6 @@ def con_update():
     printer = config_object["PRINTER"]
     #Update the printer
     printer["printer_select"] = cfg.printer_select.get()
-    printer["local_print"] = cfg.local_print.get()
     #Get the TAG-TYPE section
     tag = config_object["TAG-TYPE"]
     #Update the tag
@@ -490,8 +486,6 @@ try:
     # parse the settings
     print_1 = str(format(printer["printer_select"]))
     cfg.printer_select.set(print_1)
-    local_1 = str(format(printer["local_print"]))
-    cfg.local_print.set(local_1)
     tag_1 = int(tag["tag_select"])
     cfg.tag_select.set(tag_1)
     flag_1a = int(flag["flag_1"]) # 1 = Config, 2 = Mezz, 0 = Technician
@@ -501,8 +495,7 @@ except:
     #Get the configparser object and create file
     config_object = ConfigParser()
     config_object["PRINTER"] = {
-        "printer_select": cfg.printer_select.get(),
-        "local_print": cfg.local_print.get()}
+        "printer_select": cfg.printer_select.get()}
     config_object["TAG-TYPE"] = {
         "tag_select": cfg.tag_select.get()}
     config_object["FLAGS"] = {
@@ -521,7 +514,7 @@ try:
 except:
     logo_text = tk.Label(frametop1, text="CDW", font=("Helvetica",20))
     logo_text.pack(side=LEFT, anchor=W, padx=10, pady=10)
-app_title = tk.Label(frametop2, text="Config General Printing Application", font=("Helvetica",25)).pack(side=TOP)
+app_title = tk.Label(frametop2, text="Config General Printing Application", font=("Helvetica",30)).pack(side=TOP)
 help_button = tk.Button(master=frametop3, text="?", font=('Helvetica',20), command=help_me).pack(padx=(0,10))
 try:
     cog_icon = ImageTk.PhotoImage(Image.open("data/cogwheel.png").resize((25, 25)))
@@ -552,13 +545,6 @@ mezz_print_button = tk.Radiobutton(master=frame1,
                     command=con_update)
 mezz_print_button.grid(row=2, sticky=W)
 
-test_print_button = tk.Radiobutton(master=frame1, # test print button. Remove for final release
-                    text="Test Printer",
-                    value="local",
-                    variable=cfg.printer_select,
-                    command=con_update)
-test_print_button.grid(row=3, sticky=W)
-
 set_printer_btn = tk.Button(master=frame1,
                     text="Map Printers",
                     command=set_print)
@@ -581,11 +567,6 @@ set_serial_button = tk.Radiobutton(master=frame1,
                     value=1,
                     command=set_tag)
 set_serial_button.grid(row=7, sticky=W)
-
-reset_button = tk.Button(master=frame1, # restart app button, can be removed for final release
-                    text="Restart App",
-                    command=reset)
-reset_button.grid(row=9, sticky=EW)
 
 exit_button = tk.Button(master=frame1,
                     text="Quit",
@@ -755,28 +736,28 @@ print_quantity_label = tk.Label(master=tab5,
                             font=12,
                             fg="blue",
                             text="Enter quantity of labels required")
-print_quantity_label.grid(row=0, column=0, pady=20, padx= 10)
+print_quantity_label.grid(row=0, column=1, pady=20, padx= 10)
 
 print_quantity = tk.Spinbox(master=tab5, from_=1, to=9999,
                             textvariable=cfg.cust_quantity)
-print_quantity.grid(row=0, column=1, pady=10, padx= 10)
+print_quantity.grid(row=0, column=2, pady=10, padx= 10)
 
 bbc_button = tk.Button(master=tab5,
                         text="BBC",
                         command=BBC,
-                        width=15)
+                        width=20)
 bbc_button.grid(row=2, column=0, pady=10, padx= 10)
 
 ebay_mac_button = tk.Button(master=tab5,
                         text="eBay Mac QR Code",
                         command=ebay_mac,
-                        width=15)
+                        width=20)
 ebay_mac_button.grid(row=3, column=0, pady=10, padx= 10)
 
 ebay_pc_button = tk.Button(master=tab5,
-                        text="eBay PC QR Code",
+                        text="eBay Windows QR Code",
                         command=ebay_PC,
-                        width=15)
+                        width=20)
 ebay_pc_button.grid(row=4, column=0, pady=10, padx= 10)
 
 # ==========================================
@@ -845,7 +826,7 @@ slide1_label = tk.Label(master=tab7aa,
                         text="QR position: ")
 slide1_label.pack(side=LEFT)
 
-slide1 = Scale(tab7aa, from_=200, to=400, orient=HORIZONTAL, length=250)
+slide1 = Scale(tab7aa, from_=320, to=380, orient=HORIZONTAL, length=250)
 slide1.set(cfg.qr_pos)
 slide1.pack(side=LEFT)
 
@@ -886,7 +867,7 @@ custom_quantity_label = tk.Label(master=tab7c,
 custom_quantity_label.pack(padx=10, side=LEFT)
 
 custom_quantity = tk.Spinbox(master=tab7c, from_=1, to=9999,
-                            textvariable=cfg.custom_quantity)
+                            textvariable=cfg.cust_quantity)
 custom_quantity.pack(padx=10, side=LEFT)
 
 custom_textbox = tkscrolled.ScrolledText(master=tab7,
@@ -900,18 +881,19 @@ custom_textbox.pack(side=TOP, padx=5, pady=(10,30))
 # =====================================
 # Step 1, add list of files, include short description, '\n' on end to input new line
 files = ""
+files += "data/8dheowme.mp3          # misc audio file\n"
 files += "data/8d82b51.mp3           # misc audio file\n"
 files += "data/8d82b52.mp3           # misc audio file\n"
 files += "data/bbc.png               # to print the BBC logo\n"
 files += "data/CDW_Logo.png          # display CDW logo in app\n"
 files += "data/cogwheel.png          # settings icon in app\n"
-files += "data/custom_helper.jpg     # Help image for custom tab (300x400)\n"
-files += "data/groups_helper.jpg     # Help image for groups tab (300x400)\n"
-files += "data/range_auto_helper.jpg # Help image for range auto tab (300x400)\n"
-files += "data/range_helper.jpg      # Help image for range tab (300x400)\n"
-files += "data/single_helper.jpg     # Help image for singles tab (300x400)\n"
-files += "data/cust_helper.jpg       # Help image for customer tab (300x400)\n"
-files += "data/reports_helper.jpg    # Help image for reports tab (300x400)\n"
+files += "data/custom_helper.jpg     # Help image for custom tab (320x600)\n"
+files += "data/groups_helper.jpg     # Help image for groups tab (320x600)\n"
+files += "data/range_auto_helper.jpg # Help image for range auto tab (320x600)\n"
+files += "data/range_helper.jpg      # Help image for range tab (320x600)\n"
+files += "data/single_helper.jpg     # Help image for singles tab (320x600)\n"
+files += "data/cust_helper.jpg       # Help image for customer tab (320x600)\n"
+files += "data/reports_helper.jpg    # Help image for reports tab (320x600)\n"
 # Step 2, name your file
 file_list = "data/filelist.txt"
 # Step 3, Open file. "w" sets file to be freshly overwritten
@@ -930,4 +912,6 @@ try:
 except:
     pass
 self.bind('<Return>', return_key)
+self.bind('<Control-p>', ctrl_p)
+self.bind('<Control-P>', ctrl_p)
 self.mainloop()

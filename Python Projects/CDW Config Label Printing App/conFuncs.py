@@ -1,3 +1,4 @@
+from logging import exception
 from random import randint
 from playsound import playsound
 import socket
@@ -5,7 +6,6 @@ import subprocess
 import sys
 from tkinter import messagebox
 import re
-from time import sleep
 import win32print
 import win32ui
 from PIL import Image, ImageWin
@@ -13,9 +13,37 @@ from PIL import Image, ImageWin
 # ============ Command definitions ============
 # miscellaneous defined commands
 
+def ctrl_p(event):
+    try:
+        if cfg.pCounter == 0:
+            messagebox.showinfo("Ctrl+P","I wouldn't do that if I were you")
+            cfg.pCounter += 1
+            return
+        elif cfg.pCounter == 1:
+            messagebox.showinfo("Ctrl+P","I'm warning you to not keep trying that!")
+            cfg.pCounter += 1
+            return
+        elif cfg.pCounter == 2:
+            messagebox.showinfo("Ctrl+P","Are you trying to upset me?")
+            cfg.pCounter += 1
+            return
+        elif cfg.pCounter == 3:
+            messagebox.showinfo("Ctrl+P","This is your last chance to turn back!")
+            cfg.pCounter += 1
+            return
+        elif cfg.pCounter == 4:
+            messagebox.showinfo("Ctrl+P","You're really doing this?")
+            cfg.pCounter += 1
+            return
+        elif cfg.pCounter == 5:
+            messagebox.showinfo("Ctrl+P","Fine, be that way. Don't say I didn't warn you")
+            playsound("data/8dheowme.mp3")
+            return
+    except exception as e:
+        print(e)
+
 def quit(): # simple shutdown of program
     play = randint(0, 20)
-    print(play)
     if play == 1:
         playsound('data/8d82b52.mp3')
     if play == 2:
@@ -66,7 +94,7 @@ def txt_import(*more):
     try:
         font_size_max = max(more, key=len)
         txt_length = len(font_size_max)
-        font_size = min(round(180/(sub_total)),round(750/txt_length),60)
+        font_size = min(round(180/(sub_total)),round(640/txt_length),60)
     except:
         font_size = min(round(180/(sub_total)),60)
     txt_printing = ""
@@ -126,8 +154,8 @@ def BCPrint(code,quant,hist,sa):
     printing += sa # Serial or asset tag
     printing += "^FS" # end of field
     printing += "^FO3,60" # Position of Barcode code
-    printing += "^BCN,100,Y,N" # Barcode 'Code 128 Type' Initiator | orientation, height, line, lineAbove
-    # printing += "^B3N,N,100,Y,N" # Barcode 'Code 39 Type' Initiator | orientation, checkDigit, height, line, lineAbove
+    # printing += "^BCN,100,Y,N" # Barcode 'Code 128 Type' Initiator | orientation, height, line, lineAbove
+    printing += "^B3N,N,100,Y,N" # Barcode 'Code 39 Type' Initiator | orientation, checkDigit, height, line, lineAbove
     printing += "^FD" # Field Initiator
     printing += str(code) # Barcode Entry
     printing += "^FS" # end of field
@@ -155,7 +183,7 @@ def imgPrint(code,quant,hist):
     # rezise image to fit on label
     pic = im.resize(newsize)
     # show image
-    pic.show() # displays the resized image in the default viewer
+    # pic.show() # displays the resized image in the default viewer
     # figure out how to print it instead!!!!
 
     # the below sends 1 byte to the printer?! It's a zpl emulator so it might be ignoring it?
@@ -164,16 +192,18 @@ def imgPrint(code,quant,hist):
     
     hDC = win32ui.CreateDC ()
     hDC.CreatePrinterDC (printer_name)
-
+    y = int(quant)
+    x = 0
     hDC.StartDoc (code)
-    hDC.StartPage ()
-
-    dib = ImageWin.Dib (pic)
-    dib.draw (hDC.GetHandleOutput (), (0,0,newsize[0],newsize[1]))
-
-    hDC.EndPage ()
+    while x < y: # Loop the print for to match the quantity.
+        hDC.StartPage ()
+        dib = ImageWin.Dib (pic)
+        dib.draw (hDC.GetHandleOutput (), (0,0,newsize[0],newsize[1]))
+        hDC.EndPage ()
+        x += 1
     hDC.EndDoc ()
     hDC.DeleteDC ()
+    
 
 # ========== to_print ==========
 # 2x parameters = zpl code + log
@@ -265,7 +295,6 @@ def print_auto():
                 y = str(x).zfill(lead_zeros)
                 log = prefixed + y + suffixed
                 BCPrint(log,1,log,"Asset Tag")
-                sleep(0.7)
         else:
             messagebox.showinfo("","Printing has been aborted")
             return
@@ -286,7 +315,7 @@ def cust_print(type,hist,code,*txt):
         except:
             return
     else:
-        messagebox.showinfo("","Printing has been aborted")
+        messagebox.showinfo("Cancelled","Printing has been aborted")
         return
 
 # ==========================================    
@@ -314,9 +343,9 @@ def ebay_mac():
 
 def ebay_PC():
     y = str(cfg.cust_quantity.get())
-    log = ("*Ebay PC QR tag* x" + y)
+    log = ("*Ebay Windows QR tag* x" + y)
     qrcode = "https://azwusenduserguidestorage.blob.core.windows.net/slef-setup-guide/Setup%20Assistant%20-%20Windows%20PC.pdf?sp=r&st=2021-07-21T20:04:59Z&se=2022-07-22T04:04:59Z&spr=https&sv=2020-08-04&sr=b&sig=UPuaJt%2BZmcqrG%2BqEx5WNPpGp7BInx0gdsaXQlg%2Be4c8%3D"
-    cust_print(1,log,qrcode,"eBay PC","QR Code")
+    cust_print(1,log,qrcode,"eBay Windows","QR Code")
 
 # Import cfg last!!
 import cfg
