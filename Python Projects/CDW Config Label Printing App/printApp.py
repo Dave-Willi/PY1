@@ -43,8 +43,10 @@ y = (hs/2) - (h/2)
 # and where it is placed
 self.geometry('%dx%d+%d+%d' % (w, h, x, y))
 self.resizable(False,False)
-
-self.iconphoto(False, tk.PhotoImage(file='data/CDW_icon.png'))
+try:
+    self.iconphoto(False, tk.PhotoImage(file='data/CDW_icon.png'))
+except:
+    pass
 # Set default font style for MOST widgets, don't not effect notebook tabs and maybe more
 self.option_add( "*font", "aerial 14" )
 
