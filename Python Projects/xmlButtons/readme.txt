@@ -1,6 +1,7 @@
 External file will need :-
 
 button name = BBC Logo, eBay Windows QR Code
+frame = frame label to place button (tab5 is default)
 History name = *BBC Tag*, *Ebay MAC QR tag*
 type of label to print = 
 			label type = 0 plain text label e.g. (0,"plain tag","","Hello World")

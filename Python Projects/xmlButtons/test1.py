@@ -11,4 +11,15 @@ from configparser import ConfigParser
 root = tk.Tk()
 root.title("XML Import Test")
 
+class button:
+    def __init__(self, name, frame, history, type, code, *text):
+        self.name = name
+        self.frame = frame
+        self.history = history
+        self.type = type
+        self.code = code
+        self.text = text
+
+ConfigParser
+
 root.mainloop()
