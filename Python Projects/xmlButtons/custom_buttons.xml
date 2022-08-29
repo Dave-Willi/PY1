@@ -1,13 +1,359 @@
+[DEFAULT]
+button_name = 
+frame = 
+history = 
+type = 
+code = 
+text = 
+
 [BBC]
-button_name = "BBC"
-history = "BBC Tag"
+button_name = BBC
+frame = root.tab5
+history = BBC Tag
 type = 3
-code = "data/bbc.png"
-text = ""
+code = data/bbc.png
+text = 
 
 [ebay_mac]
-button_name = "ebay mac"
-history = "ebay mac qr"
+button_name = eBay MAC QR Code
+frame = root.tab5
+history = ebay mac qr
 type = 1
-code = "https://azwusenduserguidestorage.blob.core.windows.net/slef-setup-guide/Setup%20Assistant%20-%20Mac.pdf"
-text = "eBay MAC","QR Code"
+code = https://azwusenduserguidestorage.blob.core.windows.net/slef-setup-guide/Setup Assistant - Mac.pdf
+text = eBay MAC','QR Code
+
+[Pineapple]
+button_name = Pineapple
+frame = root.tab5
+history = Pineapple
+type = 2
+code = iHaveAPineapple
+text = Asset Tag
+
+[apple]
+button_name = Apple
+frame = root.tab5
+history = Apple
+type = 2
+code = IHaveAPen
+text = Serial Number
+
+[pen]
+button_name = Pen
+frame = tab5
+history = Pen
+type = 0
+code = 
+text = I have a pineapple pen
+
+[pen2]
+button_name = Pen
+frame = tab5
+history = Pen
+type = 0
+code = 
+text = I have a pineapple pen
+
+[pen3]
+button_name = Pen
+frame = tab5
+history = Pen
+type = 0
+code = 
+text = I have a pineapple pen
+
+[pen4]
+button_name = Pen
+frame = tab5
+history = Pen
+type = 0
+code = 
+text = I have a pineapple pen
+
+[pen5]
+button_name = Pen
+frame = tab5
+history = Pen
+type = 0
+code = 
+text = I have a pineapple pen
+
+[pen6]
+button_name = Pen
+frame = tab5
+history = Pen
+type = 0
+code = 
+text = I have a pineapple pen
+
+[pen7]
+button_name = Pen
+frame = tab5
+history = Pen
+type = 0
+code = 
+text = I have a pineapple pen
+
+[pen8]
+button_name = Pen
+frame = tab5
+history = Pen
+type = 0
+code = 
+text = I have a pineapple pen
+
+[pen9]
+button_name = Pen
+frame = tab5
+history = Pen
+type = 0
+code = 
+text = I have a pineapple pen
+
+[pen10]
+button_name = Pen
+frame = tab5
+history = Pen
+type = 0
+code = 
+text = I have a pineapple pen
+
+[pen11]
+button_name = Pen
+frame = tab5
+history = Pen
+type = 0
+code = 
+text = I have a pineapple pen
+
+[pen12]
+button_name = Pen
+frame = tab5
+history = Pen
+type = 0
+code = 
+text = I have a pineapple pen
+
+[pen13]
+button_name = Pen
+frame = tab5
+history = Pen
+type = 0
+code = 
+text = I have a pineapple pen
+
+[pen14]
+button_name = Pen
+frame = tab5
+history = Pen
+type = 0
+code = 
+text = I have a pineapple pen
+
+[pen15]
+button_name = Pen
+frame = tab5
+history = Pen
+type = 0
+code = 
+text = I have a pineapple pen
+
+[pen16]
+button_name = Pen
+frame = tab5
+history = Pen
+type = 0
+code = 
+text = I have a pineapple pen
+
+[pen17]
+button_name = Pen
+frame = tab5
+history = Pen
+type = 0
+code = 
+text = I have a pineapple pen
+
+[pen18]
+button_name = Pen
+frame = tab5
+history = Pen
+type = 0
+code = 
+text = I have a pineapple pen
+
+[pen19]
+button_name = Pen
+frame = tab5
+history = Pen
+type = 0
+code = 
+text = I have a pineapple pen
+
+[pen20]
+button_name = Pen
+frame = tab5
+history = Pen
+type = 0
+code = 
+text = I have a pineapple pen
+
+[pen21]
+button_name = Pen
+frame = tab5
+history = Pen
+type = 0
+code = 
+text = I have a pineapple pen
+
+[pen22]
+button_name = Pen
+frame = tab5
+history = Pen
+type = 0
+code = 
+text = I have a pineapple pen
+
+[pen23]
+button_name = Pen
+frame = tab5
+history = Pen
+type = 0
+code = 
+text = I have a pineapple pen
+
+[pen24]
+button_name = Pen
+frame = tab5
+history = Pen
+type = 0
+code = 
+text = I have a pineapple pen
+
+[pen25]
+button_name = Pen
+frame = tab5
+history = Pen
+type = 0
+code = 
+text = I have a pineapple pen
+
+[pen26]
+button_name = Pen
+frame = tab5
+history = Pen
+type = 0
+code = 
+text = I have a pineapple pen
+
+[pen27]
+button_name = Pen
+frame = tab5
+history = Pen
+type = 0
+code = 
+text = I have a pineapple pen
+
+[pen28]
+button_name = Pen
+frame = tab5
+history = Pen
+type = 0
+code = 
+text = I have a pineapple pen
+
+[pen29]
+button_name = Pen
+frame = tab5
+history = Pen
+type = 0
+code = 
+text = I have a pineapple pen
+
+[pen30]
+button_name = Pen
+frame = tab5
+history = Pen
+type = 0
+code = 
+text = I have a pineapple pen
+
+[pen31]
+button_name = Pen
+frame = tab5
+history = Pen
+type = 0
+code = 
+text = I have a pineapple pen
+
+[pen32]
+button_name = Pen
+frame = tab5
+history = Pen
+type = 0
+code = 
+text = I have a pineapple pen
+
+[pen33]
+button_name = Pen
+frame = tab5
+history = Pen
+type = 0
+code = 
+text = I have a pineapple pen
+
+[pen34]
+button_name = Pen
+frame = tab5
+history = Pen
+type = 0
+code = 
+text = I have a pineapple pen
+
+[pen35]
+button_name = Pen
+frame = tab5
+history = Pen
+type = 0
+code = 
+text = I have a pineapple pen
+
+[pen36]
+button_name = Pen
+frame = tab5
+history = Pen
+type = 0
+code = 
+text = I have a pineapple pen
+
+[pen37]
+button_name = Pen
+frame = tab5
+history = Pen
+type = 0
+code = 
+text = I have a pineapple pen
+
+[pen38]
+button_name = Pen
+frame = tab5
+history = Pen
+type = 0
+code = 
+text = I have a pineapple pen
+
+[pen39]
+button_name = Pen
+frame = tab5
+history = Pen
+type = 0
+code = 
+text = I have a pineapple pen
+
+[pen40]
+button_name = Pen
+frame = tab5
+history = Pen
+type = 0
+code = 
+text = I have a pineapple pen

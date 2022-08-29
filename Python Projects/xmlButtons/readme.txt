@@ -15,16 +15,18 @@ Optional additional text for label = eBay Windows, QR Code
 Example of file
 
 [BBC]
-button_name = "BBC"
-history = "BBC Tag"
+button_name = BBC
+frame = root.tab5
+history = BBC Tag
 type = 3
-code = "data/bbc.png"
-text = ""
+code = data/bbc.png
+text = 
 
 [ebay_mac]
-button_name = "ebay mac"
-history = "ebay mac qr"
+button_name = eBay MAC QR Code
+frame = root.tab5
+history = ebay mac qr
 type = 1
-code = "https://azwusenduserguidestorage.blob.core.windows.net/slef-setup-guide/Setup%20Assistant%20-%20Mac.pdf"
+code = https://azwusenduserguidestorage.blob.core.windows.net/slef-setup-guide/Setup Assistant - Mac.pdf
 text = "eBay MAC","QR Code"
 
