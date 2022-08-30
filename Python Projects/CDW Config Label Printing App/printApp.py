@@ -426,7 +426,7 @@ def print_custom_one(): # print one custom label
     print_custom(1,qr,txt)
     
 def print_custom_many(): # print many custom labels
-    quant = str(cfg.custom_quantity.get())
+    quant = str(cfg.cust_quantity.get())
     qr = custom_qr.get()
     txt = custom_textbox.get("1.0", END)
     if (qr == "") and (txt.isspace()):

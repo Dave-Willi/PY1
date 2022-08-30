@@ -1,4 +1,5 @@
 from logging import exception
+from pickle import TRUE
 from random import randint
 from playsound import playsound
 import socket
@@ -137,6 +138,7 @@ def txtPrint(quant,hist,*more):
         printing += txt_import(*more)
     except:
         printing += txt_import(more)
+    printing += "^PQ"
     printing += str(quant) # Selected quantity
     printing += "^XZ" # End of label
     to_print(printing,hist)
@@ -168,18 +170,37 @@ def BCPrint(code,quant,hist,sa):
 # 3x parameters = (code)image filename + (quant)Quantity + (hist)log
 
 def imgPrint(code,quant,hist):
-
     # read the image
     im = Image.open(code)
     # look at the dimensions
     size = im.size
-    # calculate ratio x/y
-    ratio = size[0] / size[1]
-    # determine whether to apply ratio to height or width and do so
-    if (180 * ratio) > 500:
-        newsize = (500, round(500/ratio))
+    sidex = size[0]
+    sidey = size[1]
+    if sidex > sidey:
+        im = im.rotate(270, expand=TRUE)
+        size = im.size
+        sidex = size[0]
+        sidey = size[1]
+        ratio = sidey / sidex
+        print("flip")
+        print(ratio)
+        if (180 * ratio) > 500:
+            newsize = (round(500/ratio), 500)
+        else:
+            newsize = (180, round(180*ratio))
     else:
-        newsize = (round(180*ratio),180)
+        print("orig")
+        ratio = sidex / sidey
+        print(ratio)
+        if (180 * ratio) > 500:
+            newsize = (500, round(500/ratio))
+        else:
+            newsize = (round(180*ratio),180)
+    # determine whether to apply ratio to height or width and do so
+    # if (180 * ratio) > 500:
+    #     newsize = (500, round(500/ratio))
+    # else:
+    #     newsize = (round(180*ratio),180)
     # rezise image to fit on label
     pic = im.resize(newsize)
     # show image
@@ -203,7 +224,7 @@ def imgPrint(code,quant,hist):
         x += 1
     hDC.EndDoc ()
     hDC.DeleteDC ()
-    
+    history(hist)
 
 # ========== to_print ==========
 # 2x parameters = zpl code + log
