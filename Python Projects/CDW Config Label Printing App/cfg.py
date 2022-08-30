@@ -10,7 +10,7 @@ printer_select = tk.StringVar(None, "LPT1")
 local_print = tk.StringVar(None, "127.0.0.1")
 tag_select = tk.IntVar(value=0)
 asset_type = tk.StringVar(None, "Asset Tag :")
-cust_quantity = tk.IntVar(None)
+cust_quantity = tk.IntVar(None, "1")
 auto_1 = tk.StringVar(None)
 auto_2 = tk.StringVar(None)
 bg_col = str("white")
@@ -20,6 +20,8 @@ range_image = ""
 qr_pos = 340 # default QR code position on the X axis
 qr_mag = 2 # default QR magnification. range is 1-10
 pCounter = 0
+x_col = 0
+y_row = 1
 
 # ============ Printer Initial Selection ============
 

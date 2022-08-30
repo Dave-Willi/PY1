@@ -169,7 +169,7 @@ tab7c.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
 # **********************************************
 # import external functions after setting frames
 # **********************************************
-from conFuncs import quit, set_print, BCPrint, print_auto, BBC, ebay_mac, ebay_PC, txtPrint, QRPrint, ctrl_p
+from conFuncs import quit, set_print, BCPrint, print_auto, cust_print, txtPrint, QRPrint, ctrl_p
 
 
 # ==========================================
@@ -506,6 +506,44 @@ except:
         config_object.write(conf)
 
 # ==========================================
+# ================= Classes ================
+# ==========================================
+
+class button:
+    def __init__(self, name, history, type, code, *text):
+        self.name = name
+        self.history = history
+        self.type = type
+        self.code = code
+        self.text = text
+        name = tk.Button(master=tab5,
+                        text=self.name,
+                        command=self.func,
+                        width=20)
+        name.grid(pady=(0,10), padx=(0,10),row=cfg.y_row, column=cfg.x_col)
+        if cfg.y_row > 9:
+            cfg.x_col += 1
+            cfg.y_row = 1
+        else:
+            cfg.y_row += 1
+
+    def func(self):
+        cust_print(int(self.type),str(self.history),str(self.code),str(self.text))
+
+trial = ConfigParser()
+trial.read("data/custom_buttons.xml")
+for x in trial:
+    if x == "DEFAULT":
+        continue
+    y = trial[x]
+    name = str(y["button_name"])
+    history = str(y["history"])
+    type = str(y["type"])
+    code = str(y["code"])
+    text = str(y["text"])
+    button(name, history, type, code, text)
+
+# ==========================================
 # =============== Title header =============
 # ==========================================
 
@@ -744,23 +782,23 @@ print_quantity = tk.Spinbox(master=tab5, from_=1, to=9999,
                             textvariable=cfg.cust_quantity)
 print_quantity.grid(row=0, column=2, pady=10, padx= 10)
 
-bbc_button = tk.Button(master=tab5,
-                        text="BBC",
-                        command=BBC,
-                        width=20)
-bbc_button.grid(row=2, column=0, pady=10, padx= 10)
+# bbc_button = tk.Button(master=tab5,
+#                         text="BBC",
+#                         command=BBC,
+#                         width=20)
+# bbc_button.grid(row=2, column=0, pady=10, padx= 10)
 
-ebay_mac_button = tk.Button(master=tab5,
-                        text="eBay Mac QR Code",
-                        command=ebay_mac,
-                        width=20)
-ebay_mac_button.grid(row=3, column=0, pady=10, padx= 10)
+# ebay_mac_button = tk.Button(master=tab5,
+#                         text="eBay Mac QR Code",
+#                         command=ebay_mac,
+#                         width=20)
+# ebay_mac_button.grid(row=3, column=0, pady=10, padx= 10)
 
-ebay_pc_button = tk.Button(master=tab5,
-                        text="eBay Windows QR Code",
-                        command=ebay_PC,
-                        width=20)
-ebay_pc_button.grid(row=4, column=0, pady=10, padx= 10)
+# ebay_pc_button = tk.Button(master=tab5,
+#                         text="eBay Windows QR Code",
+#                         command=ebay_PC,
+#                         width=20)
+# ebay_pc_button.grid(row=4, column=0, pady=10, padx= 10)
 
 # ==========================================
 # ========== Reports Tab (tab6) ============

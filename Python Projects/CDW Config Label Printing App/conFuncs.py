@@ -87,7 +87,18 @@ def history(log): # writes to history log file
 # text formatting function
 # Label is 200 dots high (actually larger but buffer for misaligned labels allows for less bad labels)
 
-def txt_import(*more):
+def txt_import(dud,*more):
+
+    if str(more).startswith('('):
+        more = str(more)
+        more = more.split(',')
+        print(type(more))
+    # prints extra ("(' at start and ')") at end
+
+    if dud == 0:
+        dud_length = 640
+    elif dud == 1:
+        dud_length = 1000
     if len(more) == 0:
         return ""
     sub_total = len(more)
@@ -95,9 +106,9 @@ def txt_import(*more):
     try:
         font_size_max = max(more, key=len)
         txt_length = len(font_size_max)
-        font_size = min(round(180/(sub_total)),round(640/txt_length),60)
+        font_size = min(round(180/(sub_total)),round(dud_length/txt_length),60)
     except:
-        font_size = min(round(180/(sub_total)),60)
+        font_size = min(round(180/(sub_total)),80)
     txt_printing = ""
     for x in (more):
         txt_printing += "^A0N," + str(font_size)
@@ -115,9 +126,9 @@ def QRPrint(code,quant,hist,*more):
     printing = "^XA" # Start of label
     printing += "^LH15,0" # Label Home | position of start of label
     try:
-        printing += txt_import(*more)
+        printing += txt_import(0,*more)
     except:
-        printing += txt_import(more)
+        printing += txt_import(0,more)
     printing += "^FO" + str(cfg.qr_pos) +",10" # Position of QR code
     printing += "^BQN,2," + str(cfg.qr_mag) # QR Initiator | last number is magnification/size
     printing += "^FDQA," # Field Initiator (QA is added for QR codes)
@@ -135,9 +146,9 @@ def txtPrint(quant,hist,*more):
     printing = "^XA" # Start of label
     printing += "^LH15,0" # Label Home | position of start of label
     try:
-        printing += txt_import(*more)
+        printing += txt_import(1,*more)
     except:
-        printing += txt_import(more)
+        printing += txt_import(1,more)
     printing += "^PQ"
     printing += str(quant) # Selected quantity
     printing += "^XZ" # End of label
@@ -182,8 +193,6 @@ def imgPrint(code,quant,hist):
         sidex = size[0]
         sidey = size[1]
         ratio = sidey / sidex
-        print("flip")
-        print(ratio)
         if (180 * ratio) > 500:
             newsize = (round(500/ratio), 500)
         else:
@@ -196,16 +205,8 @@ def imgPrint(code,quant,hist):
             newsize = (500, round(500/ratio))
         else:
             newsize = (round(180*ratio),180)
-    # determine whether to apply ratio to height or width and do so
-    # if (180 * ratio) > 500:
-    #     newsize = (500, round(500/ratio))
-    # else:
-    #     newsize = (round(180*ratio),180)
-    # rezise image to fit on label
+
     pic = im.resize(newsize)
-    # show image
-    # pic.show() # displays the resized image in the default viewer
-    # figure out how to print it instead!!!!
 
     # the below sends 1 byte to the printer?! It's a zpl emulator so it might be ignoring it?
 
@@ -330,7 +331,7 @@ def cust_print(type,hist,code,*txt):
             elif type == 1:
                 QRPrint(code,quant,hist,*txt)
             elif type == 2:
-                BCPrint(code,quant,hist,*txt)
+                BCPrint(code,quant,hist,txt)
             elif type == 3:
                 imgPrint(code,quant,hist)
         except:
