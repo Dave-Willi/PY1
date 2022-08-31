@@ -15,6 +15,8 @@ import tkinter as tk
 from tkinter import *
 from tkinter import messagebox, filedialog
 from tkinter.ttk import Notebook, Style
+from types import TracebackType
+from typing import Type
 from PIL import Image, ImageTk
 from configparser import ConfigParser
 import tkinter.scrolledtext as tkscrolled
@@ -343,9 +345,6 @@ def open_file(): # opens selected file for group textbox insertion
     group_textbox.insert("1.0", File2.read())
     File2.close()  # Make sure you close the file when done
 
-def clear_group_text(): # clears the group tab text box
-    group_textbox.delete("1.0", END)
-
 def print_group_text(): # print the group text box
     if group_textbox.get("1.0", END) == "\n":
         return
@@ -369,21 +368,30 @@ def print_group_text(): # print the group text box
             y = x
             BCPrint(y,1,y,tag_type)
             sleep(0.3) # sending the commands too quickly will have some disappear.. probably
-        clear_group_text()
+        clear_all()
         return
     else:
         messagebox.showinfo("","Printing has been aborted")
-
-def clear_range():
+    
+def clear_all():
+    clear_custom_qr()
+    single_entry.delete(0, END)
+    group_entry.delete(0, END)
+    auto_entry1.delete(0, END)
+    auto_entry2.delete(0, END)
+    group_textbox.delete("1.0", END)
+    custom_textbox.delete("1.0", END)
     range_entry2.delete(0, END)
     range_entry3.delete(0, END)
     cfg.range_start.set(0)
     cfg.range_end.set(0)
+    cfg.cust_quantity.set(1)
 
-def clear_auto():
-    auto_entry1.delete(0, END)
-    auto_entry2.delete(0, END)
-    
+def clear_custom_qr(): # clears the group tab text box
+    custom_qr.delete(0, END)
+    slide1.set(340)
+    slide2.set(2)
+
 def print_range():
     total_print = 1 + int(cfg.range_end.get()) - int(cfg.range_start.get())
     if total_print <= 0:
@@ -399,24 +407,10 @@ def print_range():
             log = prefixed + y + suffixed
             BCPrint(log,1,log,"Asset Tag")
             sleep(0.3)
-        clear_range()
+        clear_all()
     else:
         messagebox.showinfo("","Printing has been aborted")
         return
-
-def clear_all():
-    clear_auto()
-    clear_group_text()
-    clear_range()
-
-def clear_custom_qr(): # clears the group tab text box
-    custom_qr.delete(0, END)
-    slide1.set(340)
-    slide2.set(2)
-
-def clear_custom():
-    clear_custom_qr()
-    custom_textbox.delete("1.0", END)
 
 def print_custom_one(): # print one custom label
     qr = custom_qr.get()
@@ -434,6 +428,7 @@ def print_custom_many(): # print many custom labels
     answer = messagebox.askyesno("Question","This will print " + quant + " labels.\nDo you wish to continue?")
     if answer == True:
         print_custom(quant,qr,txt)
+        clear_all()
     else:
         messagebox.showinfo("","Printing has been aborted")
 
@@ -510,15 +505,15 @@ except:
 # ==========================================
 
 class button:
-    def __init__(self, name, history, type, code, *text):
-        self.name = name
-        self.history = history
-        self.type = type
-        self.code = code
-        self.text = text
+    def __init__(self, bname, bhistory, btype, bcode, *btext):
+        self.bname = bname
+        self.bhistory = bhistory
+        self.btype = btype
+        self.bcode = bcode
+        self.btext = btext
         name = tk.Button(master=tab5,
-                        text=self.name,
-                        command=self.func,
+                        text=self.bname,
+                        command=self.bfunc,
                         width=20)
         name.grid(pady=(0,10), padx=(0,10),row=cfg.y_row, column=cfg.x_col)
         if cfg.y_row > 9:
@@ -526,9 +521,19 @@ class button:
             cfg.y_row = 1
         else:
             cfg.y_row += 1
+        # Sort out the text before sending it onwards!!!
+        print(self.btext)
+        print(type(btext))
+        newText = str(self.btext)
+        print(newText)
 
-    def func(self):
-        cust_print(int(self.type),str(self.history),str(self.code),str(self.text))
+        return
+        # if self.text.startswith('('):
+        #     more = str(more)
+        #     more = more.split(',')
+        #     print(type(more))
+    def bfunc(self):
+        cust_print(int(self.btype),str(self.history),str(self.code),str(self.text))
 
 trial = ConfigParser()
 trial.read("data/custom_buttons.xml")
@@ -536,12 +541,12 @@ for x in trial:
     if x == "DEFAULT":
         continue
     y = trial[x]
-    name = str(y["button_name"])
-    history = str(y["history"])
-    type = str(y["type"])
-    code = str(y["code"])
-    text = str(y["text"])
-    button(name, history, type, code, text)
+    bname = str(y["button_name"])
+    bhistory = str(y["history"])
+    btype = str(y["type"])
+    bcode = str(y["code"])
+    btext = y["text"]
+    button(bname, bhistory, btype, bcode, btext)
 
 # ==========================================
 # =============== Title header =============
@@ -656,7 +661,7 @@ group_entry.pack(side=LEFT, padx=10, pady=(20,0))
 
 group_clear = tk.Button(master=tab2b,
                         text="Clear",
-                        command=clear_group_text,
+                        command=clear_all,
                         width=10)
 group_clear.pack(side=LEFT)
 
@@ -720,7 +725,7 @@ range_entry5.grid(row=4, column=1)
 
 range_clear = tk.Button(master=tab3a,
                         text="Clear",
-                        command=clear_range,
+                        command=clear_all,
                         width=10)
 range_clear.grid(row=5, column=0, pady=(20,0), padx=40, sticky=E)
 
@@ -752,7 +757,7 @@ auto_entry2.pack()
 
 auto_clear = tk.Button(master=tab4b,
                         text="Clear",
-                        command=clear_auto,
+                        command=clear_all,
                         width=10)
 auto_clear.grid(row=0, column=1, padx=10)
 
@@ -898,7 +903,7 @@ custom_print_many.pack(side=LEFT, padx=0)
 
 custom_load = tk.Button(master=tab7b,
                         text="Clear all",
-                        command=clear_custom,
+                        command=clear_all,
                         width=10)
 custom_load.pack(side=LEFT, padx=40)
 
@@ -942,6 +947,22 @@ File1 = open(file_list, "w")
 File1.write(files)
 # Step 5, close file
 File1.close()
+
+# ===============================
+# ========= Dev Tools ===========
+# ===============================
+
+reset_button = tk.Button(master=frame1,
+                    text="Restart App",
+                    command=reset)
+reset_button.grid(row=8, sticky=EW)
+
+test_print_button = tk.Radiobutton(master=frame1,
+                    text="Test Printer",
+                    value="local",
+                    variable=cfg.printer_select,
+                    command=con_update)
+test_print_button.grid(row=3, sticky=W)
 
 # ==========================================
 # ========= Start up the routine ===========

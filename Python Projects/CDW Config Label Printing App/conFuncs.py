@@ -89,10 +89,10 @@ def history(log): # writes to history log file
 
 def txt_import(dud,*more):
 
-    if str(more).startswith('('):
-        more = str(more)
-        more = more.split(',')
-        print(type(more))
+    # if str(more).startswith('('):
+    #     more = str(more)
+    #     more = more.split(',')
+    #     print(type(more))
     # prints extra ("(' at start and ')") at end
 
     if dud == 0:
@@ -232,10 +232,11 @@ def imgPrint(code,quant,hist):
 
 def to_print(zyx, log):
     host = str(cfg.printer_select.get())
-    print_me = bytes(zyx, 'utf-8')
+    print_me = zyx
     try:
         if host == "local":
             host = str(cfg.local_print.get())
+            print_me = bytes(zyx, 'utf-8')
             mysocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
             mysocket.connect((host, cfg.port)) #connecting to host
             mysocket.send(print_me)
