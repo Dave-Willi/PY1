@@ -437,18 +437,19 @@ def print_custom_many(): # print many custom labels
 def print_custom(quant,qr,txt):
     cfg.qr_pos = slide1.get()
     cfg.qr_mag = slide2.get()
-    customtxt = ()
+    customtxt = list()
     # txt = custom_textbox.get("1.0", END)
-    txt = re.split(", |\n",txt)
+    txt = re.split("\n",txt)
     for x in (txt):
         if x == "":
             continue
-        customtxt += (x,)
+        customtxt.append(x)
     # qr = custom_qr.get()
+
     if qr == "":
-        txtPrint(quant,"*custom text label*",*customtxt)
+        txtPrint(quant,"*custom text label*",tuple(customtxt))
     else:
-        QRPrint(qr,quant,"*custom QR label*",*customtxt)
+        QRPrint(qr,quant,"*custom QR label*",tuple(customtxt))
 
 def con_update():
     #Read config.ini file
@@ -540,7 +541,7 @@ for x in trial:
     y = trial[x]
     bname = y["button_name"]
     bhistory = y["history"]
-    btype = y["type"]
+    btype = y["btn_type"]
     bcode = y["code"]
     btext = y["text"]
     button(bname, bhistory, btype, bcode, btext)
@@ -949,17 +950,17 @@ File1.close()
 # ========= Dev Tools ===========
 # ===============================
 
-# reset_button = tk.Button(master=frame1,
-#                     text="Restart App",
-#                     command=reset)
-# reset_button.grid(row=8, sticky=EW)
+reset_button = tk.Button(master=frame1,
+                    text="Restart App",
+                    command=reset)
+reset_button.grid(row=8, sticky=EW)
 
-# test_print_button = tk.Radiobutton(master=frame1,
-#                     text="Test Printer",
-#                     value="local",
-#                     variable=cfg.printer_select,
-#                     command=con_update)
-# test_print_button.grid(row=3, sticky=W)
+test_print_button = tk.Radiobutton(master=frame1,
+                    text="Test Printer",
+                    value="local",
+                    variable=cfg.printer_select,
+                    command=con_update)
+test_print_button.grid(row=3, sticky=W)
 
 # ==========================================
 # ========= Start up the routine ===========

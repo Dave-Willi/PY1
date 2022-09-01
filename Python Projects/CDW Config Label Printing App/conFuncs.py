@@ -1,4 +1,3 @@
-from dis import code_info
 from logging import exception
 from pickle import TRUE
 from random import randint
@@ -111,6 +110,7 @@ def txt_import(dud,more):
     except:
         font_size = min(round(180/(sub_total)),80)
     txt_printing = ""
+    print(type(more))
     for x in (more):
         txt_printing += "^A0N," + str(font_size)
         txt_printing += "^FO10," + str((10+(font_size*index)))
@@ -125,7 +125,7 @@ def txt_import(dud,more):
 
 def QRPrint(code,quant,hist,*more):
     printing = "^XA" # Start of label
-    printing += "^LH15,0" # Label Home | position of start of label
+    printing += "^LH25,10" # Label Home | position of start of label
     try:
         printing += txt_import(0,*more)
     except:
@@ -145,7 +145,9 @@ def QRPrint(code,quant,hist,*more):
 
 def txtPrint(quant,hist,*more):
     printing = "^XA" # Start of label
-    printing += "^LH15,0" # Label Home | position of start of label
+    printing += "^LH25,10" # Label Home | position of start of label
+    print(*more)
+    print(more)
     try:
         printing += txt_import(1,*more)
     except:
@@ -160,7 +162,7 @@ def txtPrint(quant,hist,*more):
 
 def BCPrint(code,quant,hist,sa):
     printing = "^XA" # Start of label
-    printing += "^LH15,0" # Label Home | position of start of label
+    printing += "^LH25,10" # Label Home | position of start of label
     printing += "^FO1,20" # Field position
     printing += "^ASN,25,25" # Font to use for this field | font, orientation, height, width
     printing += "^FD" # Field initiator
@@ -168,8 +170,8 @@ def BCPrint(code,quant,hist,sa):
     printing += str(sa) # Serial or asset tag
     printing += "^FS" # end of field
     printing += "^FO3,60" # Position of Barcode code
-    printing += "^BCN,100,Y,N" # Barcode 'Code 128 Type' Initiator | orientation, height, line, lineAbove
-    # printing += "^B3N,N,100,Y,N" # Barcode 'Code 39 Type' Initiator | orientation, checkDigit, height, line, lineAbove
+    printing += "^BCN,80,Y,N" # Barcode 'Code 128 Type' Initiator | orientation, height, line, lineAbove
+    # printing += "^B3N,N,80,Y,N" # Barcode 'Code 39 Type' Initiator | orientation, checkDigit, height, line, lineAbove
     printing += "^FD" # Field Initiator
     printing += str(code).upper() # Barcode Entry
     printing += "^FS" # end of field
