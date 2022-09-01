@@ -1,3 +1,4 @@
+from dis import code_info
 from logging import exception
 from pickle import TRUE
 from random import randint
@@ -87,7 +88,7 @@ def history(log): # writes to history log file
 # text formatting function
 # Label is 200 dots high (actually larger but buffer for misaligned labels allows for less bad labels)
 
-def txt_import(dud,*more):
+def txt_import(dud,more):
 
     # if str(more).startswith('('):
     #     more = str(more)
@@ -164,13 +165,13 @@ def BCPrint(code,quant,hist,sa):
     printing += "^ASN,25,25" # Font to use for this field | font, orientation, height, width
     printing += "^FD" # Field initiator
     printing += "Device "
-    printing += sa # Serial or asset tag
+    printing += str(sa) # Serial or asset tag
     printing += "^FS" # end of field
     printing += "^FO3,60" # Position of Barcode code
-    # printing += "^BCN,100,Y,N" # Barcode 'Code 128 Type' Initiator | orientation, height, line, lineAbove
-    printing += "^B3N,N,100,Y,N" # Barcode 'Code 39 Type' Initiator | orientation, checkDigit, height, line, lineAbove
+    printing += "^BCN,100,Y,N" # Barcode 'Code 128 Type' Initiator | orientation, height, line, lineAbove
+    # printing += "^B3N,N,100,Y,N" # Barcode 'Code 39 Type' Initiator | orientation, checkDigit, height, line, lineAbove
     printing += "^FD" # Field Initiator
-    printing += str(code) # Barcode Entry
+    printing += str(code).upper() # Barcode Entry
     printing += "^FS" # end of field
     printing += "^PQ" # Print quantity
     printing += str(quant) # Selected quantity (normally 1 for barcodes)
@@ -198,9 +199,7 @@ def imgPrint(code,quant,hist):
         else:
             newsize = (180, round(180*ratio))
     else:
-        print("orig")
         ratio = sidex / sidey
-        print(ratio)
         if (180 * ratio) > 500:
             newsize = (500, round(500/ratio))
         else:
@@ -322,16 +321,21 @@ def print_auto():
             messagebox.showinfo("","Printing has been aborted")
             return
 
-def cust_print(type,hist,code,*txt):
+def cust_print(type,hist,code,txt):
     quant = str(cfg.cust_quantity.get())
     answer = messagebox.askyesno("Question","This will print " + hist + " labels.\nDo you wish to continue?")
     if answer == True:
         try:
             if type == 0:
-                txtPrint(quant,hist,*txt)
+                txtPrint(quant,hist,txt)
             elif type == 1:
-                QRPrint(code,quant,hist,*txt)
+                QRPrint(code,quant,hist,txt)
             elif type == 2:
+                # txt = str(txt)
+                # if txt.startswith("("):
+                #     txt.strip()[1:]
+                # if txt.endswith(")"):
+                #     txt.strip()[:-1]
                 BCPrint(code,quant,hist,txt)
             elif type == 3:
                 imgPrint(code,quant,hist)

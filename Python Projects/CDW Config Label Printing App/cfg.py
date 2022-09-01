@@ -21,7 +21,7 @@ qr_pos = 340 # default QR code position on the X axis
 qr_mag = 2 # default QR magnification. range is 1-10
 pCounter = 0
 x_col = 0
-y_row = 1
+y_row = 0
 
 # ============ Printer Initial Selection ============
 

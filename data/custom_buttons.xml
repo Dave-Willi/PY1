@@ -1,217 +1,217 @@
 [DEFAULT]
-button_name = 
-history : 
-type = 
-code : 
-text : 
+button_name = This appears on the button
+history : This appears in the log file
+type = This selects the type of label (0=text, 1=QR, 2=Barcode, 3=Image)
+code : this is the code or image file that will be printed
+text = This is plain text that will be printed. "Asset Tag:" or "Serial Number:" for barcodes. Use $2 for a new line
 
 [BBC]
 button_name = BBC
 history : BBC Tag
 type = 3
 code : data/bbc.png
-text :
+text =
 
 [ebay_mac]
 button_name = eBay MAC QR Code
 history : ebay mac qr
 type = 1
 code : https://azwusenduserguidestorage.blob.core.windows.net/slef-setup-guide/Setup Assistant - Mac.pdf
-text :eBay MAC
-    QR Code
+text = eBay MAC $2 QR Code
 
 [Pineapple]
 button_name = Pineapple
 history : Pineapple
 type = 2
 code : iHaveAPineapple
-text : Asset Tag
+text = Asset Tag :
 
 [apple]
 button_name = Apple
 history : Apple
 type = 2
 code : IHaveAPen
-text : Serial Number
+text = Serial Number :
 
 [pen]
-button_name = Pen
+button_name = 2 line Pen
 history : Pen
 type = 0
 code : 
-text : "I" have a","pineapple pen"
+text = I have a, pineapple pen
 
 [pen2]
-button_name = Pen
+button_name = Pen 2
 history : Pen
 type = 0
 code : 
-text : I have a pineapple pen
+text = (I have a pineapple pen)
 
 [pen3]
-button_name = Pen
+button_name = Pen 3
 history : Pen
 type = 0
 code : 
-text : I have a pineapple pen
+text : [I have a, pineapple pen]
 
 [pen4]
-button_name = Pen
+button_name = Pen 4
 history : Pen
 type = 0
 code : 
-text : I have a pineapple pen
+text : (I have a , pineapple pen)
 
 [pen5]
-button_name = Pen
+button_name = Pen 5
 history : Pen
 type = 0
 code : 
-text : I have a pineapple pen
+text = I have a pineapple pen
 
 [pen6]
 button_name = Pen
 history : Pen
 type = 0
 code : 
-text : I have a pineapple pen
+text = I have a pineapple pen
 
 [pen7]
 button_name = Pen
 history : Pen
 type = 0
 code : 
-text : I have a pineapple pen
+text = I have a pineapple pen
 
 [pen8]
 button_name = Pen
 history : Pen
 type = 0
 code : 
-text : I have a pineapple pen
+text = I have a pineapple pen
 
 [pen9]
 button_name = Pen
 history : Pen
 type = 0
 code : 
-text : I have a pineapple pen
+text = I have a pineapple pen
 
 [pen10]
 button_name = Pen
 history : Pen
 type = 0
 code : 
-text : I have a pineapple pen
+text = I have a pineapple pen
 
 [pen11]
 button_name = Pen
 history : Pen
 type = 0
 code : 
-text : I have a pineapple pen
+text = I have a pineapple pen
 
 [pen12]
 button_name = Pen
 history : Pen
 type = 0
 code : 
-text : I have a pineapple pen
+text = I have a pineapple pen
 
 [pen13]
 button_name = Pen
 history : Pen
 type = 0
 code : 
-text : I have a pineapple pen
+text = I have a pineapple pen
 
 [pen14]
 button_name = Pen
 history : Pen
 type = 0
 code : 
-text : I have a pineapple pen
+text = I have a pineapple pen
 
 [pen15]
 button_name = Pen
 history : Pen
 type = 0
 code : 
-text : I have a pineapple pen
+text = I have a pineapple pen
 
 [pen16]
 button_name = Pen
 history : Pen
 type = 0
 code : 
-text : I have a pineapple pen
+text = I have a pineapple pen
 
 [pen17]
 button_name = Pen
 history : Pen
 type = 0
 code : 
-text : I have a pineapple pen
+text = I have a pineapple pen
 
 [pen18]
 button_name = Pen
 history : Pen
 type = 0
 code : 
-text : I have a pineapple pen
+text = I have a pineapple pen
 
 [pen19]
 button_name = Pen
 history : Pen
 type = 0
 code : 
-text : I have a pineapple pen
+text = I have a pineapple pen
 
 [pen20]
 button_name = Pen
 history : Pen
 type = 0
 code : 
-text : I have a pineapple pen
+text = I have a pineapple pen
 
 [pen21]
 button_name = Pen
 history : Pen
 type = 0
 code : 
-text : I have a pineapple pen
+text = I have a pineapple pen
 
 [pen22]
 button_name = Pen
 history : Pen
 type = 0
 code : 
-text : I have a pineapple pen
+text = I have a pineapple pen
 
 [pen23]
 button_name = Pen
 history : Pen
 type = 0
 code : 
-text : I have a pineapple pen
+text = I have a pineapple pen
 
 [pen24]
 button_name = Pen
 history : Pen
 type = 0
 code : 
-text : I have a pineapple pen
+text = I have a pineapple pen
 
 [pen25]
 button_name = Pen
 history : Pen
 type = 0
 code : 
-text : I have a pineapple pen
+text = I have a pineapple pen
 
 [pen26]
 button_name = Pen
 history : Pen
 type = 0
 code : 
-text : I have a pineapple pen
+text = I have a pineapple pen $2 
+    do you have a pen?

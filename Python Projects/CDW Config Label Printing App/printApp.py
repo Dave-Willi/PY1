@@ -15,8 +15,6 @@ import tkinter as tk
 from tkinter import *
 from tkinter import messagebox, filedialog
 from tkinter.ttk import Notebook, Style
-from types import TracebackType
-from typing import Type
 from PIL import Image, ImageTk
 from configparser import ConfigParser
 import tkinter.scrolledtext as tkscrolled
@@ -141,6 +139,8 @@ tab4a = tk.Frame(tab4)
 tab4b = tk.Frame(tab4)
 tab4c = tk.Frame(tab4)
 tab5 = tk.Frame(frame2) # customer labels
+tab5a = tk.Frame(tab5)
+tab5b = tk.Frame(tab5)
 tab6 = tk.Frame(frame2) # reports
 tab7 = tk.Frame(frame2) # custom labels
 tab7a = tk.Frame(tab7)
@@ -162,6 +162,8 @@ tab3a.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
 tab4a.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10, fill=BOTH)
 tab4b.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
 tab4c.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10, fill=BOTH)
+tab5a.pack(anchor=CENTER, expand=False, side=TOP, pady=(10,0))
+tab5b.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10, fill=BOTH)
 tab7a.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
 tab7aa.pack(anchor=CENTER, expand=False, side=TOP)
 tab7ab.pack(anchor=CENTER, expand=False, side=TOP)
@@ -483,6 +485,8 @@ try:
     # parse the settings
     print_1 = str(format(printer["printer_select"]))
     cfg.printer_select.set(print_1)
+    local_1 = str(format(printer["local_print"]))
+    cfg.local_print.set(local_1)
     tag_1 = int(tag["tag_select"])
     cfg.tag_select.set(tag_1)
     flag_1a = int(flag["flag_1"]) # 1 = Config, 2 = Mezz, 0 = Technician
@@ -492,7 +496,8 @@ except:
     #Get the configparser object and create file
     config_object = ConfigParser()
     config_object["PRINTER"] = {
-        "printer_select": cfg.printer_select.get()}
+        "printer_select": cfg.printer_select.get(),
+        "local_print": cfg.local_print.get()}
     config_object["TAG-TYPE"] = {
         "tag_select": cfg.tag_select.get()}
     config_object["FLAGS"] = {
@@ -505,35 +510,27 @@ except:
 # ==========================================
 
 class button:
-    def __init__(self, bname, bhistory, btype, bcode, *btext):
+    def __init__(self, bname, bhistory, btype, bcode, btext):
         self.bname = bname
         self.bhistory = bhistory
         self.btype = btype
         self.bcode = bcode
         self.btext = btext
-        name = tk.Button(master=tab5,
+        name = tk.Button(master=tab5b,
                         text=self.bname,
                         command=self.bfunc,
                         width=20)
         name.grid(pady=(0,10), padx=(0,10),row=cfg.y_row, column=cfg.x_col)
-        if cfg.y_row > 9:
-            cfg.x_col += 1
-            cfg.y_row = 1
-        else:
+        if cfg.x_col >= 2:
             cfg.y_row += 1
-        # Sort out the text before sending it onwards!!!
-        print(self.btext)
-        print(type(btext))
-        newText = str(self.btext)
-        print(newText)
-
+            cfg.x_col = 0
+        else:
+            cfg.x_col += 1
         return
-        # if self.text.startswith('('):
-        #     more = str(more)
-        #     more = more.split(',')
-        #     print(type(more))
+
     def bfunc(self):
-        cust_print(int(self.btype),str(self.history),str(self.code),str(self.text))
+        self.newText = tuple(self.btext.split('$2'))
+        cust_print(int(self.btype),str(self.bhistory),self.bcode,self.newText)
 
 trial = ConfigParser()
 trial.read("data/custom_buttons.xml")
@@ -541,10 +538,10 @@ for x in trial:
     if x == "DEFAULT":
         continue
     y = trial[x]
-    bname = str(y["button_name"])
-    bhistory = str(y["history"])
-    btype = str(y["type"])
-    bcode = str(y["code"])
+    bname = y["button_name"]
+    bhistory = y["history"]
+    btype = y["type"]
+    bcode = y["code"]
     btext = y["text"]
     button(bname, bhistory, btype, bcode, btext)
 
@@ -777,15 +774,15 @@ warn_label.pack(side=TOP, padx=40, pady=40)
 # ======== Customer label Tab (tab5) =======
 # ==========================================
 
-print_quantity_label = tk.Label(master=tab5,
+print_quantity_label = tk.Label(master=tab5a,
                             font=12,
                             fg="blue",
                             text="Enter quantity of labels required")
-print_quantity_label.grid(row=0, column=1, pady=20, padx= 10)
+print_quantity_label.pack(side=LEFT, pady=20, padx= 10)
 
-print_quantity = tk.Spinbox(master=tab5, from_=1, to=9999,
+print_quantity = tk.Spinbox(master=tab5a, from_=1, to=9999,
                             textvariable=cfg.cust_quantity)
-print_quantity.grid(row=0, column=2, pady=10, padx= 10)
+print_quantity.pack(side=LEFT, pady=10, padx= 10)
 
 # bbc_button = tk.Button(master=tab5,
 #                         text="BBC",
@@ -952,17 +949,17 @@ File1.close()
 # ========= Dev Tools ===========
 # ===============================
 
-reset_button = tk.Button(master=frame1,
-                    text="Restart App",
-                    command=reset)
-reset_button.grid(row=8, sticky=EW)
+# reset_button = tk.Button(master=frame1,
+#                     text="Restart App",
+#                     command=reset)
+# reset_button.grid(row=8, sticky=EW)
 
-test_print_button = tk.Radiobutton(master=frame1,
-                    text="Test Printer",
-                    value="local",
-                    variable=cfg.printer_select,
-                    command=con_update)
-test_print_button.grid(row=3, sticky=W)
+# test_print_button = tk.Radiobutton(master=frame1,
+#                     text="Test Printer",
+#                     value="local",
+#                     variable=cfg.printer_select,
+#                     command=con_update)
+# test_print_button.grid(row=3, sticky=W)
 
 # ==========================================
 # ========= Start up the routine ===========
