@@ -94,26 +94,27 @@ def txt_import(dud,more):
     #     more = more.split(',')
     #     print(type(more))
     # prints extra ("(' at start and ')") at end
-
+    sub_total = len(more)
     if dud == 0:
         dud_length = 640
     elif dud == 1:
         dud_length = 1000
-    if len(more) == 0:
+    if sub_total == 0:
         return ""
-    sub_total = len(more)
     index = 0
     try:
         font_size_max = max(more, key=len)
         txt_length = len(font_size_max)
-        font_size = min(round(180/(sub_total)),round(dud_length/txt_length),60)
+        font_size = min(round(200/(sub_total)),round(dud_length/txt_length),60)
     except:
-        font_size = min(round(180/(sub_total)),80)
+        font_size = min(round(200/(sub_total)),100)
     txt_printing = ""
-    print(type(more))
     for x in (more):
         txt_printing += "^A0N," + str(font_size)
-        txt_printing += "^FO10," + str((10+(font_size*index)))
+        if sub_total== 1:
+            txt_printing += "^FO10," + str((100-(font_size/2)))
+        else:
+            txt_printing += "^FO10," + str((10+(font_size*index)))
         txt_printing += "^FD"
         txt_printing += str(x)
         txt_printing += "^FS"
