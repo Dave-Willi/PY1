@@ -16,6 +16,7 @@ import tkinter as tk
 from tkinter import *
 from tkinter import messagebox, filedialog
 from tkinter.ttk import Notebook, Style
+from wsgiref import validate
 from PIL import Image, ImageTk
 from configparser import ConfigParser
 import tkinter.scrolledtext as tkscrolled
@@ -554,35 +555,42 @@ class button2(tk.Tk):
             cfg.x_col += 1
         return
 
-    def bfunc(self):
+    
 
+    def bfunc(self):
         def entry_window(bline1,bentry1,bline2,bentry2):
             enter_box = tk.Toplevel()
             enter_box.geometry('350x500')
             enter_box.title(self.bname)
             def kill_me(): # closes the extra window
                 enter_box.destroy()
-            enter_box.focus_force()
-            enter_box.bind('<FocusOut>', lambda x:kill_me())
+            # enter_box.focus_force()
+            # enter_box.bind('<FocusOut>', lambda x:kill_me())
             # enter_box.overrideredirect(True)
             enter_frame1 = tk.Frame(master=enter_box)
             enter_frame1.pack()
             entry1_label = tk.Label(master=enter_frame1,
                                     text=bline1)
             entry1_label.pack(pady=(15,0))
-            enter1_entry = tk.Entry(master=enter_frame1, textvariable=bentry1)
+            enter1_entry = tk.Entry(master=enter_frame1, textvariable=self.bentry1, text=self.bentry1)
             enter1_entry.pack(pady=(0,15))
             enter1_entry.focus()
             entry2_label = tk.Label(master=enter_frame1,
                                     text=bline2)
             entry2_label.pack()
-            enter2_entry = tk.Entry(master=enter_frame1, textvariable=bentry2)
+            enter2_entry = tk.Entry(master=enter_frame1, textvariable=self.bentry2)
             enter2_entry.pack(pady=(0,15))
-            enter2_entry.focus()
             enter_print = tk.Button(master=enter_frame1,
-                                    text="Print")
+                                    text="Print",
+                                    command=an_print)
             enter_print.pack()                                    
             return
+        
+        def an_print():
+            print(self.bentry1)
+            print(self.bentry2)
+            pass
+
         entry_window(self.bline1,self.bentry1,self.bline2,self.bentry2)
         
         self.newText1 = (self.bline1,bentry1)
