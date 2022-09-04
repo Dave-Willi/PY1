@@ -1,5 +1,5 @@
 from logging import exception
-from pickle import TRUE
+# from pickle import TRUE
 from random import randint
 from playsound import playsound
 import socket
@@ -147,8 +147,6 @@ def QRPrint(code,quant,hist,*more):
 def txtPrint(quant,hist,*more):
     printing = "^XA" # Start of label
     printing += "^LH25,10" # Label Home | position of start of label
-    print(*more)
-    print(more)
     try:
         printing += txt_import(1,*more)
     except:
@@ -192,7 +190,7 @@ def imgPrint(code,quant,hist):
     sidex = size[0]
     sidey = size[1]
     if sidex > sidey:
-        im = im.rotate(270, expand=TRUE)
+        im = im.rotate(270, expand=True)
         size = im.size
         sidex = size[0]
         sidey = size[1]
@@ -219,7 +217,7 @@ def imgPrint(code,quant,hist):
     y = int(quant)
     x = 0
     hDC.StartDoc (code)
-    while x < y: # Loop the print for to match the quantity.
+    while x < y: # Loop the print to match the quantity.
         hDC.StartPage ()
         dib = ImageWin.Dib (pic)
         dib.draw (hDC.GetHandleOutput (), (0,0,newsize[0],newsize[1]))
@@ -334,11 +332,6 @@ def cust_print(type,hist,code,txt):
             elif type == 1:
                 QRPrint(code,quant,hist,txt)
             elif type == 2:
-                # txt = str(txt)
-                # if txt.startswith("("):
-                #     txt.strip()[1:]
-                # if txt.endswith(")"):
-                #     txt.strip()[:-1]
                 BCPrint(code,quant,hist,txt)
             elif type == 3:
                 imgPrint(code,quant,hist)

@@ -19,7 +19,7 @@ from PIL import Image, ImageTk
 from configparser import ConfigParser
 import tkinter.scrolledtext as tkscrolled
 import re
-from time import sleep
+# from time import sleep
 
 self = tk.Tk()
 self.title("Config printing app")
@@ -104,11 +104,6 @@ frame2 = Notebook (self,
                     width=680,)
 frame2.pack(padx=10,pady=10, anchor=E, fill=BOTH, expand=True, side=RIGHT)
 
-frame1.grid_rowconfigure((0,1,2,5,6,7,9,10), weight=1)
-frame1.grid_rowconfigure((3,4,8), weight=8)
-frame1.grid_columnconfigure(0, weight=1)
-
-
 # Creates a style for use on the notebook tabs
 Mysky = "#DCF0F2"
 Myyellow = "#F2C88B"
@@ -173,7 +168,7 @@ tab7c.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
 # **********************************************
 # import external functions after setting frames
 # **********************************************
-from conFuncs import quit, set_print, BCPrint, print_auto, cust_print, txtPrint, QRPrint, ctrl_p
+from conFuncs import quit, set_print, BCPrint, print_auto, cust_print, to_print, txtPrint, QRPrint, ctrl_p
 
 
 # ==========================================
@@ -369,7 +364,7 @@ def print_group_text(): # print the group text box
             tag_type = cfg.asset_type.get()
             y = x
             BCPrint(y,1,y,tag_type)
-            sleep(0.3) # sending the commands too quickly will have some disappear.. probably
+            # sleep(0.3) # sending the commands too quickly will have some disappear.. probably
         clear_all()
         return
     else:
@@ -408,7 +403,7 @@ def print_range():
             y = str(x).zfill(lead_zeros)
             log = prefixed + y + suffixed
             BCPrint(log,1,log,"Asset Tag")
-            sleep(0.3)
+            # sleep(0.3)
         clear_all()
     else:
         messagebox.showinfo("","Printing has been aborted")
@@ -517,6 +512,7 @@ class button:
         self.btype = btype
         self.bcode = bcode
         self.btext = btext
+
         name = tk.Button(master=tab5b,
                         text=self.bname,
                         command=self.bfunc,
@@ -530,8 +526,43 @@ class button:
         return
 
     def bfunc(self):
-        self.newText = tuple(self.btext.split('$2'))
+        if int(self.btype) != 2:
+            self.newText = tuple(self.btext.split('$2'))
+        else:
+            self.newText = str(self.btext)
         cust_print(int(self.btype),str(self.bhistory),self.bcode,self.newText)
+
+class button2:
+    def __init__(self, bname, bhistory, bline1, bentry1, bline2, bentry2):
+        self.bname = bname
+        self.bhistory = bhistory
+        self.btype = 0
+        self.bline1 = bline1
+        self.bentry1 = bentry1
+        self.bline2 = bline2
+        self.bentry2 = bentry2
+        name = tk.Button(master=tab5b,
+                        text=self.bname,
+                        command=self.bfunc,
+                        width=20)
+        name.grid(pady=(0,10), padx=(0,10),row=cfg.y_row, column=cfg.x_col)
+        if cfg.x_col >= 2:
+            cfg.y_row += 1
+            cfg.x_col = 0
+        else:
+            cfg.x_col += 1
+        return
+
+    def bfunc(self):
+
+        def question_window(bline1,bentry1,bline2,bentry2):
+            pass
+
+        question_window(self.bline1,self.bentry1,self.bline2,self.bentry2)
+        self.newText1 = (self.bline1,bentry1)
+        self.newText2 = (self.bline2,bentry2)
+        cust_print(int(self.btype),str(self.bhistory),self.bcode,self.newText1)
+        cust_print(int(self.btype),str(self.bhistory),self.bcode,self.newText2)
 
 trial = ConfigParser()
 trial.read("data/custom_buttons.xml")
@@ -542,9 +573,16 @@ for x in trial:
     bname = y["button_name"]
     bhistory = y["history"]
     btype = y["btn_type"]
-    bcode = y["code"]
-    btext = y["text"]
-    button(bname, bhistory, btype, bcode, btext)
+    if btype == 5:
+        bline1 = y["line1"]
+        bentry1 = y["entry1"]
+        bline2 = y["line2"]
+        bentry2 = y["entry2"]
+        button2(bname, bhistory, bline1, bentry1, bline2, bentry2)
+    else:
+        bcode = y["code"]
+        btext = y["text"]
+        button(bname, bhistory, btype, bcode, btext)
 
 # ==========================================
 # =============== Title header =============
@@ -570,6 +608,10 @@ except:
 # ======= Settings panel (frame1a) =========
 # ==========================================
 
+frame1.grid_rowconfigure((0,1,2,4,6,7,8,10), weight=1)
+frame1.grid_rowconfigure((3,5,9), weight=8)
+frame1.grid_columnconfigure(0, weight=1)
+
 printer_label = tk.Label(master=frame1,
                             text="Select printer:")
 printer_label.grid(row=0, sticky=EW)
@@ -588,28 +630,40 @@ mezz_print_button = tk.Radiobutton(master=frame1,
                     command=con_update)
 mezz_print_button.grid(row=2, sticky=W)
 
+#row=3 is reserved for test printer
+
+def reset_print():
+    to_print("^MNY","")
+
+reset_printer_btn = tk.Button(master=frame1,
+                    text="Reset Printer",
+                    command=reset_print)
+reset_printer_btn.grid(row=4, sticky=EW)
+
 set_printer_btn = tk.Button(master=frame1,
                     text="Map Printers",
                     command=set_print)
-set_printer_btn.grid(row=4, sticky=EW)
+set_printer_btn.grid(row=5, sticky=EW)
 
 asset_label = tk.Label(master=frame1,
                             text="Asset or serial?")
-asset_label.grid(row=5, sticky=EW)
+asset_label.grid(row=6, sticky=EW)
 
 set_asset_button = tk.Radiobutton(master=frame1,
                     text="Asset tags",
                     variable=cfg.tag_select,
                     value=0,
                     command=set_tag)
-set_asset_button.grid(row=6, sticky=W)
+set_asset_button.grid(row=7, sticky=W)
 
 set_serial_button = tk.Radiobutton(master=frame1,
                     text="Serial Numbers",
                     variable=cfg.tag_select,
                     value=1,
                     command=set_tag)
-set_serial_button.grid(row=7, sticky=W)
+set_serial_button.grid(row=8, sticky=W)
+
+#row=9 reserved for dev reset button
 
 exit_button = tk.Button(master=frame1,
                     text="Quit",
@@ -953,7 +1007,7 @@ File1.close()
 reset_button = tk.Button(master=frame1,
                     text="Restart App",
                     command=reset)
-reset_button.grid(row=8, sticky=EW)
+reset_button.grid(row=9, sticky=EW)
 
 test_print_button = tk.Radiobutton(master=frame1,
                     text="Test Printer",
