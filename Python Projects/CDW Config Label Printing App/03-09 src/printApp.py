@@ -8,7 +8,6 @@
 
 # imports.... so many imports 
 
-from cgitb import text
 import os
 import subprocess
 import sys
@@ -506,7 +505,7 @@ except:
 # ================= Classes ================
 # ==========================================
 
-class button(tk.Tk):
+class button:
     def __init__(self, bname, bhistory, btype, bcode, btext):
         self.bname = bname
         self.bhistory = bhistory
@@ -533,7 +532,7 @@ class button(tk.Tk):
             self.newText = str(self.btext)
         cust_print(int(self.btype),str(self.bhistory),self.bcode,self.newText)
 
-class button2(tk.Tk):
+class button2:
     def __init__(self, bname, bhistory, bline1, bentry1, bline2, bentry2):
         self.bname = bname
         self.bhistory = bhistory
@@ -556,39 +555,14 @@ class button2(tk.Tk):
 
     def bfunc(self):
 
-        def entry_window(bline1,bentry1,bline2,bentry2):
-            enter_box = tk.Toplevel()
-            enter_box.geometry('350x500')
-            enter_box.title(self.bname)
-            def kill_me(): # closes the extra window
-                enter_box.destroy()
-            enter_box.focus_force()
-            enter_box.bind('<FocusOut>', lambda x:kill_me())
-            # enter_box.overrideredirect(True)
-            enter_frame1 = tk.Frame(master=enter_box)
-            enter_frame1.pack()
-            entry1_label = tk.Label(master=enter_frame1,
-                                    text=bline1)
-            entry1_label.pack(pady=(15,0))
-            enter1_entry = tk.Entry(master=enter_frame1, textvariable=bentry1)
-            enter1_entry.pack(pady=(0,15))
-            enter1_entry.focus()
-            entry2_label = tk.Label(master=enter_frame1,
-                                    text=bline2)
-            entry2_label.pack()
-            enter2_entry = tk.Entry(master=enter_frame1, textvariable=bentry2)
-            enter2_entry.pack(pady=(0,15))
-            enter2_entry.focus()
-            enter_print = tk.Button(master=enter_frame1,
-                                    text="Print")
-            enter_print.pack()                                    
-            return
-        entry_window(self.bline1,self.bentry1,self.bline2,self.bentry2)
-        
+        def question_window(bline1,bentry1,bline2,bentry2):
+            pass
+
+        question_window(self.bline1,self.bentry1,self.bline2,self.bentry2)
         self.newText1 = (self.bline1,bentry1)
         self.newText2 = (self.bline2,bentry2)
-        # cust_print(int(self.btype),str(self.bhistory),"",self.newText1)
-        # cust_print(int(self.btype),str(self.bhistory),"",self.newText2)
+        cust_print(int(self.btype),str(self.bhistory),self.bcode,self.newText1)
+        cust_print(int(self.btype),str(self.bhistory),self.bcode,self.newText2)
 
 trial = ConfigParser()
 trial.read("data/custom_buttons.xml")
@@ -599,7 +573,7 @@ for x in trial:
     bname = y["button_name"]
     bhistory = y["history"]
     btype = y["btn_type"]
-    if btype == "5":
+    if btype == 5:
         bline1 = y["line1"]
         bentry1 = y["entry1"]
         bline2 = y["line2"]

@@ -62,3 +62,12 @@ line1 : Username
 entry1 : enter the username here
 line2 : Password
 entry2 : enter the password here
+
+[multi-test2]
+button_name = Big bad more
+history : Baddie
+btn_type = 5
+line1 : IP
+entry1 : enter the username here
+line2 : Label
+entry2 : enter the password here
