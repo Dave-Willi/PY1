@@ -10,6 +10,7 @@ import re
 import win32print
 import win32ui
 from PIL import Image, ImageWin
+# from printApp import clear_custom_qr
 
 # ============ Command definitions ============
 # miscellaneous defined commands
@@ -85,7 +86,7 @@ def history(log): # writes to history log file
 # +++++++++++++++ ZPL PRINT FUNCTIONS +++++++++++++++
 
 # text formatting function
-# Label is 200 dots high (actually larger but buffer for misaligned labels allows for less bad labels)
+# Label is 200 dots high (actually 208 but buffer for misaligned labels allows for less bad labels)
 
 def txt_import(dud,more):
 
@@ -126,7 +127,7 @@ def txt_import(dud,more):
 
 def QRPrint(code,quant,hist,*more):
     printing = "^XA" # Start of label
-    printing += "^LH25,10" # Label Home | position of start of label
+    printing += "^LH15,10" # Label Home | position of start of label
     try:
         printing += txt_import(0,*more)
     except:
@@ -146,7 +147,7 @@ def QRPrint(code,quant,hist,*more):
 
 def txtPrint(quant,hist,*more):
     printing = "^XA" # Start of label
-    printing += "^LH25,10" # Label Home | position of start of label
+    printing += "^LH15,10" # Label Home | position of start of label
     try:
         printing += txt_import(1,*more)
     except:
@@ -161,7 +162,7 @@ def txtPrint(quant,hist,*more):
 
 def BCPrint(code,quant,hist,sa):
     printing = "^XA" # Start of label
-    printing += "^LH25,10" # Label Home | position of start of label
+    printing += "^LH15,10" # Label Home | position of start of label
     printing += "^FO1,20" # Field position
     printing += "^ASN,25,25" # Font to use for this field | font, orientation, height, width
     printing += "^FD" # Field initiator
@@ -189,7 +190,7 @@ def imgPrint(code,quant,hist):
     size = im.size
     sidex = size[0]
     sidey = size[1]
-    if sidex > sidey:
+    if sidex < sidey:
         im = im.rotate(270, expand=True)
         size = im.size
         sidex = size[0]
@@ -209,6 +210,8 @@ def imgPrint(code,quant,hist):
     pic = im.resize(newsize)
 
     # the below sends 1 byte to the printer?! It's a zpl emulator so it might be ignoring it?
+
+    # pic.show()
 
     printer_name = win32print.GetDefaultPrinter ()
     
@@ -322,7 +325,7 @@ def print_auto():
             messagebox.showinfo("","Printing has been aborted")
             return
 
-def cust_print(type,hist,code,txt):
+def cust_print(type,hist,code,*txt):
     quant = str(cfg.cust_quantity.get())
     answer = messagebox.askyesno("Question","This will print " + hist + " labels.\nDo you wish to continue?")
     if answer == True:
@@ -351,7 +354,7 @@ def cust_print(type,hist,code,txt):
 # label type = 2 BarCode label e.g. (2,"Stripes","F1355SV","Asset Tag")
 # label type = 3 Image print e.g. (3,"Pretty picture","img.png")
 # for barcode labels the 'txt' parameter needs either "Serial Number" or "Asset Tag"
-#
+
 
 def BBC():
     y = str(cfg.cust_quantity.get())
@@ -361,12 +364,16 @@ def BBC():
 def ebay_mac():
     y = str(cfg.cust_quantity.get())
     log = ("*Ebay MAC QR tag* x" + y)
+    cfg.qr_pos = 340
+    cfg.qr_mag = 2
     qrcode = "https://azwusenduserguidestorage.blob.core.windows.net/slef-setup-guide/Setup%20Assistant%20-%20Mac.pdf?sp=r&st=2021-07-21T20:03:19Z&se=2022-07-22T04:03:19Z&spr=https&sv=2020-08-04&sr=b&sig=asYaBWQoH1%2FpMQx348TdCyRw6A%2BU8LvqWObiQXSkK4I%3D"
     cust_print(1,log,qrcode,"eBay MAC","QR Code")
 
 def ebay_PC():
     y = str(cfg.cust_quantity.get())
     log = ("*Ebay Windows QR tag* x" + y)
+    cfg.qr_pos = 340
+    cfg.qr_mag = 2
     qrcode = "https://azwusenduserguidestorage.blob.core.windows.net/slef-setup-guide/Setup%20Assistant%20-%20Windows%20PC.pdf?sp=r&st=2021-07-21T20:04:59Z&se=2022-07-22T04:04:59Z&spr=https&sv=2020-08-04&sr=b&sig=UPuaJt%2BZmcqrG%2BqEx5WNPpGp7BInx0gdsaXQlg%2Be4c8%3D"
     cust_print(1,log,qrcode,"eBay Windows","QR Code")
 
