@@ -170,7 +170,7 @@ tab7c.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
 # **********************************************
 # import external functions after setting frames
 # **********************************************
-from conFuncs import quit, set_print, BCPrint, print_auto, BBC, ebay_mac, ebay_PC, to_print, txtPrint, QRPrint, ctrl_p
+from conFuncs import quit, set_print, BCPrint, BBC, ebay_mac, ebay_PC, to_print, txtPrint, QRPrint, ctrl_p
 
 
 # ==========================================
@@ -388,8 +388,8 @@ def clear_all():
 
 def clear_custom_qr(): # clears the group tab text box
     custom_qr.delete(0, END)
-    slide1.set(340)
-    slide2.set(2)
+    # slide1.set(340)
+    # slide2.set(2)
 
 def print_range():
     total_print = 1 + int(cfg.range_end.get()) - int(cfg.range_start.get())
@@ -410,6 +410,73 @@ def print_range():
     else:
         messagebox.showinfo("","Printing has been aborted")
         return
+
+# ============ Auto Range (Experimental)============
+
+def print_auto():
+    if cfg.auto_1.get() == "" or cfg.auto_2.get() == "":
+        return
+    if cfg.auto_1.get() == cfg.auto_2.get():
+        messagebox.showerror("Error", "Error, that's the same tag twice")
+        return
+    auto_prefix1 = ""
+    auto_start = ""
+    auto_suffix1 = "" 
+    auto_prefix2 = ""
+    auto_end = ""
+    auto_suffix2 = ""
+    auto_range_split1 = re.split("(\d+)", cfg.auto_1.get())
+    auto_range_split2 = re.split("(\d+)", cfg.auto_2.get())
+    if len(cfg.auto_1.get()) != len(cfg.auto_2.get()) or len(auto_range_split1) != len(auto_range_split2):
+        messagebox.showerror("Error", "Error, tags don't match")
+        return
+    y = 0
+    z = 0
+    for x in auto_range_split1: #cycles through however many splits exist in the first split
+        if auto_range_split1[y] != auto_range_split2[y]:
+            z = y + 1
+            auto_start = auto_range_split1[y]
+            auto_end = auto_range_split2[y]
+            for x in auto_range_split1[z:]:
+                try:
+                    if auto_range_split1[z] == auto_range_split2[z]:
+                        auto_suffix1 += x
+                        auto_suffix2 += x
+                        z+=1
+                    else:
+                        messagebox.showerror("Error", "Problem determining the suffix")
+                        return
+                except:
+                    break
+            break
+        elif auto_range_split1[y] == auto_range_split2[y]:
+            auto_prefix1 += x
+            auto_prefix2 += x
+        y+=1
+    if auto_prefix1 != auto_prefix2:
+        messagebox.showerror("Error", "Error detected in the prefix. \nPlease check and try again")
+        return
+    elif auto_suffix1 != auto_suffix2:
+        messagebox.showerror("Error", "Error detected in the suffix. \nPlease check and try again")
+        return
+    else:
+        total_print = 1 + int(auto_end) - int(auto_start)
+        if total_print <= 0:
+            messagebox.showerror("Error", "Please sure you have the first and last tags the correct way around")
+            return
+        answer = messagebox.askyesno("Question","This will print " + str(total_print) + " labels.\nDo you wish to continue?")
+        if answer == True:
+            lead_zeros = len(auto_end)
+            prefixed = str(auto_prefix1).upper()
+            suffixed = str(auto_suffix1).upper()
+            for x in range(int(auto_start), int(auto_end)+1):
+                y = str(x).zfill(lead_zeros)
+                log = prefixed + y + suffixed
+                BCPrint(log,1,log,"Asset Tag")
+        else:
+            messagebox.showinfo("","Printing has been aborted")
+            return
+    clear_all()
 
 def print_custom_one(): # print one custom label
     qr = custom_qr.get()
@@ -432,8 +499,10 @@ def print_custom_many(): # print many custom labels
         messagebox.showinfo("","Printing has been aborted")
 
 def print_custom(quant,qr,txt):
-    cfg.qr_pos = slide1.get()
-    cfg.qr_mag = slide2.get()
+    # cfg.qr_pos = slide1.get()
+    # cfg.qr_mag = slide2.get()
+    cfg.qr_pos = 340
+    cfg.qr_mag = 2
     customtxt = list()
     # txt = custom_textbox.get("1.0", END)
     txt = re.split("\n",txt)
@@ -673,10 +742,10 @@ mezz_print_button.grid(row=2, sticky=W)
 def reset_print():
     to_print("^MNY","")
 
-reset_printer_btn = tk.Button(master=frame1,
-                    text="Reset Printer",
-                    command=reset_print)
-reset_printer_btn.grid(row=4, sticky=EW)
+# reset_printer_btn = tk.Button(master=frame1,
+#                     text="Reset Printer",
+#                     command=reset_print)
+# reset_printer_btn.grid(row=4, sticky=EW)
 
 set_printer_btn = tk.Button(master=frame1,
                     text="Map Printers",
@@ -959,21 +1028,21 @@ custom_qr = tk.Entry(master=tab7a,
                     width=70)
 custom_qr.pack(side=LEFT, padx=10, pady=(10,0))
 
-slide1_label = tk.Label(master=tab7aa,
-                        text="QR position: ")
-slide1_label.pack(side=LEFT)
+# slide1_label = tk.Label(master=tab7aa,
+#                         text="QR position: ")
+# slide1_label.pack(side=LEFT)
 
-slide1 = Scale(tab7aa, from_=320, to=380, orient=HORIZONTAL, length=250)
-slide1.set(cfg.qr_pos)
-slide1.pack(side=LEFT)
+# slide1 = Scale(tab7aa, from_=320, to=380, orient=HORIZONTAL, length=250)
+# slide1.set(cfg.qr_pos)
+# slide1.pack(side=LEFT)
 
-slide2 = Scale(tab7aa, from_=1, to=10, orient=HORIZONTAL)
-slide2.set(cfg.qr_mag)
-slide2.pack(side=RIGHT)
+# slide2 = Scale(tab7aa, from_=1, to=10, orient=HORIZONTAL)
+# slide2.set(cfg.qr_mag)
+# slide2.pack(side=RIGHT)
 
-slide2_label = tk.Label(master=tab7aa,
-                        text="QR size: ")
-slide2_label.pack(side=RIGHT)
+# slide2_label = tk.Label(master=tab7aa,
+#                         text="QR size: ")
+# slide2_label.pack(side=RIGHT)
 
 custom_clear = tk.Button(master=tab7b,
                         text="Clear QR Code",
@@ -1068,7 +1137,7 @@ if flag_2a == "homebuild":
 # ==========================================
 
 version_label = tk.Label(master=frame1,
-                            text="Version 1.0.13",
+                            text="Version 1.0.14",
                             font=("courier new", 10))
 version_label.grid(row=10, sticky=EW)
 

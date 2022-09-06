@@ -3,7 +3,7 @@ button_name = This appears on the button
 history : This appears in the log file
 btn_type = This selects the btn_type of label (0=text, 1=QR, 2=Barcode, 3=Image)
 code : this is the code or image file that will be printed
-text = This is plain text that will be printed. "Asset Tag:" or "Serial Number:" for barcodes. Use $2 for a new line
+text = This is plain text that will be printed. "Asset Tag:" or "Serial Number:" for barcodes. Use $2for a new line
 
 [BBC]
 button_name = BBC
@@ -16,202 +16,58 @@ text =
 button_name = eBay MAC QR Code
 history : ebay mac qr
 btn_type = 1
-code : https://azwusenduserguidestorage.blob.core.windows.net/slef-setup-guide/Setup Assistant - Mac.pdf
-text = eBay MAC $2 QR Code
+code : https://azwusenduserguidestorage.blob.core.windows.net/slef-setup-guide/Setup%%20Assistant%%20-%%20Mac.pdf?sp=r&st=2021-07-21T20:03:19Z&se=2022-07-22T04:03:19Z&spr=https&sv=2020-08-04&sr=b&sig=asYaBWQoH1%%2FpMQx348TdCyRw6A%%2BU8LvqWObiQXSkK4I%%3D
+text = eBay MAC $2QR Code
 
 [ebay_win]
-button_name = eBay MAC Windows Code
+button_name = eBay Windows Code
 history : ebay mac qr
 btn_type = 1
-code : https://azwusenduserguidestorage.blob.core.windows.net/slef-setup-guide/Setup Assistant - Mac.pdf
-text = eBay Windows QR Code
+code : https://azwusenduserguidestorage.blob.core.windows.net/slef-setup-guide/Setup%%20Assistant%%20-%%20Windows%%20PC.pdf?sp=r&st=2021-07-21T20:04:59Z&se=2022-07-22T04:04:59Z&spr=https&sv=2020-08-04&sr=b&sig=UPuaJt%%2BZmcqrG%%2BqEx5WNPpGp7BInx0gdsaXQlg%%2Be4c8%%3D
+text = eBay Windows $2QR Code
 
 [apple]
 button_name = Apple
 history : Apple
 btn_type = 2
 code : IHaveAPen
-text = Serial Number :
+text= Serial Number :
 
 [pen]
 button_name = 2 line Pen
-history : Pen
+history : Pen x2
 btn_type = 0
 code : 
-text = I have a $2 pineapple pen
+text = I have a $2pineapple pen
 
 [pen2]
 button_name = Pen 2
-history : Pen
+history : Pen2
 btn_type = 0
 code : 
 text = I have a pineapple pen
 
 [pen3]
 button_name = Pen 3
-history : Pen
+history : Pen3
 btn_type = 0
 code : 
-text = I have a $2 pineapple pen
+text = I have a $2pineapple pen
 
-[pen4]
-button_name = Pen 4
-history : Pen
-btn_type = 0
-code : 
-text = I have a $2 pineapple pen
+[multi-test]
+button_name = Big bad
+history : Baddie
+btn_type = 5
+line1 : Username
+entry1 : enter the username here
+line2 : Password
+entry2 : enter the password here
 
-[pen5]
-button_name = Pen 5
-history : Pen
-btn_type = 0
-code : 
-text = I have a $2 pineapple pen
-
-[pen6]
-button_name = Pen
-history : Pen
-btn_type = 0
-code : 
-text = I have a $2 pineapple pen
-
-[pen7]
-button_name = Pen
-history : Pen
-btn_type = 0
-code : 
-text = I have a $2 pineapple pen
-
-[pen8]
-button_name = Pen
-history : Pen
-btn_type = 0
-code : 
-text = I have a $2 pineapple pen
-
-[pen9]
-button_name = Pen
-history : Pen
-btn_type = 0
-code : 
-text = I have a $2 pineapple pen
-
-[pen10]
-button_name = Pen
-history : Pen
-btn_type = 0
-code : 
-text = I have a $2 pineapple pen
-
-[pen11]
-button_name = Pen
-history : Pen
-btn_type = 0
-code : 
-text = I have a $2 pineapple pen
-
-[pen12]
-button_name = Pen
-history : Pen
-btn_type = 0
-code : 
-text = I have a $2 pineapple pen
-
-[pen13]
-button_name = Pen
-history : Pen
-btn_type = 0
-code : 
-text = I have a $2 pineapple pen
-
-[pen14]
-button_name = Pen
-history : Pen
-btn_type = 0
-code : 
-text = I have a $2 pineapple pen
-
-[pen15]
-button_name = Pen
-history : Pen
-btn_type = 0
-code : 
-text = I have a $2 pineapple pen
-
-[pen16]
-button_name = Pen
-history : Pen
-btn_type = 0
-code : 
-text = I have a $2 pineapple pen
-
-[pen17]
-button_name = Pen
-history : Pen
-btn_type = 0
-code : 
-text = I have a $2 pineapple pen
-
-[pen18]
-button_name = Pen
-history : Pen
-btn_type = 0
-code : 
-text = I have a $2 pineapple pen
-
-[pen19]
-button_name = Pen
-history : Pen
-btn_type = 0
-code : 
-text = I have a $2 pineapple pen
-
-[pen20]
-button_name = Pen
-history : Pen
-btn_type = 0
-code : 
-text = I have a $2 pineapple pen
-
-[pen21]
-button_name = Pen
-history : Pen
-btn_type = 0
-code : 
-text = I have a $2 pineapple pen
-
-[pen22]
-button_name = Pen
-history : Pen
-btn_type = 0
-code : 
-text = I have a $2 pineapple pen
-
-[pen23]
-button_name = Pen
-history : Pen
-btn_type = 0
-code : 
-text = I have a $2 pineapple pen
-
-[pen24]
-button_name = Pen
-history : Pen
-btn_type = 0
-code : 
-text = I have a $2 pineapple pen
-
-[pen25]
-button_name = Pen
-history : Pen
-btn_type = 0
-code : 
-text = I have a $2 pineapple pen
-
-[pen26]
-button_name = Pen
-history : Pen
-btn_type = 0
-code : 
-text = I have a $2 pineapple pen $2 
-    do you have a pen?
+[multi-test2]
+button_name = Big bad more
+history : Baddie
+btn_type = 5
+line1 : IP
+entry1 : enter the ip here
+line2 : Label
+entry2 : enter the label here

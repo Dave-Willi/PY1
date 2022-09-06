@@ -99,16 +99,16 @@ def txt_import(dud,more):
     if dud == 0:
         dud_length = 640
     elif dud == 1:
-        dud_length = 1000
+        dud_length = 850
     if sub_total == 0:
         return ""
     index = 0
     try:
         font_size_max = max(more, key=len)
         txt_length = len(font_size_max)
-        font_size = min(round(200/(sub_total)),round(dud_length/txt_length),60)
+        font_size = min(round(190/(sub_total)),round(dud_length/txt_length),60)
     except:
-        font_size = min(round(200/(sub_total)),100)
+        font_size = min(round(190/(sub_total)),100)
     txt_printing = ""
     for x in (more):
         txt_printing += "^A0N," + str(font_size)
@@ -259,72 +259,6 @@ def to_print(zyx, log):
         con_error()
         return
 
-# ============ Auto Range (Experimental)============
-
-def print_auto():
-    if cfg.auto_1.get() == "" or cfg.auto_2.get() == "":
-        return
-    if cfg.auto_1.get() == cfg.auto_2.get():
-        messagebox.showerror("Error", "Error, that's the same tag twice")
-        return
-    auto_prefix1 = ""
-    auto_start = ""
-    auto_suffix1 = "" 
-    auto_prefix2 = ""
-    auto_end = ""
-    auto_suffix2 = ""
-    auto_range_split1 = re.split("(\d+)", cfg.auto_1.get())
-    auto_range_split2 = re.split("(\d+)", cfg.auto_2.get())
-    if len(cfg.auto_1.get()) != len(cfg.auto_2.get()) or len(auto_range_split1) != len(auto_range_split2):
-        messagebox.showerror("Error", "Error, tags don't match")
-        return
-    y = 0
-    z = 0
-    for x in auto_range_split1: #cycles through however many splits exist in the first split
-        if auto_range_split1[y] != auto_range_split2[y]:
-            z = y + 1
-            auto_start = auto_range_split1[y]
-            auto_end = auto_range_split2[y]
-            for x in auto_range_split1[z:]:
-                try:
-                    if auto_range_split1[z] == auto_range_split2[z]:
-                        auto_suffix1 += x
-                        auto_suffix2 += x
-                        z+=1
-                    else:
-                        messagebox.showerror("Error", "Problem determining the suffix")
-                        return
-                except:
-                    break
-            break
-        elif auto_range_split1[y] == auto_range_split2[y]:
-            auto_prefix1 += x
-            auto_prefix2 += x
-        y+=1
-    if auto_prefix1 != auto_prefix2:
-        messagebox.showerror("Error", "Error detected in the prefix. \nPlease check and try again")
-        return
-    elif auto_suffix1 != auto_suffix2:
-        messagebox.showerror("Error", "Error detected in the suffix. \nPlease check and try again")
-        return
-    else:
-        total_print = 1 + int(auto_end) - int(auto_start)
-        if total_print <= 0:
-            messagebox.showerror("Error", "Please sure you have the first and last tags the correct way around")
-            return
-        answer = messagebox.askyesno("Question","This will print " + str(total_print) + " labels.\nDo you wish to continue?")
-        if answer == True:
-            lead_zeros = len(auto_end)
-            prefixed = str(auto_prefix1).upper()
-            suffixed = str(auto_suffix1).upper()
-            for x in range(int(auto_start), int(auto_end)+1):
-                y = str(x).zfill(lead_zeros)
-                log = prefixed + y + suffixed
-                BCPrint(log,1,log,"Asset Tag")
-        else:
-            messagebox.showinfo("","Printing has been aborted")
-            return
-
 def cust_print(type,hist,code,*txt):
     quant = str(cfg.cust_quantity.get())
     answer = messagebox.askyesno("Question","This will print " + hist + " labels.\nDo you wish to continue?")
@@ -360,6 +294,7 @@ def BBC():
     y = str(cfg.cust_quantity.get())
     log = ("*BBC Tag* x" + y)
     cust_print(3,log,"data/bbc.png")
+    cfg.cust_quantity.set(1)
 
 def ebay_mac():
     y = str(cfg.cust_quantity.get())
@@ -368,6 +303,7 @@ def ebay_mac():
     cfg.qr_mag = 2
     qrcode = "https://azwusenduserguidestorage.blob.core.windows.net/slef-setup-guide/Setup%20Assistant%20-%20Mac.pdf?sp=r&st=2021-07-21T20:03:19Z&se=2022-07-22T04:03:19Z&spr=https&sv=2020-08-04&sr=b&sig=asYaBWQoH1%2FpMQx348TdCyRw6A%2BU8LvqWObiQXSkK4I%3D"
     cust_print(1,log,qrcode,"eBay MAC","QR Code")
+    cfg.cust_quantity.set(1)
 
 def ebay_PC():
     y = str(cfg.cust_quantity.get())
@@ -376,6 +312,7 @@ def ebay_PC():
     cfg.qr_mag = 2
     qrcode = "https://azwusenduserguidestorage.blob.core.windows.net/slef-setup-guide/Setup%20Assistant%20-%20Windows%20PC.pdf?sp=r&st=2021-07-21T20:04:59Z&se=2022-07-22T04:04:59Z&spr=https&sv=2020-08-04&sr=b&sig=UPuaJt%2BZmcqrG%2BqEx5WNPpGp7BInx0gdsaXQlg%2Be4c8%3D"
     cust_print(1,log,qrcode,"eBay Windows","QR Code")
+    cfg.cust_quantity.set(1)
 
 # Import cfg last!!
 import cfg
