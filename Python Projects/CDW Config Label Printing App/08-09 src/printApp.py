@@ -689,10 +689,6 @@ except:
 #         btext = y["text"]
 #         button(bname, bhistory, btype, bcode, btext)
 
-tryout = ConfigParser()
-tryout.read("data/custom_buttons.xml")
-print(tryout)
-
 # ==========================================
 # =============== Title header =============
 # ==========================================

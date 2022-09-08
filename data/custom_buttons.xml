@@ -59,15 +59,15 @@ button_name = Big bad
 history : Baddie
 btn_type = 5
 line1 : Username
-entry1 : enter the username here
+entry1 : 
 line2 : Password
-entry2 : enter the password here
+entry2 : 
 
 [multi-test2]
 button_name = Big bad more
 history : Baddie
 btn_type = 5
 line1 : IP
-entry1 : enter the ip here
+entry1 : 
 line2 : Label
-entry2 : enter the label here
+entry2 : 
