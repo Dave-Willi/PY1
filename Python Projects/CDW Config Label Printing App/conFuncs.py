@@ -133,7 +133,8 @@ def QRPrint(code,quant,hist,*more):
     except:
         printing += txt_import(0,more)
     printing += "^FO" + str(cfg.qr_pos) +",10" # Position of QR code
-    printing += "^BQN,2," + str(cfg.qr_mag) # QR Initiator | last number is magnification/size
+    printing += "^BQN,2," + str(cfg.qr_mag) + ",L" # QR Initiator | last number is magnification/size
+    # printing += "^BQN,2," + "3" + ",L" # QR Initiator | last number is magnification/size
     printing += "^FDQA," # Field Initiator (QA is added for QR codes)
     printing += str(code) # QR Entry
     printing += "^FS" # end of field
@@ -265,11 +266,11 @@ def cust_print(type,hist,code,*txt):
     if answer == True:
         try:
             if type == 0:
-                txtPrint(quant,hist,txt)
+                txtPrint(quant,hist,*txt)
             elif type == 1:
-                QRPrint(code,quant,hist,txt)
+                QRPrint(code,quant,hist,*txt)
             elif type == 2:
-                BCPrint(code,quant,hist,txt)
+                BCPrint(code,quant,hist,*txt)
             elif type == 3:
                 imgPrint(code,quant,hist)
         except:

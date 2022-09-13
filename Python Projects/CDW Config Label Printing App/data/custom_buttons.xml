@@ -16,14 +16,14 @@ text =
 button_name = eBay MAC QR Code
 history : ebay mac qr
 btn_type = 1
-code : https://azwusenduserguidestorage.blob.core.windows.net/slef-setup-guide/Setup%%20Assistant%%20-%%20Mac.pdf?sp=r&st=2021-07-21T20:03:19Z&se=2022-07-22T04:03:19Z&spr=https&sv=2020-08-04&sr=b&sig=asYaBWQoH1%%2FpMQx348TdCyRw6A%%2BU8LvqWObiQXSkK4I%%3D
+code : https://azwusenduserguidestorage.blob.core.windows.net/slef-setup-guide/Setup%%20Assistant%%20-%%20Mac.pdf
 text = eBay MAC $2QR Code
 
 [ebay_win]
 button_name = eBay Windows Code
 history : ebay mac qr
 btn_type = 1
-code : https://azwusenduserguidestorage.blob.core.windows.net/slef-setup-guide/Setup%%20Assistant%%20-%%20Windows%%20PC.pdf?sp=r&st=2021-07-21T20:04:59Z&se=2022-07-22T04:04:59Z&spr=https&sv=2020-08-04&sr=b&sig=UPuaJt%%2BZmcqrG%%2BqEx5WNPpGp7BInx0gdsaXQlg%%2Be4c8%%3D
+code : https://azwusenduserguidestorage.blob.core.windows.net/slef-setup-guide/Setup%%20Assistant%%20-%%20Windows%%20PC.pdf
 text = eBay Windows $2QR Code
 
 [apple]

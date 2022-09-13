@@ -21,8 +21,8 @@ import tkinter.scrolledtext as tkscrolled
 import re
 # from time import sleep
 
-self = tk.Tk()
-self.title("Config printing app")
+root = tk.Tk()
+root.title("Config printing app")
 
 w = 1080 # width for the Tk root
 h = 720 # height for the Tk root
@@ -32,8 +32,8 @@ h = 720 # height for the Tk root
 # ==========================================
 
 # get screen width and height
-ws = self.winfo_screenwidth() # width of the screen
-hs = self.winfo_screenheight() # height of the screen
+ws = root.winfo_screenwidth() # width of the screen
+hs = root.winfo_screenheight() # height of the screen
 
 # calculate x and y coordinates for the Tk root window
 x = (ws/2) - (w/2)
@@ -41,14 +41,14 @@ y = (hs/2) - (h/2)
 
 # set the dimensions of the screen 
 # and where it is placed
-self.geometry('%dx%d+%d+%d' % (w, h, x, y))
-self.resizable(False,False)
+root.geometry('%dx%d+%d+%d' % (w, h, x, y))
+root.resizable(False,False)
 try:
-    self.iconphoto(False, tk.PhotoImage(file='data/CDW_icon.png'))
+    root.iconphoto(False, tk.PhotoImage(file='data/CDW_icon.png'))
 except:
     pass
 # Set default font style for MOST widgets, don't not effect notebook tabs and maybe more
-self.option_add( "*font", "aerial 14" )
+root.option_add( "*font", "aerial 14" )
 
 # ***************************************************************
 # cfg holds global variables. Must import AFTER initiating window
@@ -73,7 +73,7 @@ def resource_path(relative_path):
 # header is further split into 3 sections = frametop1, frametop2, frametop3
 # Body is split into 2x1 = frame1, frame2
 
-frametop = tk.Frame(self,
+frametop = tk.Frame(root,
                     height=120,
                     width=780)
 frametop.pack(side=TOP, fill=X, expand=False)
@@ -94,12 +94,12 @@ frametop2 = tk.Frame(frametop,
 frametop2.pack(side=RIGHT)
 frametop2.place(relx=0.25, y=15)
 
-frame1 = tk.Frame(self,
+frame1 = tk.Frame(root,
                 height=490,
                 width=200)
 frame1.pack(padx=10, pady=10, anchor=W, fill=Y, expand=False, side=LEFT)
 
-frame2 = Notebook (self, 
+frame2 = Notebook (root, 
                     height=470,
                     width=680,)
 frame2.pack(padx=10,pady=10, anchor=E, fill=BOTH, expand=True, side=RIGHT)
@@ -134,8 +134,8 @@ tab4a = tk.Frame(tab4)
 tab4b = tk.Frame(tab4)
 tab4c = tk.Frame(tab4)
 tab5 = tk.Frame(frame2) # customer labels
-# tab5a = tk.Frame(tab5)
-# tab5b = tk.Frame(tab5)
+tab5a = tk.Frame(tab5)
+tab5b = tk.Frame(tab5)
 tab6 = tk.Frame(frame2) # reports
 tab7 = tk.Frame(frame2) # custom labels
 tab7a = tk.Frame(tab7)
@@ -157,8 +157,8 @@ tab3a.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
 tab4a.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10, fill=BOTH)
 tab4b.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
 tab4c.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10, fill=BOTH)
-# tab5a.pack(anchor=CENTER, expand=False, side=TOP, pady=(10,0))
-# tab5b.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10, fill=BOTH)
+tab5a.pack(anchor=CENTER, expand=False, side=TOP, pady=(10,0))
+tab5b.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10, fill=BOTH)
 tab7a.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
 tab7aa.pack(anchor=CENTER, expand=False, side=TOP)
 tab7ab.pack(anchor=CENTER, expand=False, side=TOP)
@@ -168,7 +168,7 @@ tab7c.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
 # **********************************************
 # import external functions after setting frames
 # **********************************************
-from conFuncs import quit, set_print, BCPrint, BBC, ebay_mac, ebay_PC, to_print, txtPrint, QRPrint, ctrl_p
+from conFuncs import cust_print, quit, set_print, BCPrint, BBC, ebay_mac, ebay_PC, to_print, txtPrint, QRPrint, ctrl_p
 
 
 # ==========================================
@@ -177,7 +177,7 @@ from conFuncs import quit, set_print, BCPrint, BBC, ebay_mac, ebay_PC, to_print,
 # definitions required for the buttons on the left side menu to function
 
 def reset(): # stop and restart app. Can be disabled for final release
-    self.destroy()
+    root.destroy()
     subprocess.call([sys.executable, os.path.realpath(__file__)] + sys.argv[1:])
 
 def set_tag(): # Change between asset tag and serial number. Sets colour of entry box as an added hint for which is selected. Disable range tabs in serial number mode.
@@ -214,7 +214,7 @@ def help_me(): # Set custom help dialog boxes for each page/tab
 
 
 def set_config(tab=""): # additional window with extra info such as print log
-    omni_box = Toplevel(self)
+    omni_box = Toplevel(root)
     omni_box.title("Settings and about")
     omni_box.overrideredirect(True)
 
@@ -225,8 +225,8 @@ def set_config(tab=""): # additional window with extra info such as print log
     h = 740 # height for the Tk root
 
     # get screen width and height
-    ws = self.winfo_screenwidth() # width of the screen
-    hs = self.winfo_screenheight() # height of the screen
+    ws = root.winfo_screenwidth() # width of the screen
+    hs = root.winfo_screenheight() # height of the screen
 
     # calculate x and y coordinates for the Tk root window
     x = (ws/2) + (550)
@@ -578,116 +578,111 @@ except:
 # # ================= Classes ================
 # # ==========================================
 
-# class button(tk.Tk):
-#     def __init__(self, bname, bhistory, btype, bcode, btext):
-#         self.bname = bname
-#         self.bhistory = bhistory
-#         self.btype = btype
-#         self.bcode = bcode
-#         self.btext = btext
+class button(tk.Tk):
+    def __init__(self, y):
+        self.bname = y["button_name"]
+        self.bhistory = y["history"]
+        self.btype = y["btn_type"]
+        self.bcode = y["code"]
+        self.btext = y["text"]
 
-#         name = tk.Button(master=tab5b,
-#                         text=self.bname,
-#                         command=self.bfunc,
-#                         width=20)
-#         name.grid(pady=(0,10), padx=(0,10),row=cfg.y_row, column=cfg.x_col)
-#         if cfg.x_col >= 2:
-#             cfg.y_row += 1
-#             cfg.x_col = 0
-#         else:
-#             cfg.x_col += 1
-#         return
+        name = tk.Button(master=tab5b,
+                        text=self.bname,
+                        command=self.bfunc,
+                        width=20)
+        name.grid(pady=(0,10), padx=(0,10),row=cfg.y_row, column=cfg.x_col)
+        if cfg.x_col >= 2:
+            cfg.y_row += 1
+            cfg.x_col = 0
+        else:
+            cfg.x_col += 1
+        return
 
-#     def bfunc(self):
-#         if int(self.btype) != 2:
-#             self.newText = tuple(self.btext.split('$2'))
-#         else:
-#             self.newText = str(self.btext)
-#         cust_print(int(self.btype),str(self.bhistory),self.bcode,self.newText)
+    def bfunc(self):
+        if int(self.btype) != 2:
+            self.newText = tuple(self.btext.split('$2'))
+        else:
+            self.newText = str(self.btext)
+        cust_print(int(self.btype),str(self.bhistory),self.bcode,self.newText)
 
-# class button2(tk.Tk):
-#     def __init__(self, bname, bhistory, bline1, bentry1, bline2, bentry2):
-#         self.bname = bname
-#         self.bhistory = bhistory
-#         self.btype = 0
-#         self.bline1 = bline1
-#         self.bentry1 = bentry1
-#         self.bline2 = bline2
-#         self.bentry2 = bentry2
-#         name = tk.Button(master=tab5b,
-#                         text=self.bname,
-#                         command=self.bfunc,
-#                         width=20)
-#         name.grid(pady=(0,10), padx=(0,10),row=cfg.y_row, column=cfg.x_col)
-#         if cfg.x_col >= 2:
-#             cfg.y_row += 1
-#             cfg.x_col = 0
-#         else:
-#             cfg.x_col += 1
-#         return
+class button2(tk.Tk):
+    def __init__(self, y):
+        self.bname = y["button_name"]
+        self.bhistory = y["history"]
+        self.btype = y["btn_type"]
+        self.bline1 = y["line1"]
+        self.bentry1 = y["entry1"]
+        self.bline2 = y["line2"]
+        self.bentry2 = y["entry2"]
+        name = tk.Button(master=tab5b,
+                        text=self.bname,
+                        command=self.bfunc,
+                        width=20)
+        name.grid(pady=(0,10), padx=(0,10),row=cfg.y_row, column=cfg.x_col)
+        if cfg.x_col >= 2:
+            cfg.y_row += 1
+            cfg.x_col = 0
+        else:
+            cfg.x_col += 1
+        return
 
-    
-
-#     def bfunc(self):
-#         def entry_window(bline1,bentry1,bline2,bentry2):
-#             enter_box = tk.Toplevel()
-#             enter_box.geometry('350x500')
-#             enter_box.title(self.bname)
-#             def kill_me(): # closes the extra window
-#                 enter_box.destroy()
-#             # enter_box.focus_force()
-#             # enter_box.bind('<FocusOut>', lambda x:kill_me())
-#             # enter_box.overrideredirect(True)
-#             enter_frame1 = tk.Frame(master=enter_box)
-#             enter_frame1.pack()
-#             entry1_label = tk.Label(master=enter_frame1,
-#                                     text=bline1)
-#             entry1_label.pack(pady=(15,0))
-#             enter1_entry = tk.Entry(master=enter_frame1, textvariable=self.bentry1, text=self.bentry1)
-#             enter1_entry.pack(pady=(0,15))
-#             enter1_entry.focus()
-#             entry2_label = tk.Label(master=enter_frame1,
-#                                     text=bline2)
-#             entry2_label.pack()
-#             enter2_entry = tk.Entry(master=enter_frame1, textvariable=self.bentry2)
-#             enter2_entry.pack(pady=(0,15))
-#             enter_print = tk.Button(master=enter_frame1,
-#                                     text="Print",
-#                                     command=an_print)
-#             enter_print.pack()                                    
-#             return
+    def bfunc(self):
+        def entry_window(bline1,bline2):
+            enter_box = tk.Toplevel()
+            enter_box.geometry('350x500')
+            enter_box.title(self.bname)
+            enter_frame1 = tk.Frame(master=enter_box)
+            enter_frame1.pack()
+            entry1_label = tk.Label(master=enter_frame1,
+                                    text=bline1)
+            entry1_label.pack(pady=(15,0))
+            enter1_entry = tk.Entry(master=enter_frame1, textvariable=cfg.bentry1)
+            enter1_entry.pack(pady=(0,15))
+            enter1_entry.focus()
+            entry2_label = tk.Label(master=enter_frame1,
+                                    text=bline2)
+            entry2_label.pack()
+            enter2_entry = tk.Entry(master=enter_frame1, textvariable=cfg.bentry2)
+            enter2_entry.pack(pady=(0,15))
+            enter_print = tk.Button(master=enter_frame1,
+                                    text="Print",
+                                    command=an_print)
+            enter_print.pack()
+            # return(bentry1,bentry2)
         
-#         def an_print():
-#             print(self.bentry1)
-#             print(self.bentry2)
-#             pass
+        def an_print():
+            text1 = cfg.bentry1.get()
+            text2 = cfg.bentry2.get()
+            if text1 != "":
+                newtext1 = (self.bline1,text1)
+                txtPrint(int(1),str(self.bhistory),newtext1)
+            if text2 != "":
+                newtext2 = (self.bline2,text2)
+                txtPrint(int(1),str(self.bhistory),newtext2)
+            pass
+        try:
+            for widget in root.winfo_children():
+                if isinstance(widget, tk.Toplevel):
+                    widget.destroy()
+        except:
+            pass
+        cfg.bentry1.set("")
+        cfg.bentry2.set("")
+        entry_window(self.bline1,self.bline2)        
 
-#         entry_window(self.bline1,self.bentry1,self.bline2,self.bentry2)
-        
-#         self.newText1 = (self.bline1,bentry1)
-#         self.newText2 = (self.bline2,bentry2)
-#         # cust_print(int(self.btype),str(self.bhistory),"",self.newText1)
-#         # cust_print(int(self.btype),str(self.bhistory),"",self.newText2)
 
-# trial = ConfigParser()
-# trial.read("data/custom_buttons.xml")
-# for x in trial:
-#     if x == "DEFAULT":
-#         continue
-#     y = trial[x]
-#     bname = y["button_name"]
-#     bhistory = y["history"]
-#     btype = y["btn_type"]
-#     if btype == "5":
-#         bline1 = y["line1"]
-#         bentry1 = y["entry1"]
-#         bline2 = y["line2"]
-#         bentry2 = y["entry2"]
-#         button2(bname, bhistory, bline1, bentry1, bline2, bentry2)
-#     else:
-#         bcode = y["code"]
-#         btext = y["text"]
-#         button(bname, bhistory, btype, bcode, btext)
+
+trial = ConfigParser()
+trial.read("data/custom_buttons.xml")
+for x in trial:
+    if x == "DEFAULT":
+        continue
+    y = trial[x]
+    btype = y["btn_type"]
+    if btype == "5":
+        button2(y)
+    else:
+        button(y)
 
 tryout = ConfigParser()
 tryout.read("data/custom_buttons.xml")
@@ -742,12 +737,13 @@ mezz_print_button.grid(row=2, sticky=W)
 #row=3 is reserved for test printer
 
 def reset_print():
-    to_print("^MNY","")
+    res = str("^MNY")
+    to_print(res,"")
 
-# reset_printer_btn = tk.Button(master=frame1,
-#                     text="Reset Printer",
-#                     command=reset_print)
-# reset_printer_btn.grid(row=4, sticky=EW)
+reset_printer_btn = tk.Button(master=frame1,
+                    text="Reset Printer",
+                    command=reset_print)
+reset_printer_btn.grid(row=4, sticky=EW)
 
 set_printer_btn = tk.Button(master=frame1,
                     text="Map Printers",
@@ -940,33 +936,33 @@ warn_label.pack(side=TOP, padx=40, pady=40)
 # ======== Customer label Tab (tab5) =======
 # ==========================================
 
-print_quantity_label = tk.Label(master=tab5,
+print_quantity_label = tk.Label(master=tab5a,
                             font=12,
                             fg="blue",
                             text="Enter quantity of labels required")
 print_quantity_label.grid(row=0, column=1, pady=20, padx= 10)
 
-print_quantity = tk.Spinbox(master=tab5, from_=1, to=9999,
+print_quantity = tk.Spinbox(master=tab5a, from_=1, to=9999,
                             textvariable=cfg.cust_quantity)
 print_quantity.grid(row=0, column=2, pady=10, padx= 10)
 
-bbc_button = tk.Button(master=tab5,
-                        text="BBC",
-                        command=BBC,
-                        width=20)
-bbc_button.grid(row=2, column=0, pady=10, padx= 10)
+# bbc_button = tk.Button(master=tab5,
+#                         text="BBC",
+#                         command=BBC,
+#                         width=20)
+# bbc_button.grid(row=2, column=0, pady=10, padx= 10)
 
-ebay_mac_button = tk.Button(master=tab5,
-                        text="eBay Mac QR Code",
-                        command=ebay_mac,
-                        width=20)
-ebay_mac_button.grid(row=3, column=0, pady=10, padx= 10)
+# ebay_mac_button = tk.Button(master=tab5,
+#                         text="eBay Mac QR Code",
+#                         command=ebay_mac,
+#                         width=20)
+# ebay_mac_button.grid(row=3, column=0, pady=10, padx= 10)
 
-ebay_pc_button = tk.Button(master=tab5,
-                        text="eBay Windows QR Code",
-                        command=ebay_PC,
-                        width=20)
-ebay_pc_button.grid(row=4, column=0, pady=10, padx= 10)
+# ebay_pc_button = tk.Button(master=tab5,
+#                         text="eBay Windows QR Code",
+#                         command=ebay_PC,
+#                         width=20)
+# ebay_pc_button.grid(row=4, column=0, pady=10, padx= 10)
 
 # ==========================================
 # ========== Reports Tab (tab6) ============
@@ -1139,7 +1135,7 @@ if flag_2a == "homebuild":
 # ==========================================
 
 version_label = tk.Label(master=frame1,
-                            text="Version 1.0.14",
+                            text="Version 1.1",
                             font=("courier new", 10))
 version_label.grid(row=10, sticky=EW)
 
@@ -1151,8 +1147,8 @@ try:
     set_tag()
 except:
     pass
-self.bind('<Return>', return_key)
-self.bind('<Control-p>', ctrl_p)
-self.bind('<Control-P>', ctrl_p)
+root.bind('<Return>', return_key)
+root.bind('<Control-p>', ctrl_p)
+root.bind('<Control-P>', ctrl_p)
 
-self.mainloop()
+root.mainloop()
