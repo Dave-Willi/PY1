@@ -23,6 +23,7 @@ qr_mag = 2 # default QR magnification. range is 1-10
 pCounter = 0
 x_col = 0
 y_row = 0
+button_num = tk.IntVar(value=0)
 
 # ============ Printer Initial Selection ============
 

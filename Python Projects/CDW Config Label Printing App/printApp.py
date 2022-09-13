@@ -15,6 +15,7 @@ import tkinter as tk
 from tkinter import *
 from tkinter import messagebox, filedialog
 from tkinter.ttk import Notebook, Style
+from turtle import title
 from PIL import Image, ImageTk
 from configparser import ConfigParser
 import tkinter.scrolledtext as tkscrolled
@@ -586,11 +587,11 @@ class button(tk.Tk):
         self.bcode = y["code"]
         self.btext = y["text"]
 
-        name = tk.Button(master=tab5b,
+        self.bname = tk.Button(master=tab5b,
                         text=self.bname,
                         command=self.bfunc,
                         width=20)
-        name.grid(pady=(0,10), padx=(0,10),row=cfg.y_row, column=cfg.x_col)
+        self.bname.grid(pady=(0,10), padx=(0,10),row=cfg.y_row, column=cfg.x_col)
         if cfg.x_col >= 2:
             cfg.y_row += 1
             cfg.x_col = 0
@@ -614,11 +615,11 @@ class button2(tk.Tk):
         self.bentry1 = y["entry1"]
         self.bline2 = y["line2"]
         self.bentry2 = y["entry2"]
-        name = tk.Button(master=tab5b,
+        self.bname = tk.Button(master=tab5b,
                         text=self.bname,
                         command=self.bfunc,
                         width=20)
-        name.grid(pady=(0,10), padx=(0,10),row=cfg.y_row, column=cfg.x_col)
+        self.bname.grid(pady=(0,10), padx=(0,10),row=cfg.y_row, column=cfg.x_col)
         if cfg.x_col >= 2:
             cfg.y_row += 1
             cfg.x_col = 0
@@ -644,6 +645,13 @@ class button2(tk.Tk):
             entry2_label.pack()
             enter2_entry = tk.Entry(master=enter_frame1, textvariable=cfg.bentry2)
             enter2_entry.pack(pady=(0,15))
+
+            entry_quant_label = tk.Label(master=enter_frame1, text="Enter number of labels to print")
+            entry_quant_label.pack(pady=(35,0))
+            entry_quantities = tk.Spinbox(master=enter_frame1, from_=1, to=999,
+                                        textvariable=cfg.cust_quantity)
+            entry_quantities.pack()
+
             enter_print = tk.Button(master=enter_frame1,
                                     text="Print",
                                     command=an_print)
@@ -653,12 +661,13 @@ class button2(tk.Tk):
         def an_print():
             text1 = cfg.bentry1.get()
             text2 = cfg.bentry2.get()
+            qty = cfg.cust_quantity.get()
             if text1 != "":
                 newtext1 = (self.bline1,text1)
-                txtPrint(int(1),str(self.bhistory),newtext1)
+                txtPrint(qty,str(self.bhistory),newtext1)
             if text2 != "":
                 newtext2 = (self.bline2,text2)
-                txtPrint(int(1),str(self.bhistory),newtext2)
+                txtPrint(qty,str(self.bhistory),newtext2)
             pass
         try:
             for widget in root.winfo_children():
@@ -670,23 +679,108 @@ class button2(tk.Tk):
         cfg.bentry2.set("")
         entry_window(self.bline1,self.bline2)        
 
+class button3(tk.Tk):
+    def __init__(self, y):
+        qt = y
+        self.bname = qt["button_name"]
+        self.bhistory = qt["history"]
+        self.btype = qt["btn_type"]
+        self.tags = []
+        self.bname = tk.Button(master=tab5b,
+                        text=self.bname,
+                        command=self.bfunc,
+                        width=20)
+        self.bname.grid(pady=(0,10), padx=(0,10),row=cfg.y_row, column=cfg.x_col)
+        if cfg.x_col >= 2:
+            cfg.y_row += 1
+            cfg.x_col = 0
+        else:
+            cfg.x_col += 1
+        return
 
+    def bfunc(self):
+        def entry_window(qt):
+            print(qt)
+            enter_box = tk.Toplevel()
+            enter_box.geometry('350x500')
+            enter_box.title(self.bname)
+            enter_frame1 = tk.Frame(master=enter_box)
+            enter_frame1.pack()
+            tags = []
+            for x in qt:
+                z = str(x)
+                if z.startswith("tag"):
+                    tags.append(qt[z])
+                else:
+                    pass
+                print("tags")
+                print(tags)
+                for i in tags:
+                    enter[i] = tk.Label(text=tags[i])
+                    enter[i].pack()
+                    pass
+
+                # for i in range(1,self.tags):
+                #     enterlabel = tk.Label(text=i)
+                #     enterlabel.pack()
+                    
+                #     enterbox = tk.Entry(enter_frame1)
+                #     enterbox.pack()
+
+            
+            
+
+            entry_quant_label = tk.Label(master=enter_frame1, text="Enter number of labels to print")
+            entry_quant_label.pack(pady=(35,0))
+            entry_quantities = tk.Spinbox(master=enter_frame1, from_=1, to=999,
+                                        textvariable=cfg.cust_quantity)
+            entry_quantities.pack(pady=10)
+
+            enter_print = tk.Button(master=enter_frame1,
+                                    text="Print",
+                                    command=an_print)
+            enter_print.pack()
+            # return(bentry1,bentry2)
+        
+        def an_print():
+            text1 = cfg.bentry1.get()
+            text2 = cfg.bentry2.get()
+            qty = cfg.cust_quantity.get()
+            # if text1 != "":
+            #     newtext1 = (self.tag1,text1)
+            #     txtPrint(qty,str(self.bhistory),newtext1)
+            # if text2 != "":
+            #     newtext2 = (self.bline2,text2)
+            #     txtPrint(qty,str(self.bhistory),newtext2)
+            pass
+        try:
+            for widget in root.winfo_children():
+                if isinstance(widget, tk.Toplevel):
+                    widget.destroy()
+        except:
+            pass
+        
+        cfg.bentry1.set("")
+        cfg.bentry2.set("")
+        entry_window(y) 
 
 trial = ConfigParser()
-trial.read("data/custom_buttons.xml")
+trial.read("data/custom_buttons.ini")
 for x in trial:
     if x == "DEFAULT":
         continue
     y = trial[x]
     btype = y["btn_type"]
     if btype == "5":
-        button2(y)
+        try:
+            button3(y)
+        except:
+            pass
     else:
         button(y)
 
 tryout = ConfigParser()
-tryout.read("data/custom_buttons.xml")
-print(tryout)
+tryout.read("data/custom_buttons.ini")
 
 # ==========================================
 # =============== Title header =============
