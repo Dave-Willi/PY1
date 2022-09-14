@@ -681,10 +681,11 @@ class button2(tk.Tk):
 
 class button3(tk.Tk):
     def __init__(self, y):
-        qt = y
-        self.bname = qt["button_name"]
-        self.bhistory = qt["history"]
-        self.btype = qt["btn_type"]
+        self.qt = y
+        self.bname = self.qt["button_name"]
+        self.bname2 = str(self.bname)
+        self.bhistory = self.qt["history"]
+        self.btype = self.qt["btn_type"]
         self.tags = []
         self.bname = tk.Button(master=tab5b,
                         text=self.bname,
@@ -698,37 +699,50 @@ class button3(tk.Tk):
             cfg.x_col += 1
         return
 
+
     def bfunc(self):
-        def entry_window(qt):
-            print(qt)
+        def entry_window():
             enter_box = tk.Toplevel()
             enter_box.geometry('350x500')
-            enter_box.title(self.bname)
+            enter_box.title(str(self.bname2))
             enter_frame1 = tk.Frame(master=enter_box)
             enter_frame1.pack()
-            tags = []
-            for x in qt:
+            self.tags = []
+            for x in self.qt:
                 z = str(x)
                 if z.startswith("tag"):
-                    tags.append(qt[z])
+                    self.tags.append(self.qt[z])
                 else:
                     pass
-                print("tags")
-                print(tags)
-                for i in tags:
-                    enter[i] = tk.Label(text=tags[i])
-                    enter[i].pack()
+            for i in self.tags:
+                enter = tk.Label(master=enter_frame1,text=i)
+                enter.pack()
+                dataEntry = tk.Entry(master=enter_frame1)
+                dataEntry.pack()
+                pass
+
+            def an_print():
+                entries = []
+                try:
+                    for widget in enter_frame1.winfo_children():
+                        if isinstance(widget, tk.Entry):
+                            entries.append(widget.get())
+                except Exception as e:
+                    print(e)
+                    print("Couldn't collate answers")
+                pass
+                try:
+                    qty = cfg.cust_quantity.get()
+                    newText = ()
+                    for x in range(len(self.tags)):
+                        print(entries[x])
+                        if entries[x] != "":
+                            newText = (self.tags[x],entries[x])
+                            txtPrint(qty,str(self.bhistory),newText)
+                        else:
+                            pass
+                except:
                     pass
-
-                # for i in range(1,self.tags):
-                #     enterlabel = tk.Label(text=i)
-                #     enterlabel.pack()
-                    
-                #     enterbox = tk.Entry(enter_frame1)
-                #     enterbox.pack()
-
-            
-            
 
             entry_quant_label = tk.Label(master=enter_frame1, text="Enter number of labels to print")
             entry_quant_label.pack(pady=(35,0))
@@ -741,28 +755,15 @@ class button3(tk.Tk):
                                     command=an_print)
             enter_print.pack()
             # return(bentry1,bentry2)
+            
         
-        def an_print():
-            text1 = cfg.bentry1.get()
-            text2 = cfg.bentry2.get()
-            qty = cfg.cust_quantity.get()
-            # if text1 != "":
-            #     newtext1 = (self.tag1,text1)
-            #     txtPrint(qty,str(self.bhistory),newtext1)
-            # if text2 != "":
-            #     newtext2 = (self.bline2,text2)
-            #     txtPrint(qty,str(self.bhistory),newtext2)
-            pass
         try:
             for widget in root.winfo_children():
                 if isinstance(widget, tk.Toplevel):
                     widget.destroy()
         except:
             pass
-        
-        cfg.bentry1.set("")
-        cfg.bentry2.set("")
-        entry_window(y) 
+        entry_window()
 
 trial = ConfigParser()
 trial.read("data/custom_buttons.ini")
