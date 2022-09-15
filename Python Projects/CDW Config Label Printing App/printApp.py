@@ -169,7 +169,7 @@ tab7c.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
 # **********************************************
 # import external functions after setting frames
 # **********************************************
-from conFuncs import cust_print, quit, set_print, BCPrint, BBC, ebay_mac, ebay_PC, to_print, txtPrint, QRPrint, ctrl_p
+from conFuncs import cust_print, quit, set_print, BCPrint, BBC, ebay_mac, ebay_PC, to_print, txtPrint, QRPrint, ctrl_p, history
 
 
 # ==========================================
@@ -500,7 +500,7 @@ def print_custom_many(): # print many custom labels
 def print_custom(quant,qr,txt):
     # cfg.qr_pos = slide1.get()
     # cfg.qr_mag = slide2.get()
-    cfg.qr_pos = 340
+    cfg.qr_pos = 325
     cfg.qr_mag = 2
     customtxt = list()
     # txt = custom_textbox.get("1.0", END)
@@ -606,78 +606,78 @@ class button(tk.Tk):
             self.newText = str(self.btext)
         cust_print(int(self.btype),str(self.bhistory),self.bcode,self.newText)
 
-class button2(tk.Tk):
-    def __init__(self, y):
-        self.bname = y["button_name"]
-        self.bhistory = y["history"]
-        self.btype = y["btn_type"]
-        self.bline1 = y["line1"]
-        self.bentry1 = y["entry1"]
-        self.bline2 = y["line2"]
-        self.bentry2 = y["entry2"]
-        self.bname = tk.Button(master=tab5b,
-                        text=self.bname,
-                        command=self.bfunc,
-                        width=20)
-        self.bname.grid(pady=(0,10), padx=(0,10),row=cfg.y_row, column=cfg.x_col)
-        if cfg.x_col >= 2:
-            cfg.y_row += 1
-            cfg.x_col = 0
-        else:
-            cfg.x_col += 1
-        return
+# class button2(tk.Tk):
+#     def __init__(self, y):
+#         self.bname = y["button_name"]
+#         self.bhistory = y["history"]
+#         self.btype = y["btn_type"]
+#         self.bline1 = y["line1"]
+#         self.bentry1 = y["entry1"]
+#         self.bline2 = y["line2"]
+#         self.bentry2 = y["entry2"]
+#         self.bname = tk.Button(master=tab5b,
+#                         text=self.bname,
+#                         command=self.bfunc,
+#                         width=20)
+#         self.bname.grid(pady=(0,10), padx=(0,10),row=cfg.y_row, column=cfg.x_col)
+#         if cfg.x_col >= 2:
+#             cfg.y_row += 1
+#             cfg.x_col = 0
+#         else:
+#             cfg.x_col += 1
+#         return
 
-    def bfunc(self):
-        def entry_window(bline1,bline2):
-            enter_box = tk.Toplevel()
-            enter_box.geometry('350x500')
-            enter_box.title(self.bname)
-            enter_frame1 = tk.Frame(master=enter_box)
-            enter_frame1.pack()
-            entry1_label = tk.Label(master=enter_frame1,
-                                    text=bline1)
-            entry1_label.pack(pady=(15,0))
-            enter1_entry = tk.Entry(master=enter_frame1, textvariable=cfg.bentry1)
-            enter1_entry.pack(pady=(0,15))
-            enter1_entry.focus()
-            entry2_label = tk.Label(master=enter_frame1,
-                                    text=bline2)
-            entry2_label.pack()
-            enter2_entry = tk.Entry(master=enter_frame1, textvariable=cfg.bentry2)
-            enter2_entry.pack(pady=(0,15))
+#     def bfunc(self):
+#         def entry_window(bline1,bline2):
+#             enter_box = tk.Toplevel()
+#             enter_box.geometry('350x500')
+#             enter_box.title(self.bname)
+#             enter_frame1 = tk.Frame(master=enter_box)
+#             enter_frame1.pack()
+#             entry1_label = tk.Label(master=enter_frame1,
+#                                     text=bline1)
+#             entry1_label.pack(pady=(15,0))
+#             enter1_entry = tk.Entry(master=enter_frame1, textvariable=cfg.bentry1)
+#             enter1_entry.pack(pady=(0,15))
+#             enter1_entry.focus()
+#             entry2_label = tk.Label(master=enter_frame1,
+#                                     text=bline2)
+#             entry2_label.pack()
+#             enter2_entry = tk.Entry(master=enter_frame1, textvariable=cfg.bentry2)
+#             enter2_entry.pack(pady=(0,15))
 
-            entry_quant_label = tk.Label(master=enter_frame1, text="Enter number of labels to print")
-            entry_quant_label.pack(pady=(35,0))
-            entry_quantities = tk.Spinbox(master=enter_frame1, from_=1, to=999,
-                                        textvariable=cfg.cust_quantity)
-            entry_quantities.pack()
+#             entry_quant_label = tk.Label(master=enter_frame1, text="Enter number of labels to print")
+#             entry_quant_label.pack(pady=(35,0))
+#             entry_quantities = tk.Spinbox(master=enter_frame1, from_=1, to=999,
+#                                         textvariable=cfg.cust_quantity)
+#             entry_quantities.pack()
 
-            enter_print = tk.Button(master=enter_frame1,
-                                    text="Print",
-                                    command=an_print)
-            enter_print.pack()
-            # return(bentry1,bentry2)
+#             enter_print = tk.Button(master=enter_frame1,
+#                                     text="Print",
+#                                     command=an_print)
+#             enter_print.pack()
+#             # return(bentry1,bentry2)
         
-        def an_print():
-            text1 = cfg.bentry1.get()
-            text2 = cfg.bentry2.get()
-            qty = cfg.cust_quantity.get()
-            if text1 != "":
-                newtext1 = (self.bline1,text1)
-                txtPrint(qty,str(self.bhistory),newtext1)
-            if text2 != "":
-                newtext2 = (self.bline2,text2)
-                txtPrint(qty,str(self.bhistory),newtext2)
-            pass
-        try:
-            for widget in root.winfo_children():
-                if isinstance(widget, tk.Toplevel):
-                    widget.destroy()
-        except:
-            pass
-        cfg.bentry1.set("")
-        cfg.bentry2.set("")
-        entry_window(self.bline1,self.bline2)        
+#         def an_print():
+#             text1 = cfg.bentry1.get()
+#             text2 = cfg.bentry2.get()
+#             qty = cfg.cust_quantity.get()
+#             if text1 != "":
+#                 newtext1 = (self.bline1,text1)
+#                 txtPrint(qty,str(self.bhistory),newtext1)
+#             if text2 != "":
+#                 newtext2 = (self.bline2,text2)
+#                 txtPrint(qty,str(self.bhistory),newtext2)
+#             pass
+#         try:
+#             for widget in root.winfo_children():
+#                 if isinstance(widget, tk.Toplevel):
+#                     widget.destroy()
+#         except:
+#             pass
+#         cfg.bentry1.set("")
+#         cfg.bentry2.set("")
+#         entry_window(self.bline1,self.bline2)        
 
 class button3(tk.Tk):
     def __init__(self, y):
@@ -765,6 +765,183 @@ class button3(tk.Tk):
             pass
         entry_window()
 
+class btn_bcu(tk.Tk):
+    def __init__(self):
+        self.bname = tk.Button(master=tab5b,
+                        text="BCU",
+                        command=self.bfunc,
+                        width=20)
+        self.bname.grid(pady=(0,10), padx=(0,10),row=cfg.y_row, column=cfg.x_col)
+        if cfg.x_col >= 2:
+            cfg.y_row += 1
+            cfg.x_col = 0
+        else:
+            cfg.x_col += 1
+        return
+
+    def bfunc(self):
+        def entry_window():
+            enter_box = tk.Toplevel()
+            enter_box.geometry('550x500')
+            enter_box.title("BCU Labels")
+            enter_frame1 = tk.Frame(master=enter_box)
+            enter_frame1.pack()
+            
+            BCU_ID = tk.StringVar(None, "BCUL1-")
+            BCU_ID.set("BCUL1-")
+
+            def an_print():
+                BCU_print = ""
+                BCU_print += "^XA"
+                BCU_print += "^LH5,5"
+                BCU_print += "^FO10,30"
+                BCU_print += "^A0N,40,40"
+                BCU_print += "^FD"
+                BCU_print += str(BCU_ID.get())
+                BCU_print += bcu_asset_enter.get()
+                BCU_print += "^FS"
+                BCU_print += "^FO15,70,^BY2.1"
+                BCU_print += "^B3N,N,60,Y,N" 
+                BCU_print += "^FD"
+                BCU_print += str(BCU_ID.get())
+                BCU_print += bcu_asset_enter.get()
+                BCU_print += "^FS"
+                BCU_print += "^FO10,160"
+                BCU_print += "^A0N,40,40"
+                BCU_print += "^FD"
+                BCU_print += "BCUPO:"
+                BCU_print += bcu_po_enter.get()
+                BCU_print += "^FS"
+                BCU_print += "^FD"
+                BCU_print += "^FS"
+                BCU_print += "^FO10,220"
+                BCU_print += "^A0N,40,40"
+                BCU_print += "^FD"
+                BCU_print += "SORD:"
+                BCU_print += bcu_sord_enter.get()
+                BCU_print += "^FS"
+                BCU_print += "^FD"
+                BCU_print += "^FS"
+                BCU_print += "^FO10,270"
+                BCU_print += "^A0N,40,40"
+                BCU_print += "^FD"
+                BCU_print += "ASSET TAG"
+                BCU_print += "^FS"
+                BCU_print += "^FO10,310,^BY2.1"
+                BCU_print += "^B3N,N,60,Y,N"
+                BCU_print += "^FD"
+                BCU_print += bcu_asset_enter.get()
+                BCU_print += "^PQ1"
+                BCU_print += "^FS"
+                BCU_print += "^XZ"
+                full_list = (BCU_ID.get() + " " + bcu_po_enter.get() + " " + bcu_sord_enter.get() + " " + bcu_asset_enter.get())
+                bcu_asset_enter.delete(0, END)
+                try:
+                    chisel = open("LPT4", "w")
+                    chisel.write(BCU_print)
+                    chisel.close()
+                    history("BCU Tag")
+                except Exception as e:
+                    print(e)
+                print(BCU_print)
+
+            bcu_head_label = tk.Label(master=enter_frame1,
+                                    text="Please select your unit type")
+            bcu_head_label.grid(row=0, column=0, columnspan=3)
+
+            bcu_radio1 = tk.Radiobutton(master=enter_frame1,
+                                        text="Staff Laptop",
+                                        variable=BCU_ID,
+                                        value="BCUL1-")
+            bcu_radio1.grid(row=1, column=0, sticky=W)
+
+            bcu_radio2 = tk.Radiobutton(master=enter_frame1,
+                                        text="Staff Desktop",
+                                        variable=BCU_ID,
+                                        value="BCUD1-")
+            bcu_radio2.grid(row=2, column=0, sticky=W)
+
+            bcu_radio3 = tk.Radiobutton(master=enter_frame1,
+                                        text="Staff Tablet",
+                                        variable=BCU_ID,
+                                        value="BCUT1-")
+            bcu_radio3.grid(row=3, column=0, sticky=W)
+
+            bcu_radio4 = tk.Radiobutton(master=enter_frame1,
+                                        text="Student Laptop",
+                                        variable=BCU_ID,
+                                        value="BCUL2-")
+            bcu_radio4.grid(row=1, column=1, sticky=W)
+
+            bcu_radio5 = tk.Radiobutton(master=enter_frame1,
+                                        text="Student Desktop",
+                                        variable=BCU_ID,
+                                        value="BCUD2-")
+            bcu_radio5.grid(row=2, column=1, sticky=W)
+
+            bcu_radio6 = tk.Radiobutton(master=enter_frame1,
+                                        text="Student Tablet",
+                                        variable=BCU_ID,
+                                        value="BCUT2-")
+            bcu_radio6.grid(row=3, column=1, sticky=W)
+
+            bcu_radio7 = tk.Radiobutton(master=enter_frame1,
+                                        text="Lecturn Desktop",
+                                        variable=BCU_ID,
+                                        value="BCUD4-")
+            bcu_radio7.grid(row=1, column=2, sticky=W)
+
+            bcu_po_label = tk.Label(master=enter_frame1,
+                                    text="Please enter your order PO")
+            bcu_po_label.grid(row=4, column=0, columnspan=3, pady=(20,0))
+
+            bcu_po_enter = tk.Entry(master=enter_frame1)
+            bcu_po_enter.grid(row=5, column=0, columnspan=3, pady=(0,20))
+
+            bcu_sord_label = tk.Label(master=enter_frame1,
+                                    text="Please enter your SORD#")
+            bcu_sord_label.grid(row=6, column=0, columnspan=3, pady=(20,0))
+
+            bcu_sord_enter = tk.Entry(master=enter_frame1)
+            bcu_sord_enter.grid(row=7, column=0, columnspan=3, pady=(0,20))
+
+            bcu_asset_label = tk.Label(master=enter_frame1,
+                                    text="Enter asset tag")
+            bcu_asset_label.grid(row=8, column=0, columnspan=3, pady=(20,0))
+
+            bcu_asset_enter = tk.Entry(master=enter_frame1)
+            bcu_asset_enter.grid(row=9, column=0, columnspan=3, pady=(0,20))
+
+            # enter1_entry = tk.Entry(master=enter_frame1, textvariable=cfg.bentry1)
+            # enter1_entry.pack(pady=(0,15))
+
+            # entry2_label = tk.Label(master=enter_frame1,
+            #                         text=bline2)
+            # entry2_label.pack()
+            # enter2_entry = tk.Entry(master=enter_frame1, textvariable=cfg.bentry2)
+            # enter2_entry.pack(pady=(0,15))
+
+            # entry_quant_label = tk.Label(master=enter_frame1, text="Enter number of labels to print")
+            # entry_quant_label.pack(pady=(35,0))
+            # entry_quantities = tk.Spinbox(master=enter_frame1, from_=1, to=999,
+            #                             textvariable=cfg.cust_quantity)
+            # entry_quantities.pack()
+
+            enter_print = tk.Button(master=enter_frame1,
+                                    text="Print",
+                                    command=an_print)
+            enter_print.grid(row=11, column=1)
+        
+            
+
+        try:
+            for widget in root.winfo_children():
+                if isinstance(widget, tk.Toplevel):
+                    widget.destroy()
+        except:
+            pass
+        entry_window()   
+
 trial = ConfigParser()
 trial.read("data/custom_buttons.ini")
 for x in trial:
@@ -773,10 +950,9 @@ for x in trial:
     y = trial[x]
     btype = y["btn_type"]
     if btype == "5":
-        try:
-            button3(y)
-        except:
-            pass
+        button3(y)
+    elif btype == "6":
+        btn_bcu()
     else:
         button(y)
 
@@ -1230,7 +1406,7 @@ if flag_2a == "homebuild":
 # ==========================================
 
 version_label = tk.Label(master=frame1,
-                            text="Version 1.1",
+                            text="Version 1.1.1",
                             font=("courier new", 10))
 version_label.grid(row=10, sticky=EW)
 

@@ -300,7 +300,7 @@ def BBC():
 def ebay_mac():
     y = str(cfg.cust_quantity.get())
     log = ("*Ebay MAC QR tag* x" + y)
-    cfg.qr_pos = 340
+    cfg.qr_pos = 325
     cfg.qr_mag = 2
     qrcode = "https://azwusenduserguidestorage.blob.core.windows.net/slef-setup-guide/Setup%20Assistant%20-%20Mac.pdf?sp=r&st=2021-07-21T20:03:19Z&se=2022-07-22T04:03:19Z&spr=https&sv=2020-08-04&sr=b&sig=asYaBWQoH1%2FpMQx348TdCyRw6A%2BU8LvqWObiQXSkK4I%3D"
     cust_print(1,log,qrcode,"eBay MAC","QR Code")
@@ -309,7 +309,7 @@ def ebay_mac():
 def ebay_PC():
     y = str(cfg.cust_quantity.get())
     log = ("*Ebay Windows QR tag* x" + y)
-    cfg.qr_pos = 340
+    cfg.qr_pos = 325
     cfg.qr_mag = 2
     qrcode = "https://azwusenduserguidestorage.blob.core.windows.net/slef-setup-guide/Setup%20Assistant%20-%20Windows%20PC.pdf?sp=r&st=2021-07-21T20:04:59Z&se=2022-07-22T04:04:59Z&spr=https&sv=2020-08-04&sr=b&sig=UPuaJt%2BZmcqrG%2BqEx5WNPpGp7BInx0gdsaXQlg%2Be4c8%3D"
     cust_print(1,log,qrcode,"eBay Windows","QR Code")
