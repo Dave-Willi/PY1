@@ -1,0 +1,4 @@
+dummy: can't delete section, it dosn't exist
+dummy: can't delete section, it dosn't exist
+dummy2: section or key not found!
+dummy2: section not found!
