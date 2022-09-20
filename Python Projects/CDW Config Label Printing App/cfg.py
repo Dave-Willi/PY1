@@ -23,6 +23,7 @@ qr_mag = 2 # default QR magnification. range is 1-10
 pCounter = 0
 x_col = 0
 y_row = 0
+textmod = tk.IntVar(None, "0")
 bentry1 = tk.StringVar(None)
 bentry2 = tk.StringVar(None)
 

@@ -169,7 +169,7 @@ tab7c.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
 # **********************************************
 # import external functions after setting frames
 # **********************************************
-from conFuncs import cust_print, quit, set_print, BCPrint, BBC, ebay_mac, ebay_PC, to_print, txtPrint, QRPrint, ctrl_p, history
+from conFuncs import cust_print, quit, set_print, BCPrint, to_print, txtPrint, QRPrint, ctrl_p, history, limit_print
 
 
 # ==========================================
@@ -359,13 +359,19 @@ def print_group_text(): # print the group text box
         return
     answer = messagebox.askyesno("Question","This will print " + str(total_print) + " labels.\nDo you wish to continue?")
     if answer == True:
+        full_range = ""
+        pre_label = "^XA^LH15,10^FO1,20^ASN,25,25^FDDevice" + cfg.asset_type.get() + "^FS^FO3,60^BCN,80,Y,N^FD"
+        suf_label = "^FS^PQ1^XZ"
         for x in (group_text):
             if x == "":
                 continue
-            tag_type = cfg.asset_type.get()
-            y = x
-            BCPrint(y,1,y,tag_type)
+            # tag_type = cfg.asset_type.get()
+            history(x)
+            y = pre_label + x + suf_label
+            full_range += y
+            # BCPrint(y,1,y,tag_type)
             # sleep(0.3) # sending the commands too quickly will have some disappear.. probably
+        limit_print(full_range)
         clear_all()
         return
     else:
@@ -400,11 +406,20 @@ def print_range():
         lead_zeros = max(len(cfg.range_end.get()), len(cfg.range_start.get())) # Use the longer of the two number to determine leading zeros
         prefixed = str(cfg.range_prefix.get()).upper() # prefix entry, converted to upper case
         suffixed = str(cfg.range_suffix.get()).upper() # suffix entry, converted to lower case
+        full_range = ""
+        pre_label = "^XA^LH15,10^FO1,20^ASN,25,25^FDDevice Asset Tag^FS^FO3,60^BCN,80,Y,N^FD"
+        suf_label = "^FS^PQ1^XZ"
         for x in range(int(cfg.range_start.get()), int(cfg.range_end.get())+1):
             y = str(x).zfill(lead_zeros)
             log = prefixed + y + suffixed
-            BCPrint(log,1,log,"Asset Tag")
+            full_range += pre_label + log + suf_label
+            # BCPrint(log,1,log,"Asset Tag")
             # sleep(0.3)
+        history("To: " + prefixed + cfg.range_end.get() + suffixed)
+        history("From: " + prefixed + cfg.range_start.get() + suffixed)
+        history("Printed range")
+        
+        limit_print(full_range)
         clear_all()
     else:
         messagebox.showinfo("","Printing has been aborted")
@@ -468,10 +483,19 @@ def print_auto():
             lead_zeros = len(auto_end)
             prefixed = str(auto_prefix1).upper()
             suffixed = str(auto_suffix1).upper()
+            full_range = ""
+            pre_label = "^XA^LH15,10^FO1,20^ASN,25,25^FDDevice Asset Tag^FS^FO3,60^BCN,80,Y,N^FD"
+            suf_label = "^FS^PQ1^XZ"
             for x in range(int(auto_start), int(auto_end)+1):
                 y = str(x).zfill(lead_zeros)
                 log = prefixed + y + suffixed
-                BCPrint(log,1,log,"Asset Tag")
+                full_range += pre_label + log + suf_label
+                # BCPrint(log,1,log,"Asset Tag")
+            history("To: " + prefixed + auto_end + suffixed)
+            history("From: " + prefixed + auto_start + suffixed)
+            history("Printed range")
+            limit_print(full_range)
+            # clear_all()
         else:
             messagebox.showinfo("","Printing has been aborted")
             return
@@ -1351,6 +1375,16 @@ custom_textbox = tkscrolled.ScrolledText(master=tab7,
                                         height=10)
 custom_textbox.pack(side=TOP, padx=5, pady=(10,30))
 
+tab7d = tk.Frame(tab7)
+tab7d.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
+
+custom_textmod_label = tk.Label(master=tab7d,
+                                text="Text size modifier: ")
+custom_textmod_label.pack(side=LEFT)
+
+custom_textmod = tk.Spinbox(master=tab7d, from_=-10, to=10, textvariable=cfg.textmod)
+custom_textmod.pack(side=RIGHT)
+
 # =====================================
 # ==== Generate external file list ====
 # =====================================
@@ -1406,7 +1440,7 @@ if flag_2a == "homebuild":
 # ==========================================
 
 version_label = tk.Label(master=frame1,
-                            text="Version 1.1.1",
+                            text="Version 1.1.3",
                             font=("courier new", 10))
 version_label.grid(row=10, sticky=EW)
 

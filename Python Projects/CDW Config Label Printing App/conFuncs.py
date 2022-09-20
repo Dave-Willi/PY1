@@ -106,9 +106,9 @@ def txt_import(dud,more):
     try:
         font_size_max = max(more, key=len)
         txt_length = len(font_size_max)
-        font_size = min(round(190/(sub_total)),round(dud_length/txt_length),60)
+        font_size = min(round(190/(sub_total)),round(dud_length/txt_length),60) + (int(cfg.textmod.get())*5)
     except:
-        font_size = min(round(190/(sub_total)),100)
+        font_size = min(round(190/(sub_total)),100) + (int(cfg.textmod.get())*5)
     txt_printing = ""
     for x in (more):
         txt_printing += "^A0N," + str(font_size)
@@ -253,6 +253,30 @@ def to_print(zyx, log):
                 chisel.write(zyx)
                 chisel.close()
                 history(log)
+            except Exception as e:
+                print(e)
+            return
+    except:
+        con_error()
+        return
+
+def limit_print(zyx):
+    host = str(cfg.printer_select.get())
+    print_me = zyx
+    try:
+        if host == "local":
+            host = str(cfg.local_print.get())
+            print_me = bytes(zyx, 'utf-8')
+            mysocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+            mysocket.connect((host, cfg.port)) #connecting to host
+            mysocket.send(print_me)
+            mysocket.close() #closing connection
+            return
+        else:
+            try:
+                chisel = open(host, "w")
+                chisel.write(zyx)
+                chisel.close()
             except Exception as e:
                 print(e)
             return
