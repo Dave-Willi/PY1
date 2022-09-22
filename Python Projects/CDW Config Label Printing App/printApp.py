@@ -15,18 +15,16 @@ import tkinter as tk
 from tkinter import *
 from tkinter import messagebox, filedialog
 from tkinter.ttk import Notebook, Style
-from turtle import title
 from PIL import Image, ImageTk
 from configparser import ConfigParser
 import tkinter.scrolledtext as tkscrolled
 import re
-# from time import sleep
 
 root = tk.Tk()
-root.title("Config printing app")
+root.title("CDW Con Duplicate Label Printer") # Title of app window
 
-w = 1080 # width for the Tk root
-h = 720 # height for the Tk root
+w = 1080 # width for the App
+h = 720 # height for the App
 
 # ==========================================
 # ============ Position window =============
@@ -36,26 +34,29 @@ h = 720 # height for the Tk root
 ws = root.winfo_screenwidth() # width of the screen
 hs = root.winfo_screenheight() # height of the screen
 
-# calculate x and y coordinates for the Tk root window
+# calculate x and y coordinates for the app window
 x = (ws/2) - (w/2)
 y = (hs/2) - (h/2)
 
-# set the dimensions of the screen 
-# and where it is placed
+# set the dimensions of the screen and where it is placed
 root.geometry('%dx%d+%d+%d' % (w, h, x, y))
-root.resizable(False,False)
+root.resizable(False,False) # Disable resizing of window
+
+# Set program icon in top right corner to image
 try:
     root.iconphoto(False, tk.PhotoImage(file='data/CDW_icon.png'))
 except:
     pass
-# Set default font style for MOST widgets, don't not effect notebook tabs and maybe more
+
+# Set default font style for MOST widgets, does NOT effect notebook tabs. That requires a custom style
 root.option_add( "*font", "aerial 14" )
 
 # ***************************************************************
-# cfg holds global variables. Must import AFTER initiating window
+# cfg holds global variables. MUST import AFTER initiating window
 # ***************************************************************
 import cfg
 
+# Set recource path for program, relative to exe location.
 def resource_path(relative_path):
     # Get absolute path to resource, works for dev and for PyInstaller
     try:
@@ -87,7 +88,7 @@ frametop1.pack(side=LEFT, anchor=W)
 frametop3 = tk.Frame(frametop, 
                     height=80,
                     width=680)
-frametop3.pack(side=RIGHT) #frametop3 before frametop2 to keep it on the right
+frametop3.pack(side=RIGHT) #frametop3 is packed before frametop2 to keep it on the right
 
 frametop2 = tk.Frame(frametop,
                     height=80,
@@ -122,7 +123,7 @@ style.theme_use("dummy")
 # ==========================================
 # ================= Tabs ===================
 # ==========================================
-# additional frames created inside tabs for formatting
+# additional frames created inside tabs for formatting 
 
 tab1 = tk.Frame(frame2) # singles
 tab2 = tk.Frame(frame2) # groups
@@ -166,9 +167,9 @@ tab7ab.pack(anchor=CENTER, expand=False, side=TOP)
 tab7b.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
 tab7c.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
 
-# **********************************************
-# import external functions after setting frames
-# **********************************************
+# *******************************************************
+# explicit import conFuncs functions after setting frames
+# *******************************************************
 from conFuncs import cust_print, quit, set_print, BCPrint, to_print, txtPrint, QRPrint, ctrl_p, history, limit_print
 
 
@@ -177,7 +178,7 @@ from conFuncs import cust_print, quit, set_print, BCPrint, to_print, txtPrint, Q
 # ==========================================
 # definitions required for the buttons on the left side menu to function
 
-def reset(): # stop and restart app. Can be disabled for final release
+def reset(): # restarts app by closing it and then restarting
     root.destroy()
     subprocess.call([sys.executable, os.path.realpath(__file__)] + sys.argv[1:])
 
@@ -296,7 +297,7 @@ def set_config(tab=""): # additional window with extra info such as print log
     # ==========================================
 
     # attaches to bottom of window, items placed here are bottom to top i.e. reverse order
-    Label(omni_box, text="©Dave Williams 2022").pack(side=BOTTOM)
+    Label(omni_box, text="App ©Dave Williams 2022").pack(side=BOTTOM)
     Label(omni_box, text="CDW Logo ©CDW 2022").pack(side=BOTTOM)
     Label(omni_box, text="Created for the exclusive use in\nconfig at the NDC in Rugby").pack(side=BOTTOM)
 
@@ -331,6 +332,18 @@ def return_key(event = None):
             group_textbox.insert("end", (", " + group_entry.get().upper()))
             group_entry.delete(0, END)
             group_entry.focus()
+
+def return_auto1(event = None):
+    tab_name = frame2.select()
+    tab_index = frame2.index(tab_name)
+    if tab_index == 3: # auto range
+        auto_entry2.focus()
+
+def return_auto2(event = None):
+    tab_name = frame2.select()
+    tab_index = frame2.index(tab_name)
+    if tab_index == 3: # auto range
+        auto_entry1.focus()
 
 # ==========================================
 # ========= Command definitions ============
@@ -377,7 +390,7 @@ def print_group_text(): # print the group text box
     else:
         messagebox.showinfo("","Printing has been aborted")
     
-def clear_all():
+def clear_all(): # resets all entry boxes and spinboxes to default (Empty) values
     clear_custom_qr()
     single_entry.delete(0, END)
     group_entry.delete(0, END)
@@ -390,13 +403,14 @@ def clear_all():
     cfg.range_start.set(0)
     cfg.range_end.set(0)
     cfg.cust_quantity.set(1)
+    cfg.textmod.set(0)
 
-def clear_custom_qr(): # clears the group tab text box
+def clear_custom_qr(): # clears the QR code text box
     custom_qr.delete(0, END)
     # slide1.set(340)
     # slide2.set(2)
 
-def print_range():
+def print_range(): # Print from the legacy range tab using data entered into it
     total_print = 1 + int(cfg.range_end.get()) - int(cfg.range_start.get())
     if total_print <= 0:
         messagebox.showerror("Error", "Please sure you have the start and end numbers the correct way around")
@@ -413,12 +427,10 @@ def print_range():
             y = str(x).zfill(lead_zeros)
             log = prefixed + y + suffixed
             full_range += pre_label + log + suf_label
-            # BCPrint(log,1,log,"Asset Tag")
-            # sleep(0.3)
-        history("To: " + prefixed + cfg.range_end.get() + suffixed)
+        # add to print log the range that was printed rather than the full list of labels
+        history("To: " + prefixed + cfg.range_end.get() + suffixed) 
         history("From: " + prefixed + cfg.range_start.get() + suffixed)
         history("Printed range")
-        
         limit_print(full_range)
         clear_all()
     else:
@@ -449,8 +461,8 @@ def print_auto():
     for x in auto_range_split1: #cycles through however many splits exist in the first split
         if auto_range_split1[y] != auto_range_split2[y]:
             z = y + 1
-            auto_start = auto_range_split1[y]
-            auto_end = auto_range_split2[y]
+            auto_start = min(auto_range_split1[y],auto_range_split2[y]) # sets the lowest number entered into the start
+            auto_end = max(auto_range_split2[y],auto_range_split1[y]) # sets the highest number entered into the end
             for x in auto_range_split1[z:]:
                 try:
                     if auto_range_split1[z] == auto_range_split2[z]:
@@ -490,12 +502,10 @@ def print_auto():
                 y = str(x).zfill(lead_zeros)
                 log = prefixed + y + suffixed
                 full_range += pre_label + log + suf_label
-                # BCPrint(log,1,log,"Asset Tag")
             history("To: " + prefixed + auto_end + suffixed)
             history("From: " + prefixed + auto_start + suffixed)
             history("Printed range")
             limit_print(full_range)
-            # clear_all()
         else:
             messagebox.showinfo("","Printing has been aborted")
             return
@@ -521,20 +531,15 @@ def print_custom_many(): # print many custom labels
     else:
         messagebox.showinfo("","Printing has been aborted")
 
-def print_custom(quant,qr,txt):
-    # cfg.qr_pos = slide1.get()
-    # cfg.qr_mag = slide2.get()
+def print_custom(quant,qr,txt): # 1 step print function for custom labels
     cfg.qr_pos = 325
     cfg.qr_mag = 2
     customtxt = list()
-    # txt = custom_textbox.get("1.0", END)
     txt = re.split("\n",txt)
     for x in (txt):
         if x == "":
             continue
         customtxt.append(x)
-    # qr = custom_qr.get()
-
     if qr == "":
         txtPrint(quant,"*custom text label*",tuple(customtxt))
     else:
@@ -630,79 +635,6 @@ class button(tk.Tk):
             self.newText = str(self.btext)
         cust_print(int(self.btype),str(self.bhistory),self.bcode,self.newText)
 
-# class button2(tk.Tk):
-#     def __init__(self, y):
-#         self.bname = y["button_name"]
-#         self.bhistory = y["history"]
-#         self.btype = y["btn_type"]
-#         self.bline1 = y["line1"]
-#         self.bentry1 = y["entry1"]
-#         self.bline2 = y["line2"]
-#         self.bentry2 = y["entry2"]
-#         self.bname = tk.Button(master=tab5b,
-#                         text=self.bname,
-#                         command=self.bfunc,
-#                         width=20)
-#         self.bname.grid(pady=(0,10), padx=(0,10),row=cfg.y_row, column=cfg.x_col)
-#         if cfg.x_col >= 2:
-#             cfg.y_row += 1
-#             cfg.x_col = 0
-#         else:
-#             cfg.x_col += 1
-#         return
-
-#     def bfunc(self):
-#         def entry_window(bline1,bline2):
-#             enter_box = tk.Toplevel()
-#             enter_box.geometry('350x500')
-#             enter_box.title(self.bname)
-#             enter_frame1 = tk.Frame(master=enter_box)
-#             enter_frame1.pack()
-#             entry1_label = tk.Label(master=enter_frame1,
-#                                     text=bline1)
-#             entry1_label.pack(pady=(15,0))
-#             enter1_entry = tk.Entry(master=enter_frame1, textvariable=cfg.bentry1)
-#             enter1_entry.pack(pady=(0,15))
-#             enter1_entry.focus()
-#             entry2_label = tk.Label(master=enter_frame1,
-#                                     text=bline2)
-#             entry2_label.pack()
-#             enter2_entry = tk.Entry(master=enter_frame1, textvariable=cfg.bentry2)
-#             enter2_entry.pack(pady=(0,15))
-
-#             entry_quant_label = tk.Label(master=enter_frame1, text="Enter number of labels to print")
-#             entry_quant_label.pack(pady=(35,0))
-#             entry_quantities = tk.Spinbox(master=enter_frame1, from_=1, to=999,
-#                                         textvariable=cfg.cust_quantity)
-#             entry_quantities.pack()
-
-#             enter_print = tk.Button(master=enter_frame1,
-#                                     text="Print",
-#                                     command=an_print)
-#             enter_print.pack()
-#             # return(bentry1,bentry2)
-        
-#         def an_print():
-#             text1 = cfg.bentry1.get()
-#             text2 = cfg.bentry2.get()
-#             qty = cfg.cust_quantity.get()
-#             if text1 != "":
-#                 newtext1 = (self.bline1,text1)
-#                 txtPrint(qty,str(self.bhistory),newtext1)
-#             if text2 != "":
-#                 newtext2 = (self.bline2,text2)
-#                 txtPrint(qty,str(self.bhistory),newtext2)
-#             pass
-#         try:
-#             for widget in root.winfo_children():
-#                 if isinstance(widget, tk.Toplevel):
-#                     widget.destroy()
-#         except:
-#             pass
-#         cfg.bentry1.set("")
-#         cfg.bentry2.set("")
-#         entry_window(self.bline1,self.bline2)        
-
 class button3(tk.Tk):
     def __init__(self, y):
         self.qt = y
@@ -778,8 +710,6 @@ class button3(tk.Tk):
                                     text="Print",
                                     command=an_print)
             enter_print.pack()
-            # return(bentry1,bentry2)
-            
         
         try:
             for widget in root.winfo_children():
@@ -789,7 +719,7 @@ class button3(tk.Tk):
             pass
         entry_window()
 
-class btn_bcu(tk.Tk):
+class btn_bcu(tk.Tk): # special class just for BCU labels
     def __init__(self):
         self.bname = tk.Button(master=tab5b,
                         text="BCU",
@@ -858,16 +788,15 @@ class btn_bcu(tk.Tk):
                 BCU_print += "^PQ1"
                 BCU_print += "^FS"
                 BCU_print += "^XZ"
-                full_list = (BCU_ID.get() + " " + bcu_po_enter.get() + " " + bcu_sord_enter.get() + " " + bcu_asset_enter.get())
                 bcu_asset_enter.delete(0, END)
                 try:
                     chisel = open("LPT4", "w")
                     chisel.write(BCU_print)
                     chisel.close()
-                    history("BCU Tag")
+                    history("BCU Tag " + bcu_asset_enter.get())
                 except Exception as e:
                     print(e)
-                print(BCU_print)
+                print("BCU Tag " + bcu_asset_enter.get())
 
             bcu_head_label = tk.Label(master=enter_frame1,
                                     text="Please select your unit type")
@@ -997,7 +926,8 @@ except:
 app_title = tk.Label(frametop2, text="Config General Printing Application", font=("Helvetica",30)).pack(side=TOP)
 help_button = tk.Button(master=frametop3, text="?", font=('Helvetica',20), command=help_me).pack(padx=(0,10))
 try:
-    cog_icon = ImageTk.PhotoImage(Image.open("data/cogwheel.png").resize((25, 25)))
+    # cog_icon = ImageTk.PhotoImage(Image.open("data/cogwheel.png").resize((25, 25)))
+    cog_icon = ImageTk.PhotoImage(Image.open("data/print_history.png").resize((25, 25)))
     cog = tk.Button(master=frametop3, image=cog_icon, borderwidth=0, command=set_config)
     cog.pack(padx=(0,8), pady=(5,0))    
 except:
@@ -1035,15 +965,15 @@ def reset_print():
     res = str("^MNY")
     to_print(res,"")
 
-reset_printer_btn = tk.Button(master=frame1,
-                    text="Reset Printer",
-                    command=reset_print)
-reset_printer_btn.grid(row=4, sticky=EW)
+# reset_printer_btn = tk.Button(master=frame1,
+#                     text="Reset Printer",
+#                     command=reset_print)
+# reset_printer_btn.grid(row=4, sticky=EW)
 
-set_printer_btn = tk.Button(master=frame1,
-                    text="Map Printers",
-                    command=set_print)
-set_printer_btn.grid(row=5, sticky=EW)
+# set_printer_btn = tk.Button(master=frame1,
+#                     text="Map Printers",
+#                     command=set_print)
+# set_printer_btn.grid(row=5, sticky=EW)
 
 asset_label = tk.Label(master=frame1,
                             text="Asset or serial?")
@@ -1076,41 +1006,48 @@ exit_button.grid(row=11, sticky=EW)
 # =========== Single Tab (tab1) ============
 # ==========================================
 
-tab1.grid_columnconfigure((0,1,2,3),weight=1)
+tab1.grid_columnconfigure((0,1),weight=1)
 tab1.grid_rowconfigure((0,1,2),weight=1)
 tab1.grid_rowconfigure((3),weight=3)
 
-single_label = tk.Label(master=tab1,
-                        textvariable=cfg.asset_type)
-single_label.grid(row=0, column=1, sticky=E)
-
-single_entry = tk.Entry(master=tab1, bg=cfg.bg_col)
-single_entry.grid(row=0, column=2, sticky=W, padx=10)
-
-single_btn = tk.Button(master=tab1, text="Print", width=10, command=return_key)
-single_btn.grid(row=1, column=1, columnspan=2, sticky=N)
-
 single_descript = tk.Label(master=tab1,
-                        text="This will print a single label",
+                        text="To print a single label",
                         font=12,
                         fg="blue")
-single_descript.grid(row=2, column=1, columnspan=2, sticky=N)
+single_descript.grid(row=0, column=0, columnspan=2,)
+
+single_label = tk.Label(master=tab1,
+                        textvariable=cfg.asset_type)
+single_label.grid(row=1, column=0, sticky=E)
+
+single_entry = tk.Entry(master=tab1,
+                        bg=cfg.bg_col)
+single_entry.grid(row=1, column=1, sticky=W, padx=10)
+
+single_btn = tk.Button(master=tab1,
+                        text="Print",
+                        width=10,
+                        command=return_key)
+single_btn.grid(row=2, column=0, columnspan=2, sticky=N)
+
+
 
 # ==========================================
 # =========== Groups Tab (tab2) ============
 # ==========================================
 
-group_label1 = tk.Label(master=tab2,
+group_label1 = tk.Label(master=tab2a,
                         font=12,
                         fg="blue",
-                        text="Print the tags below:")
-group_label1.pack()
+                        text="Print a selection of labels")
+group_label1.pack(side=TOP)
 
 group_label = tk.Label(master=tab2a,
                         textvariable=cfg.asset_type)
 group_label.pack(side=LEFT, pady=(20,0))
 
-group_entry = tk.Entry(master=tab2a, bg=cfg.bg_col)
+group_entry = tk.Entry(master=tab2a,
+                        bg=cfg.bg_col)
 group_entry.pack(side=LEFT, padx=10, pady=(20,0))
 
 group_clear = tk.Button(master=tab2b,
@@ -1130,9 +1067,8 @@ group_load = tk.Button(master=tab2b,
                         command=open_file)
 group_load.pack(side=LEFT, padx=(0,100))
 
-
-
-group_textbox = tkscrolled.ScrolledText(master=tab2, wrap=WORD)
+group_textbox = tkscrolled.ScrolledText(master=tab2,
+                                        wrap=WORD)
 group_textbox.pack(side=BOTTOM, fill=BOTH, expand=True, padx=30, pady=(5,20))
 
 # ==========================================
@@ -1193,17 +1129,19 @@ range_print.grid(row=5, column=1, pady=(20,0), padx=40, sticky=W)
 # ========= Range-Auto Tab (tab4) ==========
 # ==========================================
 
+auto_label1a = tk.Label(master=tab4a,
+                        font=12,
+                        fg="blue",
+                        text="Print a range of asset tags")
+auto_label1a.pack(pady=(5,20))
+
 auto_label1 = tk.Label(master=tab4a,
-                        text="Scan the first tag in the range")
+                        text="Scan the first and last tag in your range into the 2 boxes provided\nYou must use both boxes to enter your range\nDon't worry about what goes where, they both work the same")
 auto_label1.pack()
 
 auto_entry1 = tk.Entry(master=tab4a,
                         textvariable=cfg.auto_1)
-auto_entry1.pack()
-
-auto_label2 = tk.Label(master=tab4a,
-                        text="Scan the last tag in the range")
-auto_label2.pack()
+auto_entry1.pack(pady=15)
 
 auto_entry2 = tk.Entry(master=tab4a,
                         textvariable=cfg.auto_2)
@@ -1222,7 +1160,7 @@ auto_print = tk.Button(master=tab4b,
 auto_print.grid(row=0, column=2, padx=10)
 
 warn_label = tk.Label(master=tab4c,
-                        text="New Feature\nCheck number of tags\n is correct\nbefore printing",
+                        text="Check number of tags\n is correct before printing",
                         font=("Helvetica",14),
                         fg="dark red")
 warn_label.pack(side=TOP, padx=40, pady=40)
@@ -1310,7 +1248,7 @@ label_6b.grid(row=5, column=0, columnspan=4, rowspan=2)
 custom_label1 = tk.Label(master=tab7a,
                         font=12,
                         fg="blue",
-                        text="Print the label below:")
+                        text="To print plain text and/or QR codes")
 custom_label1.pack(side=TOP)
 
 custom_label = tk.Label(master=tab7a,
@@ -1399,7 +1337,7 @@ files += "data/CDW_Logo.png           # display CDW logo in app\n"
 files += "data/con_print.ini          # holds ini settings for program\n"
 files += "data/cogwheel.png           # settings icon in app\n"
 files += "data/cust_helper.jpg        # Help image for customer tab (320x600)\n"
-files += "data/custom_buttons.xml     # hold customer button information\n"
+files += "data/custom_buttons.ini     # hold customer button information\n"
 files += "data/custom_buttons_read.me # guide to write customer_button.xml\n"
 files += "data/custom_helper.jpg      # Help image for custom tab (320x600)\n"
 files += "data/groups_helper.jpg      # Help image for groups tab (320x600)\n"
@@ -1440,7 +1378,7 @@ if flag_2a == "homebuild":
 # ==========================================
 
 version_label = tk.Label(master=frame1,
-                            text="Version 1.1.3",
+                            text="Version 1.1.4",
                             font=("courier new", 10))
 version_label.grid(row=10, sticky=EW)
 
@@ -1455,5 +1393,7 @@ except:
 root.bind('<Return>', return_key)
 root.bind('<Control-p>', ctrl_p)
 root.bind('<Control-P>', ctrl_p)
+auto_entry1.bind('<Return>', return_auto1)
+auto_entry2.bind('<Return>', return_auto2)
 
 root.mainloop()

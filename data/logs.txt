@@ -1,3 +1,18 @@
+Battery label
+ebay mac qr
+SDFG
+Printed range
+From: LOL22BRB
+To: LOL26BRB
+Printed range
+From: AAA78GHJ
+To: AAA82GHJ
+Printed range
+From: 001
+To: 008
+Printed range
+From: 001
+To: 008
 *custom text label*
 *custom text label*
 *custom text label*
@@ -983,18 +998,3 @@ HSFGHSDFG
 FGHSDFGHDFG
 ASGDASD
 ASD
-A
-1
-1
-**BBC TAG** X2
-**BBC TAG** X1
-**BBC TAG** X1
-**BBC TAG** X1
-**EBAY MAC QR TAG** X1
-**EBAY PC QR TAG** X1
-**EBAY MAC QR TAG** X1
-**EBAY PC QR TAG** X1
-BO DEREK WAS HERE
-BO DEREK WAS HERE
-**EBAY MAC QR TAG** X1
-**EBAY MAC QR TAG** X1

@@ -390,6 +390,7 @@ def clear_all():
     cfg.range_start.set(0)
     cfg.range_end.set(0)
     cfg.cust_quantity.set(1)
+    cfg.textmod.set(0)
 
 def clear_custom_qr(): # clears the group tab text box
     custom_qr.delete(0, END)

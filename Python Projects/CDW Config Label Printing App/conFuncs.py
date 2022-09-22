@@ -1,5 +1,4 @@
 from logging import exception
-# from pickle import TRUE
 from random import randint
 from playsound import playsound
 import socket
@@ -10,7 +9,6 @@ import re
 import win32print
 import win32ui
 from PIL import Image, ImageWin
-# from printApp import clear_custom_qr
 
 # ============ Command definitions ============
 # miscellaneous defined commands
