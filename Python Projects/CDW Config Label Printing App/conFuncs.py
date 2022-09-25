@@ -125,7 +125,7 @@ def txt_import(dud,more):
 
 def QRPrint(code,quant,hist,*more):
     printing = "^XA" # Start of label
-    printing += "^LH15,10" # Label Home | position of start of label
+    printing += "^LH15," + str(10 + (cfg.label_mod.get() * 8)) # Label Home | position of start of label
     try:
         printing += txt_import(0,*more)
     except:
@@ -146,7 +146,7 @@ def QRPrint(code,quant,hist,*more):
 
 def txtPrint(quant,hist,*more):
     printing = "^XA" # Start of label
-    printing += "^LH15,10" # Label Home | position of start of label
+    printing += "^LH15," + str(10 + (cfg.label_mod.get() * 8)) # Label Home | position of start of label
     try:
         printing += txt_import(1,*more)
     except:
@@ -161,7 +161,7 @@ def txtPrint(quant,hist,*more):
 
 def BCPrint(code,quant,hist,sa):
     printing = "^XA" # Start of label
-    printing += "^LH15,10" # Label Home | position of start of label
+    printing += "^LH15," + str(10 + (cfg.label_mod.get() * 8)) # Label Home | position of start of label
     printing += "^FO1,20" # Field position
     printing += "^ASN,25,25" # Font to use for this field | font, orientation, height, width
     printing += "^FD" # Field initiator

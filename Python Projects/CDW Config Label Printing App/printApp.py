@@ -373,7 +373,7 @@ def print_group_text(): # print the group text box
     answer = messagebox.askyesno("Question","This will print " + str(total_print) + " labels.\nDo you wish to continue?")
     if answer == True:
         full_range = ""
-        pre_label = "^XA^LH15,10^FO1,20^ASN,25,25^FDDevice" + cfg.asset_type.get() + "^FS^FO3,60^BCN,80,Y,N^FD"
+        pre_label = "^XA^LH15," + str(10 + (cfg.label_mod.get() * 8)) + "^FO1,20^ASN,25,25^FDDevice" + cfg.asset_type.get() + "^FS^FO3,60^BCN,80,Y,N^FD"
         suf_label = "^FS^PQ1^XZ"
         for x in (group_text):
             if x == "":
@@ -421,7 +421,7 @@ def print_range(): # Print from the legacy range tab using data entered into it
         prefixed = str(cfg.range_prefix.get()).upper() # prefix entry, converted to upper case
         suffixed = str(cfg.range_suffix.get()).upper() # suffix entry, converted to lower case
         full_range = ""
-        pre_label = "^XA^LH15,10^FO1,20^ASN,25,25^FDDevice Asset Tag^FS^FO3,60^BCN,80,Y,N^FD"
+        pre_label = "^XA^LH15," + str(10 + (cfg.label_mod.get() * 8)) + "^FO1,20^ASN,25,25^FDDevice Asset Tag^FS^FO3,60^BCN,80,Y,N^FD"
         suf_label = "^FS^PQ1^XZ"
         for x in range(int(cfg.range_start.get()), int(cfg.range_end.get())+1):
             y = str(x).zfill(lead_zeros)
@@ -496,7 +496,7 @@ def print_auto():
             prefixed = str(auto_prefix1).upper()
             suffixed = str(auto_suffix1).upper()
             full_range = ""
-            pre_label = "^XA^LH15,10^FO1,20^ASN,25,25^FDDevice Asset Tag^FS^FO3,60^BCN,80,Y,N^FD"
+            pre_label = "^XA^LH15," + str(10 + (cfg.label_mod.get() * 8)) + "^FO1,20^ASN,25,25^FDDevice Asset Tag^FS^FO3,60^BCN,80,Y,N^FD"
             suf_label = "^FS^PQ1^XZ"
             for x in range(int(auto_start), int(auto_end)+1):
                 y = str(x).zfill(lead_zeros)
@@ -793,7 +793,7 @@ class btn_bcu(tk.Tk): # special class just for BCU labels
                     chisel = open("LPT4", "w")
                     chisel.write(BCU_print)
                     chisel.close()
-                    history("BCU Tag " + bcu_asset_enter.get())
+                    history("BCU Tag " + str(bcu_asset_enter.get()))
                 except Exception as e:
                     print(e)
                 print("BCU Tag " + bcu_asset_enter.get())
@@ -943,27 +943,38 @@ frame1.grid_columnconfigure(0, weight=1)
 
 printer_label = tk.Label(master=frame1,
                             text="Select printer:")
-printer_label.grid(row=0, sticky=W)
+printer_label.grid(row=0, sticky=W, column=0, columnspan=2)
 
 config_print_button = tk.Radiobutton(master=frame1,
                     text="Config Printer",
                     variable=cfg.printer_select,
                     value="LPT1",
                     command=con_update)
-config_print_button.grid(row=1, sticky=W)
+config_print_button.grid(row=1, sticky=W, column=0, columnspan=2)
 
 mezz_print_button = tk.Radiobutton(master=frame1,
                     text="MEZZ Printer",
                     variable=cfg.printer_select,
                     value="LPT7",
                     command=con_update)
-mezz_print_button.grid(row=2, sticky=W)
+mezz_print_button.grid(row=2, sticky=W, column=0, columnspan=2)
 
 #row=3 is reserved for test printer
 
 def reset_print():
     res = str("^MNY")
     to_print(res,"")
+
+label_mod_label = tk.Label(master=frame1,
+                            text="Label mod")
+label_mod_label.grid(row=4, column=0)
+
+label_mod_select = tk.Spinbox(master=frame1,
+                                from_=-10,
+                                to=10,
+                                textvariable=cfg.label_mod,
+                                width=3)
+label_mod_select.grid(row=4, column=1)
 
 # reset_printer_btn = tk.Button(master=frame1,
 #                     text="Reset Printer",
@@ -977,21 +988,21 @@ def reset_print():
 
 asset_label = tk.Label(master=frame1,
                             text="Asset or serial?")
-asset_label.grid(row=6, sticky=W)
+asset_label.grid(row=6, sticky=W, column=0, columnspan=2)
 
 set_asset_button = tk.Radiobutton(master=frame1,
                     text="Asset tags",
                     variable=cfg.tag_select,
                     value=0,
                     command=set_tag)
-set_asset_button.grid(row=7, sticky=W)
+set_asset_button.grid(row=7, sticky=W, column=0, columnspan=2)
 
 set_serial_button = tk.Radiobutton(master=frame1,
                     text="Serial Numbers",
                     variable=cfg.tag_select,
                     value=1,
                     command=set_tag)
-set_serial_button.grid(row=8, sticky=W)
+set_serial_button.grid(row=8, sticky=W, column=0, columnspan=2)
 
 # row=9 reserved for dev reset button
 
@@ -1000,7 +1011,7 @@ set_serial_button.grid(row=8, sticky=W)
 exit_button = tk.Button(master=frame1,
                     text="Quit",
                     command=quit)
-exit_button.grid(row=11, sticky=EW)
+exit_button.grid(row=11, sticky=EW, column=0, columnspan=2)
 
 # ==========================================
 # =========== Single Tab (tab1) ============
@@ -1210,10 +1221,14 @@ label_6a = tk.Label(master=tab6a,
                     text="Less than 5 rolls of labels remaining?")
 label_6a.grid(row=0, column=0)
 
-labels_ribbon = tk.Checkbutton(master=tab6a, text="Also ribbons?")
+labels_ribbon = tk.Checkbutton(master=tab6a,
+                            text="Also ribbons?")
 labels_ribbon.grid(row=1, column=1)
 
-labels_remain = tk.Spinbox(master=tab6a, from_=0, to=5, wrap=True)
+labels_remain = tk.Spinbox(master=tab6a,
+                            from_=0,
+                            to=5,
+                            wrap=True)
 labels_remain.grid(row=0, column=1)
 
 labels_alert = tk.Button(master=tab6a,
@@ -1303,7 +1318,9 @@ custom_quantity_label = tk.Label(master=tab7c,
                             text="Print quantity")
 custom_quantity_label.pack(padx=10, side=LEFT)
 
-custom_quantity = tk.Spinbox(master=tab7c, from_=1, to=9999,
+custom_quantity = tk.Spinbox(master=tab7c,
+                            from_=1,
+                            to=9999,
                             textvariable=cfg.cust_quantity)
 custom_quantity.pack(padx=10, side=LEFT)
 
@@ -1320,7 +1337,10 @@ custom_textmod_label = tk.Label(master=tab7d,
                                 text="Text size modifier: ")
 custom_textmod_label.pack(side=LEFT)
 
-custom_textmod = tk.Spinbox(master=tab7d, from_=-10, to=10, textvariable=cfg.textmod)
+custom_textmod = tk.Spinbox(master=tab7d,
+                            from_=-10,
+                            to=10,
+                            textvariable=cfg.textmod)
 custom_textmod.pack(side=RIGHT)
 
 # =====================================
@@ -1364,21 +1384,21 @@ if flag_2a == "homebuild":
     reset_button = tk.Button(master=frame1,
                         text="Restart App",
                         command=reset)
-    reset_button.grid(row=9, sticky=EW)
+    reset_button.grid(row=9, sticky=EW, column=0, columnspan=2)
 
     test_print_button = tk.Radiobutton(master=frame1,
                         text="Test Printer",
                         value="local",
                         variable=cfg.printer_select,
                         command=con_update)
-    test_print_button.grid(row=3, sticky=W)
+    test_print_button.grid(row=3, sticky=W, column=0, columnspan=2)
 
 # ==========================================
 # ======== Current version number ==========
 # ==========================================
 
 version_label = tk.Label(master=frame1,
-                            text="Version 1.1.4",
+                            text="Version 1.1.5",
                             font=("courier new", 10))
 version_label.grid(row=10, sticky=EW)
 
