@@ -736,7 +736,7 @@ class btn_bcu(tk.Tk): # special class just for BCU labels
     def bfunc(self):
         def entry_window():
             enter_box = tk.Toplevel()
-            enter_box.geometry('550x500')
+            enter_box.geometry('450x500')
             enter_box.title("BCU Labels")
             enter_frame1 = tk.Frame(master=enter_box)
             enter_frame1.pack()
@@ -803,67 +803,74 @@ class btn_bcu(tk.Tk): # special class just for BCU labels
             bcu_head_label.grid(row=0, column=0, columnspan=3)
 
             bcu_radio1 = tk.Radiobutton(master=enter_frame1,
-                                        text="Staff Laptop",
+                                        text="Staff Laptop (L1)",
                                         variable=BCU_ID,
-                                        value="BCUL1-")
+                                        value="BCUL1-",
+                                        font=("calibri", 14))
             bcu_radio1.grid(row=1, column=0, sticky=W)
 
             bcu_radio2 = tk.Radiobutton(master=enter_frame1,
-                                        text="Staff Desktop",
+                                        text="Staff Desktop (D1)",
                                         variable=BCU_ID,
-                                        value="BCUD1-")
+                                        value="BCUD1-",
+                                        font=("calibri", 14))
             bcu_radio2.grid(row=2, column=0, sticky=W)
 
             bcu_radio3 = tk.Radiobutton(master=enter_frame1,
-                                        text="Staff Tablet",
+                                        text="Staff Tablet (T1)",
                                         variable=BCU_ID,
-                                        value="BCUT1-")
+                                        value="BCUT1-",
+                                        font=("calibri", 14))
             bcu_radio3.grid(row=3, column=0, sticky=W)
 
             bcu_radio4 = tk.Radiobutton(master=enter_frame1,
-                                        text="Student Laptop",
+                                        text="Student Laptop (L2)",
                                         variable=BCU_ID,
-                                        value="BCUL2-")
+                                        value="BCUL2-",
+                                        font=("calibri", 14))
             bcu_radio4.grid(row=1, column=1, sticky=W)
 
             bcu_radio5 = tk.Radiobutton(master=enter_frame1,
-                                        text="Student Desktop",
+                                        text="Student Desktop (D2)",
                                         variable=BCU_ID,
-                                        value="BCUD2-")
+                                        value="BCUD2-",
+                                        font=("calibri", 14))
             bcu_radio5.grid(row=2, column=1, sticky=W)
 
             bcu_radio6 = tk.Radiobutton(master=enter_frame1,
-                                        text="Student Tablet",
+                                        text="Student Tablet (T2)",
                                         variable=BCU_ID,
-                                        value="BCUT2-")
+                                        value="BCUT2-",
+                                        font=("calibri", 14))
             bcu_radio6.grid(row=3, column=1, sticky=W)
 
             bcu_radio7 = tk.Radiobutton(master=enter_frame1,
-                                        text="Lecturn Desktop",
+                                        text="Lecturn Desktop (D4)",
                                         variable=BCU_ID,
-                                        value="BCUD4-")
-            bcu_radio7.grid(row=1, column=2, sticky=W)
+                                        value="BCUD4-",
+                                        font=("calibri", 14))
+            bcu_radio7.grid(row=4, column=0, columnspan=2)
 
             bcu_po_label = tk.Label(master=enter_frame1,
-                                    text="Please enter your order PO")
-            bcu_po_label.grid(row=4, column=0, columnspan=3, pady=(20,0))
+                                    text="Enter the order PO")
+            bcu_po_label.grid(row=5, column=0, columnspan=2, pady=(20,0))
 
             bcu_po_enter = tk.Entry(master=enter_frame1)
-            bcu_po_enter.grid(row=5, column=0, columnspan=3, pady=(0,20))
+            bcu_po_enter.grid(row=6, column=0, columnspan=2, pady=(0,20))
 
             bcu_sord_label = tk.Label(master=enter_frame1,
-                                    text="Please enter your SORD#")
-            bcu_sord_label.grid(row=6, column=0, columnspan=3, pady=(20,0))
+                                    text="Enter the SORD# (numbers only)")
+            bcu_sord_label.grid(row=7, column=0, columnspan=2, pady=0)
 
             bcu_sord_enter = tk.Entry(master=enter_frame1)
-            bcu_sord_enter.grid(row=7, column=0, columnspan=3, pady=(0,20))
+            bcu_sord_enter.grid(row=8, column=0, columnspan=2, pady=(0,20))
 
             bcu_asset_label = tk.Label(master=enter_frame1,
-                                    text="Enter asset tag")
-            bcu_asset_label.grid(row=8, column=0, columnspan=3, pady=(20,0))
+                                    text="Enter the asset tag")
+            bcu_asset_label.grid(row=9, column=0, columnspan=2, pady=0)
 
             bcu_asset_enter = tk.Entry(master=enter_frame1)
-            bcu_asset_enter.grid(row=9, column=0, columnspan=3, pady=(0,20))
+            bcu_asset_enter.grid(row=10, column=0, columnspan=2, pady=(0,20))
 
             # enter1_entry = tk.Entry(master=enter_frame1, textvariable=cfg.bentry1)
             # enter1_entry.pack(pady=(0,15))
@@ -883,7 +890,7 @@ class btn_bcu(tk.Tk): # special class just for BCU labels
             enter_print = tk.Button(master=enter_frame1,
                                     text="Print",
                                     command=an_print)
-            enter_print.grid(row=11, column=1)
+            enter_print.grid(row=11, column=0, columnspan=2)
         
             
 
@@ -966,8 +973,10 @@ def reset_print():
     to_print(res,"")
 
 label_mod_label = tk.Label(master=frame1,
-                            text="Label mod")
-label_mod_label.grid(row=4, column=0)
+                            text="Label\nposition",
+                            anchor="w",
+                            justify=LEFT)
+label_mod_label.grid(row=4, column=0, sticky=W)
 
 label_mod_select = tk.Spinbox(master=frame1,
                                 from_=-10,
@@ -1400,7 +1409,7 @@ if flag_2a == "homebuild":
 version_label = tk.Label(master=frame1,
                             text="Version 1.1.5",
                             font=("courier new", 10))
-version_label.grid(row=10, sticky=EW)
+version_label.grid(row=10, sticky=EW, column=0, columnspan=2)
 
 # ==========================================
 # ========= Start up the routine ===========
