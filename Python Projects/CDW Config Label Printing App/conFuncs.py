@@ -183,6 +183,7 @@ def BCPrint(code,quant,hist,sa):
 # 3x parameters = (code)image filename + (quant)Quantity + (hist)log
 
 def imgPrint(code,quant,hist):
+    downer = int(cfg.label_mod.get() * 6)
     # read the image
     im = Image.open(code)
     # look at the dimensions
@@ -222,7 +223,7 @@ def imgPrint(code,quant,hist):
     while x < y: # Loop the print to match the quantity.
         hDC.StartPage ()
         dib = ImageWin.Dib (pic)
-        dib.draw (hDC.GetHandleOutput (), (0,0,newsize[0],newsize[1]))
+        dib.draw (hDC.GetHandleOutput (), (10,0 + downer,10 + newsize[0],10 + newsize[1] + downer))
         hDC.EndPage ()
         x += 1
     hDC.EndDoc ()
