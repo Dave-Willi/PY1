@@ -86,6 +86,18 @@ def history(log): # writes to history log file
 # text formatting function
 # Label is 200 dots high (actually 208 but buffer for misaligned labels allows for less bad labels)
 
+def txt_insert(ham):
+    txt_length = len(ham)
+    font_size = min(round(850/txt_length),140) + (int(cfg.textmod.get())*5)
+    print(ham)
+    print(font_size)
+    txt_printing = ""
+    txt_printing += "^A0N," + str(font_size)
+    txt_printing += "^FO10," + str((100-(font_size/2)))
+    txt_printing += "^FD"
+    txt_printing += str(ham)
+    return(txt_printing)
+
 def txt_import(dud,more):
 
     # if str(more).startswith('('):

@@ -129,6 +129,7 @@ tab1 = tk.Frame(frame2) # singles
 tab2 = tk.Frame(frame2) # groups
 tab2a = tk.Frame(tab2)
 tab2b = tk.Frame(tab2)
+tab2c = tk.Frame(tab2)
 tab3 = tk.Frame(frame2) # range
 tab3a = tk.Frame(tab3)
 tab4 = tk.Frame(frame2) # range auto
@@ -155,6 +156,7 @@ frame2.add(tab7, text = "  Custom Labels  ")
 
 tab2a.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
 tab2b.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
+tab2c.pack(anchor=CENTER, expand=False, side=BOTTOM, pady=(10,30), padx=10)
 tab3a.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
 tab4a.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10, fill=BOTH)
 tab4b.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
@@ -170,7 +172,7 @@ tab7c.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
 # *******************************************************
 # explicit import conFuncs functions after setting frames
 # *******************************************************
-from conFuncs import cust_print, quit, set_print, BCPrint, to_print, txtPrint, QRPrint, ctrl_p, history, limit_print
+from conFuncs import cust_print, quit, set_print, BCPrint, to_print, txtPrint, QRPrint, ctrl_p, history, limit_print, txt_insert
 
 
 # ==========================================
@@ -373,18 +375,31 @@ def print_group_text(): # print the group text box
     answer = messagebox.askyesno("Question","This will print " + str(total_print) + " labels.\nDo you wish to continue?")
     if answer == True:
         full_range = ""
-        pre_label = "^XA^LH15," + str(10 + (cfg.label_mod.get() * 8)) + "^FO1,20^ASN,25,25^FDDevice" + cfg.asset_type.get() + "^FS^FO3,60^BCN,80,Y,N^FD"
+        # if cfg.no_bc.get() == TRUE:
+        #     pre_label = "^XA^LH15," + str(10 + (cfg.label_mod.get() * 8)) + "^A0N,80^FO10,40^FD"
+        # else:
         suf_label = "^FS^PQ1^XZ"
-        for x in (group_text):
-            if x == "":
-                continue
-            # tag_type = cfg.asset_type.get()
-            history(x)
-            y = pre_label + x + suf_label
-            full_range += y
-            # BCPrint(y,1,y,tag_type)
-            # sleep(0.3) # sending the commands too quickly will have some disappear.. probably
-        limit_print(full_range)
+        if cfg.no_bc.get() == TRUE:
+            for x in (group_text):
+                if x == "":
+                    continue
+                pre_label = "^XA^LH15," + str(10 + (cfg.label_mod.get() * 8))
+                mid_label = txt_insert(x)
+                printing = pre_label + mid_label + suf_label
+                print(printing)
+                to_print(printing,x)
+        else:
+            pre_label = "^XA^LH15," + str(10 + (cfg.label_mod.get() * 8)) + "^FO1,20^ASN,25,25^FDDevice" + cfg.asset_type.get() + "^FS^FO3,60^BCN,80,Y,N^FD"
+            for x in (group_text):
+                if x == "":
+                    continue
+                # tag_type = cfg.asset_type.get()
+                history(x)
+                y = pre_label + x + suf_label
+                full_range += y
+                # BCPrint(y,1,y,tag_type)
+                # sleep(0.3) # sending the commands too quickly will have some disappear.. probably
+            limit_print(full_range)
         clear_all()
         return
     else:
@@ -1070,6 +1085,11 @@ group_entry = tk.Entry(master=tab2a,
                         bg=cfg.bg_col)
 group_entry.pack(side=LEFT, padx=10, pady=(20,0))
 
+group_no_bc = tk.Checkbutton(master=tab2b,
+                            text="Plain text only",
+                            variable=cfg.no_bc)
+group_no_bc.pack(side=BOTTOM, pady=5)
+
 group_clear = tk.Button(master=tab2b,
                         text="Clear",
                         command=clear_all,
@@ -1086,6 +1106,16 @@ group_load = tk.Button(master=tab2b,
                         text="Load from file",
                         command=open_file)
 group_load.pack(side=LEFT, padx=(0,100))
+
+group_textmod_label = tk.Label(master=tab2c,
+                                text="Text size modifier: ")
+group_textmod_label.pack(side=LEFT)
+
+group_textmod = tk.Spinbox(master=tab2c,
+                            from_=-10,
+                            to=10,
+                            textvariable=cfg.textmod)
+group_textmod.pack(side=RIGHT)
 
 group_textbox = tkscrolled.ScrolledText(master=tab2,
                                         wrap=WORD)
@@ -1407,7 +1437,7 @@ if flag_2a == "homebuild":
 # ==========================================
 
 version_label = tk.Label(master=frame1,
-                            text="Version 1.1.6",
+                            text="Version 1.1.7",
                             font=("courier new", 10))
 version_label.grid(row=10, sticky=EW, column=0, columnspan=2)
 

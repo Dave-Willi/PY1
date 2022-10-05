@@ -1,3 +1,139 @@
+1234567890
+123456
+123
+1234567890
+123456
+123
+1234567890
+123456
+123
+1234567890
+123456
+123
+1234567890
+123456
+123
+12F3DS
+ASDFASDAERYHAERYAE354YAEFDGSADF
+1234567890
+123456
+1234567890
+123456
+123
+1234567890
+123456
+123
+1234567890
+123456
+123
+1234567890
+123456
+1234567890
+123456
+123
+1234567890
+123456
+1234567890
+123456
+123
+1234567890
+123456
+123
+1234567890
+123456
+123
+1234567890
+123456
+123
+1234567890
+123456
+123
+1234567890
+123456
+123
+1234567890
+123456
+123
+1234567890
+123456
+123
+1234567890
+123456
+123
+1234567890
+123456
+123
+1234567890
+123456
+123
+1234567890
+123456
+123
+A
+1234567890
+123456
+123
+1234567890
+123456
+123
+1234567890
+123456
+123
+1234567890
+123456
+123
+0147852
+654321
+123456
+012345678901234567890123456789
+567890
+123456
+SDFGHSTR
+SDGH
+ASDFGADFG
+324
+3219864
+321232
+321
+354343
+5641654
+ASDHFJ
+AERTKUYAW34GRA;PWEUHRPW
+SDFHGSETRDHYSRT
+ERQGT
+F
+ASD
+ASDF
+FGSADF
+SADFGSDZ
+ERYHGADERG
+SDFGSDFGQAERHA
+ASDFGSADFG
+DRASDGFRV
+GSAEDRGA
+ASGDSFDH
+ASDFGASDF
+HSFDTHGSDTFR
+YFSDFTHSFG
+DGFHJDT
+DFYTJDFYTJ
+DFGJH
+FTGFGHR
+TYSRTHUS
+DTYJDR
+FGHJDFGYHJ
+FDGHD
+RTSTR
+STRDBS
+SDRFG
+DFDST
+FSDGH
+SDRTHGY
+SHDFG
+ADFHGSFD
+ASDFG
+ASDGF
+ASDF
 AW3E5RAWE
 AW5ASDF
 3Q45T6
@@ -862,139 +998,3 @@ ASDF1AS
 *custom text label*
 *custom text label*
 *custom text label*
-*custom QR label*
-*custom QR label*
-*custom QR label*
-*custom text label*
-*custom text label*
-*custom text label*
-*custom text label*
-*custom text label*
-*custom text label*
-*custom text label*
-*custom text label*
-*custom text label*
-*custom text label*
-*custom text label*
-*custom text label*
-*custom text label*
-*custom text label*
-*custom text label*
-*custom text label*
-*custom text label*
-*custom text label*
-*custom text label*
-*custom text label*
-*custom text label*
-*custom text label*
-*custom text label*
-*custom text label*
-*custom text label*
-*Ebay MAC QR tag* x1
-*custom text label*
-*custom text label*
-*custom text label*
-*custom text label*
-*custom text label*
-*custom text label*
-*custom QR label*
-*custom QR label*
-*custom QR label*
-*custom text label*
-*custom text label*
-*custom text label*
-*custom text label*
-*custom text label*
-*Ebay MAC QR tag* x1
-*custom text label*
-*custom text label*
-*Ebay MAC QR tag* x1
-*Ebay MAC QR tag* x1
-*Ebay MAC QR tag* x1
-*Ebay PC QR tag* x1
-*Ebay MAC QR tag* x1
-*Ebay PC QR tag* x1
-*Ebay MAC QR tag* x1
-*custom text label*
-*custom text label*
-*custom text label*
-*custom text label*
-*custom text label*
-*Ebay MAC QR tag* x1
-*custom text label*
-*custom QR label*
-*custom QR label*
-*custom text label*
-*custom text label*
-*custom text label*
-*custom QR label*
-*custom QR label*
-*custom text label*
-*custom text label*
-*Ebay MAC QR tag* x1
-*Ebay PC QR tag* x1
-*Ebay MAC QR tag* x1
-*BBC Tag* x1
-*Ebay PC QR tag* x1
-*Ebay MAC QR tag* x1
-*BBC Tag* x1
-*BBC Tag* x1
-*Ebay MAC QR tag* x1
-*BBC Tag* x1
-*Ebay PC QR tag* x1
-*Ebay MAC QR tag* x1
-*Ebay PC QR tag* x1
-*Ebay MAC QR tag* x1
-*BBC Tag* x1
-*BBC Tag* x1
-*Ebay PC QR tag* x1
-*Ebay MAC QR tag* x1
-*BBC Tag* x1
-*Ebay PC QR tag* x1
-*Ebay MAC QR tag* x1
-*BBC Tag* x1
-*BBC Tag* x1
-*Ebay MAC QR tag* x1
-*BBC Tag* x1
-*Ebay MAC QR tag* x1
-*BBC Tag* x1
-*BBC Tag* x1
-*Ebay MAC QR tag* x1
-*BBC Tag* x1
-*Ebay MAC QR tag* x1
-*BBC Tag* x1
-*Ebay MAC QR tag* x4
-*BBC Tag* x4
-*BBC TAG* X10
-*BBC TAG* X1
-ASDR
-*BBC TAG* X1
-*BBC TAG* X1
-*BBC TAG* X1
-**EBAY MAC QR TAG** X1
-**EBAY PC QR TAG** X1
-**EBAY MAC QR TAG** X1
-**EBAY PC QR TAG** X1
-**EBAY MAC QR TAG** X1
-*BBC TAG* X1
-**EBAY MAC QR TAG** X1
-*BBC TAG* X1
-*BBC TAG* X1
-**EBAY MAC QR TAG** X1
-**EBAY MAC QR TAG** X1
-*BBC TAG* X1
-**EBAY MAC QR TAG** X1
-*BBC TAG* X1
-"
-0
-1
-**EBAY PC QR TAG** X1
-**EBAY MAC QR TAG** X1
-**EBAY PC QR TAG** X13
-**EBAY MAC QR TAG** X13
-**EBAY MAC QR TAG** X1
-**EBAY MAC QR TAG** X1
-*BBC TAG* X7
-*BBC TAG* X1
-*BBC TAG* X1
-*BBC TAG* X1

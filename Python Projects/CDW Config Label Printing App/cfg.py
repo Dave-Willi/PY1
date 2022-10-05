@@ -27,6 +27,7 @@ textmod = tk.IntVar(None, "0")
 bentry1 = tk.StringVar(None)
 bentry2 = tk.StringVar(None)
 label_mod = tk.IntVar(None, "0") # manually set modifier to alter height that label is printed at to account for inaccurate calibration of printer
+no_bc = tk.BooleanVar(None)
 
 # ============ Printer Initial Selection ============
 
