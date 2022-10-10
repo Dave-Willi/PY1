@@ -5,7 +5,7 @@ import socket
 import subprocess
 import sys
 from tkinter import messagebox
-import re
+# import re
 import win32print
 import win32ui
 from PIL import Image, ImageWin

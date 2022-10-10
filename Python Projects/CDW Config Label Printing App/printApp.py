@@ -19,6 +19,7 @@ from PIL import Image, ImageTk
 from configparser import ConfigParser
 import tkinter.scrolledtext as tkscrolled
 import re
+from tkcalendar import DateEntry
 
 root = tk.Tk()
 root.title("CDW Con Duplicate Label Printer") # Title of app window
@@ -173,7 +174,6 @@ tab7c.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
 # explicit import conFuncs functions after setting frames
 # *******************************************************
 from conFuncs import cust_print, quit, set_print, BCPrint, to_print, txtPrint, QRPrint, ctrl_p, history, limit_print, txt_insert
-
 
 # ==========================================
 # =========== Side menu commands ===========
@@ -623,6 +623,100 @@ except:
 # # ================= Classes ================
 # # ==========================================
 
+class McDonald(tk.Tk):
+    store = tk.StringVar(None,"")
+    sord = tk.StringVar(None,"")
+    shipDate = tk.StringVar(None,"")
+    def __init__(self):
+        
+        self.bname = tk.Button(master=tab5b,
+                        text="McDonalds",
+                        command=self.bfunc,
+                        width=20)
+        self.bname.grid(pady=(0,10), padx=(0,10),row=cfg.y_row, column=cfg.x_col)
+        if cfg.x_col >= 2:
+            cfg.y_row += 1
+            cfg.x_col = 0
+        else:
+            cfg.x_col += 1
+        return
+
+
+    def bfunc(self):
+        def entry_window():
+            store = tk.StringVar(None,"")
+            sord = tk.StringVar(None,"")
+            shipDate = tk.StringVar(None,"")
+            enter_box = tk.Toplevel()
+            # enter_box.geometry('750x600')
+            enter_box.title("McDonalds Project Labels")
+            # enter_frame1 = tk.Frame(master=enter_box)
+            # enter_frame1.pack()
+            # Enter Store number
+            # Enter SORD
+            # Enter ship date
+            # Select MPs
+            # Select SoCs
+            # or select from defaults (ODMB, COTF etc)
+            # Print 25mm labels
+            # Print 65mm labels
+            """
+            config parse the custom_buttons.ini
+            [McD]/[SBucks] will be used to initiate the button in the main app
+            then the variables will define the screens and socs
+            groups will need more consideration but should be doable all the same
+            screen1 = BackOfBar 1
+            screen2 = DailyOrderBoard 1
+            soc1 = BackOfBar 1 SOC
+            soc2 = DailyOrderBoard 1 SOC
+            group1 = ODmB
+            group1a = screen1, screen2, soc1, soc2
+            """
+            def an_print():
+                print(store.get())
+                print(sord.get())
+                print(date_entry.get_date())
+            
+            store_label = tk.Label(master=enter_box,
+                                    text="Enter store number",
+                                    font=("calibri", 14))
+            store_label.grid(row=0, column=0, pady=10)
+            store_entry = tk.Entry(master=enter_box,
+                                    textvariable=store,
+                                    width=15)
+            store_entry.grid(row=1, column=0)
+
+            sord_label = tk.Label(master=enter_box,
+                                    text="Enter SORD number",
+                                    font=("calibri", 14))
+            sord_label.grid(row=0, column=1, pady=10)
+            sord_entry = tk.Entry(master=enter_box,
+                                    textvariable=sord,
+                                    width=15)
+            sord_entry.grid(row=1, column=1)
+
+            date_label = tk.Label(master=enter_box,
+                                    text="Enter ship date",
+                                    font=("calibri", 14))
+            date_label.grid(row=0, column=2, pady=10)
+            date_entry = DateEntry(master=enter_box,
+                                    selectmode='day',
+                                    date_pattern='dd/mm/y')
+            date_entry.grid(row=1, column=2)
+
+            enter_print = tk.Button(master=enter_box,
+                                    text="Print",
+                                    command=an_print)
+            enter_print.grid(row=100, column=0)
+        
+        try:
+            for widget in root.winfo_children():
+                if isinstance(widget, tk.Toplevel):
+                    widget.destroy()
+        except:
+            pass
+        entry_window()
+
 class button(tk.Tk):
     def __init__(self, y):
         self.bname = y["button_name"]
@@ -887,27 +981,10 @@ class btn_bcu(tk.Tk): # special class just for BCU labels
             bcu_asset_enter = tk.Entry(master=enter_frame1)
             bcu_asset_enter.grid(row=10, column=0, columnspan=2, pady=(0,20))
 
-            # enter1_entry = tk.Entry(master=enter_frame1, textvariable=cfg.bentry1)
-            # enter1_entry.pack(pady=(0,15))
-
-            # entry2_label = tk.Label(master=enter_frame1,
-            #                         text=bline2)
-            # entry2_label.pack()
-            # enter2_entry = tk.Entry(master=enter_frame1, textvariable=cfg.bentry2)
-            # enter2_entry.pack(pady=(0,15))
-
-            # entry_quant_label = tk.Label(master=enter_frame1, text="Enter number of labels to print")
-            # entry_quant_label.pack(pady=(35,0))
-            # entry_quantities = tk.Spinbox(master=enter_frame1, from_=1, to=999,
-            #                             textvariable=cfg.cust_quantity)
-            # entry_quantities.pack()
-
             enter_print = tk.Button(master=enter_frame1,
                                     text="Print",
                                     command=an_print)
             enter_print.grid(row=11, column=0, columnspan=2)
-        
-            
 
         try:
             for widget in root.winfo_children():
@@ -930,6 +1007,8 @@ for x in trial:
         btn_bcu()
     else:
         button(y)
+
+McDonald()
 
 tryout = ConfigParser()
 tryout.read("data/custom_buttons.ini")
