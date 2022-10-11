@@ -5,7 +5,7 @@ import socket
 import subprocess
 import sys
 from tkinter import messagebox
-# import re
+import re
 import win32print
 import win32ui
 from PIL import Image, ImageWin
@@ -120,16 +120,33 @@ def txt_import(dud,more):
     except:
         font_size = min(round(190/(sub_total)),100) + (int(cfg.textmod.get())*5)
     txt_printing = ""
-    for x in (more):
-        txt_printing += "^A0N," + str(font_size)
-        if sub_total== 1:
-            txt_printing += "^FO10," + str((100-(font_size/2)))
-        else:
-            txt_printing += "^FO10," + str((10+(font_size*index)))
-        txt_printing += "^FD"
-        txt_printing += str(x)
-        txt_printing += "^FS"
-        index += 1
+    if cfg.no_bc.get() == True:
+        quant = str(cfg.cust_quantity.get())
+        for x in (more):
+            txt_printing += "^XA" # Start of label
+            txt_printing += "^LH15," + str(10 + (cfg.label_mod.get() * 8))
+            txt_printing += "^A0N," + str(font_size)
+            if sub_total== 1:
+                txt_printing += "^FO10," + str((100-(font_size/2)))
+            else:
+                txt_printing += "^FO10," + str((10+(font_size*index)))
+            txt_printing += "^FD"
+            txt_printing += str(x)
+            txt_printing += "^FS"
+            txt_printing += "^PQ"
+            txt_printing += str(quant) # Selected quantity
+            txt_printing += "^XZ" # End of label
+    else:
+        for x in (more):
+            txt_printing += "^A0N," + str(font_size)
+            if sub_total== 1:
+                txt_printing += "^FO10," + str((100-(font_size/2)))
+            else:
+                txt_printing += "^FO10," + str((10+(font_size*index)))
+            txt_printing += "^FD"
+            txt_printing += str(x)
+            txt_printing += "^FS"
+            index += 1
     return(txt_printing)
 
 # ========== QR Code Print (QRPrint) ==========
@@ -157,15 +174,31 @@ def QRPrint(code,quant,hist,*more):
 # x parameters = (quant)Quantity + (hist)log, (*more)1 or more lines of text
 
 def txtPrint(quant,hist,*more):
-    printing = "^XA" # Start of label
-    printing += "^LH15," + str(10 + (cfg.label_mod.get() * 8)) # Label Home | position of start of label
-    try:
-        printing += txt_import(1,*more)
-    except:
-        printing += txt_import(1,more)
-    printing += "^PQ"
-    printing += str(quant) # Selected quantity
-    printing += "^XZ" # End of label
+    if cfg.no_bc.get() == True:
+        printing = ""
+        # for x in more:
+            # print("Length")
+            # print(len(*more))
+            # printing += "^XA" # Start of label
+            # printing += "^LH15," + str(10 + (cfg.label_mod.get() * 8)) # Label Home | position of start of label
+        # printing += txt_import(1,*more)
+        try:
+            printing += txt_import(1,*more)
+        except:
+            printing += txt_import(1,more)
+            # printing += "^PQ"
+            # printing += str(quant) # Selected quantity
+            # printing += "^XZ" # End of label
+    else:
+        printing = "^XA" # Start of label
+        printing += "^LH15," + str(10 + (cfg.label_mod.get() * 8)) # Label Home | position of start of label
+        try:
+            printing += txt_import(1,*more)
+        except:
+            printing += txt_import(1,more)
+        printing += "^PQ"
+        printing += str(quant) # Selected quantity
+        printing += "^XZ" # End of label
     to_print(printing,hist)
 
 # ========== BarCodePrint (BCPrint) ==========

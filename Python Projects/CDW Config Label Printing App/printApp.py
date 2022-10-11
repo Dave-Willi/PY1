@@ -19,7 +19,7 @@ from PIL import Image, ImageTk
 from configparser import ConfigParser
 import tkinter.scrolledtext as tkscrolled
 import re
-from tkcalendar import DateEntry
+# from tkcalendar import DateEntry
 
 root = tk.Tk()
 root.title("CDW Con Duplicate Label Printer") # Title of app window
@@ -997,7 +997,7 @@ class btn_bcu(tk.Tk): # special class just for BCU labels
 trial = ConfigParser()
 trial.read("data/custom_buttons.ini")
 for x in trial:
-    if x == "DEFAULT":
+    if x == "DEFAULT" or x == "McD":
         continue
     y = trial[x]
     btype = y["btn_type"]
@@ -1164,10 +1164,10 @@ group_entry = tk.Entry(master=tab2a,
                         bg=cfg.bg_col)
 group_entry.pack(side=LEFT, padx=10, pady=(20,0))
 
-group_no_bc = tk.Checkbutton(master=tab2b,
-                            text="Plain text only",
-                            variable=cfg.no_bc)
-group_no_bc.pack(side=BOTTOM, pady=5)
+# group_no_bc = tk.Checkbutton(master=tab2b,
+#                             text="Plain text only",
+#                             variable=cfg.no_bc)
+# group_no_bc.pack(side=BOTTOM, pady=5)
 
 group_clear = tk.Button(master=tab2b,
                         text="Clear",
@@ -1431,6 +1431,22 @@ custom_load = tk.Button(master=tab7b,
                         command=clear_all,
                         width=10)
 custom_load.pack(side=LEFT, padx=40)
+
+def no_bc_toggle():
+    if custom_no_bc.config('text')[-1] == "Text only: All on 1":
+        custom_no_bc.config(text="Text only: 1 per label")
+        cfg.no_bc.set(True)
+    else:
+        custom_no_bc.config(text="Text only: All on 1")
+        cfg.no_bc.set(False)
+
+custom_no_bc = tk.Button(master=tab7c,
+                            text="Text only: All on 1",
+                            command=no_bc_toggle,
+                            width=20,
+                            bg="black",
+                            fg="white")
+custom_no_bc.pack(side=LEFT, pady=5)
 
 custom_quantity_label = tk.Label(master=tab7c,
                             text="Print quantity")
