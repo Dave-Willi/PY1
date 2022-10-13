@@ -1433,15 +1433,15 @@ custom_load = tk.Button(master=tab7b,
 custom_load.pack(side=LEFT, padx=40)
 
 def no_bc_toggle():
-    if custom_no_bc.config('text')[-1] == "Text only: All on 1":
+    if custom_no_bc.config('text')[-1] == "Text or QR: All on 1":
         custom_no_bc.config(text="Text only: 1 per label")
         cfg.no_bc.set(True)
     else:
-        custom_no_bc.config(text="Text only: All on 1")
+        custom_no_bc.config(text="Text or QR: All on 1")
         cfg.no_bc.set(False)
 
 custom_no_bc = tk.Button(master=tab7c,
-                            text="Text only: All on 1",
+                            text="Text or QR: All on 1",
                             command=no_bc_toggle,
                             width=20,
                             bg="black",
