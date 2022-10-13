@@ -5,6 +5,7 @@
 # pillow
 # pywin32
 # configparser
+# tkcalendar
 
 # imports.... so many imports 
 
@@ -12,6 +13,7 @@ import os
 import subprocess
 import sys
 import tkinter as tk
+from tkinter import ttk
 from tkinter import *
 from tkinter import messagebox, filedialog
 from tkinter.ttk import Notebook, Style
@@ -173,7 +175,7 @@ tab7c.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
 # *******************************************************
 # explicit import conFuncs functions after setting frames
 # *******************************************************
-from conFuncs import cust_print, quit, set_print, BCPrint, to_print, txtPrint, QRPrint, ctrl_p, history, limit_print, txt_insert
+from conFuncs import cust_print, quit, BCPrint, to_print, txtPrint, QRPrint, ctrl_p, history, limit_print
 
 # ==========================================
 # =========== Side menu commands ===========
@@ -375,20 +377,14 @@ def print_group_text(): # print the group text box
     answer = messagebox.askyesno("Question","This will print " + str(total_print) + " labels.\nDo you wish to continue?")
     if answer == True:
         full_range = ""
-        # if cfg.no_bc.get() == TRUE:
-        #     pre_label = "^XA^LH15," + str(10 + (cfg.label_mod.get() * 8)) + "^A0N,80^FO10,40^FD"
-        # else:
         suf_label = "^FS^PQ1^XZ"
         pre_label = "^XA^LH15," + str(10 + (cfg.label_mod.get() * 8)) + "^FO1,20^ASN,25,25^FDDevice" + cfg.asset_type.get() + "^FS^FO3,60^BCN,80,Y,N^FD"
         for x in (group_text):
             if x == "":
                 continue
-            # tag_type = cfg.asset_type.get()
             history(x)
             y = pre_label + x + suf_label
             full_range += y
-            # BCPrint(y,1,y,tag_type)
-            # sleep(0.3) # sending the commands too quickly will have some disappear.. probably
         limit_print(full_range)
         clear_all()
         return
@@ -617,7 +613,8 @@ class McDonald(tk.Tk):
     store = tk.StringVar(None,"")
     sord = tk.StringVar(None,"")
     shipDate = tk.StringVar(None,"")
-    def __init__(self):
+    def __init__(self, y):
+        self.setupMcD = y
         
         self.bname = tk.Button(master=tab5b,
                         text="McDonalds",
@@ -634,14 +631,28 @@ class McDonald(tk.Tk):
 
     def bfunc(self):
         def entry_window():
+            cfg.screen_row = 2
+            cfg.soc_row = 2
+            cfg.kvs_row = 2
+            cfg.group_row = 2
             store = tk.StringVar(None,"")
             sord = tk.StringVar(None,"")
             shipDate = tk.StringVar(None,"")
             enter_box = tk.Toplevel()
             # enter_box.geometry('750x600')
             enter_box.title("McDonalds Project Labels")
-            # enter_frame1 = tk.Frame(master=enter_box)
-            # enter_frame1.pack()
+            enter_frame1 = tk.Frame(master=enter_box)
+            enter_frame1.grid(row=2, column=0, columnspan=3)
+            border = ttk.Separator(master=enter_frame1,orient='horizontal')
+            border.grid(row=1, column=0, columnspan=4, sticky=EW)
+            mcdlabel1 = tk.Label(master=enter_frame1, text="Screens")
+            mcdlabel1.grid(row=0, column=0)
+            mcdlabel2 = tk.Label(master=enter_frame1, text="SoCs")
+            mcdlabel2.grid(row=0, column=1)
+            mcdlabel3 = tk.Label(master=enter_frame1, text="KVS")
+            mcdlabel3.grid(row=0, column=2)
+            mcdlabel4 = tk.Label(master=enter_frame1, text="Groups")
+            mcdlabel4.grid(row=0, column=3)
             # Enter Store number
             # Enter SORD
             # Enter ship date
@@ -667,6 +678,40 @@ class McDonald(tk.Tk):
                 print(sord.get())
                 print(date_entry.get_date())
             
+            class mcdscreen():
+                def __init__(self,x) -> None:
+                    mcdlabel = tk.Checkbutton(master=enter_frame1,
+                                            text=x)
+                    mcdlabel.grid(column=0, row=cfg.screen_row, sticky=W, padx=5)
+                    cfg.screen_row += 1
+            pass
+
+            class mcdsoc():
+                def __init__(self,x) -> None:
+                    mcdlabel = tk.Checkbutton(master=enter_frame1,
+                                            text=x)
+                    mcdlabel.grid(column=1, row=cfg.soc_row, sticky=W, padx=5)
+                    cfg.soc_row += 1
+                pass
+
+            class mcdkvs():
+                def __init__(self,x) -> None:
+                    mcdlabel = tk.Checkbutton(master=enter_frame1,
+                                            text=x)
+                    mcdlabel.grid(column=2, row=cfg.kvs_row, sticky=W, padx=5)
+                    cfg.kvs_row += 1
+                pass
+
+            class mcdgroup():
+                def __init__(self,x) -> None:
+                    mcdlabel = tk.Button(master=enter_frame1,
+                                            text=x,
+                                            width=20)
+                    mcdlabel.grid(column=3, row=cfg.group_row, sticky=W, padx=5)
+                    cfg.group_row += 1
+                pass
+
+
             store_label = tk.Label(master=enter_box,
                                     text="Enter store number",
                                     font=("calibri", 14))
@@ -694,10 +739,24 @@ class McDonald(tk.Tk):
                                     date_pattern='dd/mm/y')
             date_entry.grid(row=1, column=2)
 
+            print(type(self.setupMcD))
+            print(self.setupMcD)
+
+            for x in self.setupMcD:
+                y = self.setupMcD[x]
+                if x.startswith("screen"):
+                    mcdscreen(y)
+                elif x.startswith("soc"):
+                    mcdsoc(y)
+                elif x.startswith("kvs"):
+                    mcdkvs(y)
+                elif x.startswith("group"):
+                    mcdgroup(y)
+
             enter_print = tk.Button(master=enter_box,
                                     text="Print",
                                     command=an_print)
-            enter_print.grid(row=100, column=0)
+            enter_print.grid(row=3, column=0)
         
         try:
             for widget in root.winfo_children():
@@ -987,18 +1046,22 @@ class btn_bcu(tk.Tk): # special class just for BCU labels
 trial = ConfigParser()
 trial.read("data/custom_buttons.ini")
 for x in trial:
-    if x == "DEFAULT" or x == "McD":
+    if x == "DEFAULT":
+        continue
+    elif x == "McD":
+        McDonald(trial[x])
         continue
     y = trial[x]
     btype = y["btn_type"]
     if btype == "5":
         button3(y)
+        continue
     elif btype == "6":
         btn_bcu()
+        continue
     else:
         button(y)
 
-McDonald()
 
 tryout = ConfigParser()
 tryout.read("data/custom_buttons.ini")
@@ -1298,24 +1361,6 @@ print_quantity = tk.Spinbox(master=tab5a, from_=1, to=9999,
                             textvariable=cfg.cust_quantity)
 print_quantity.grid(row=0, column=2, pady=10, padx= 10)
 
-# bbc_button = tk.Button(master=tab5,
-#                         text="BBC",
-#                         command=BBC,
-#                         width=20)
-# bbc_button.grid(row=2, column=0, pady=10, padx= 10)
-
-# ebay_mac_button = tk.Button(master=tab5,
-#                         text="eBay Mac QR Code",
-#                         command=ebay_mac,
-#                         width=20)
-# ebay_mac_button.grid(row=3, column=0, pady=10, padx= 10)
-
-# ebay_pc_button = tk.Button(master=tab5,
-#                         text="eBay Windows QR Code",
-#                         command=ebay_PC,
-#                         width=20)
-# ebay_pc_button.grid(row=4, column=0, pady=10, padx= 10)
-
 # ==========================================
 # ========== Reports Tab (tab6) ============
 # ==========================================
@@ -1381,22 +1426,6 @@ custom_label.pack(side=LEFT, pady=(10,0))
 custom_qr = tk.Entry(master=tab7a,
                     width=70)
 custom_qr.pack(side=LEFT, padx=10, pady=(10,0))
-
-# slide1_label = tk.Label(master=tab7aa,
-#                         text="QR position: ")
-# slide1_label.pack(side=LEFT)
-
-# slide1 = Scale(tab7aa, from_=320, to=380, orient=HORIZONTAL, length=250)
-# slide1.set(cfg.qr_pos)
-# slide1.pack(side=LEFT)
-
-# slide2 = Scale(tab7aa, from_=1, to=10, orient=HORIZONTAL)
-# slide2.set(cfg.qr_mag)
-# slide2.pack(side=RIGHT)
-
-# slide2_label = tk.Label(master=tab7aa,
-#                         text="QR size: ")
-# slide2_label.pack(side=RIGHT)
 
 custom_clear = tk.Button(master=tab7b,
                         text="Clear QR Code",
@@ -1522,7 +1551,7 @@ if flag_2a == "homebuild":
 # ==========================================
 
 version_label = tk.Label(master=frame1,
-                            text="Version 1.1.7",
+                            text="Version 1.1.8",
                             font=("courier new", 10))
 version_label.grid(row=10, sticky=EW, column=0, columnspan=2)
 
