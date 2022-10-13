@@ -19,7 +19,7 @@ from PIL import Image, ImageTk
 from configparser import ConfigParser
 import tkinter.scrolledtext as tkscrolled
 import re
-# from tkcalendar import DateEntry
+from tkcalendar import DateEntry
 
 root = tk.Tk()
 root.title("CDW Con Duplicate Label Printer") # Title of app window
