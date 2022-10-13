@@ -19,7 +19,7 @@ from PIL import Image, ImageTk
 from configparser import ConfigParser
 import tkinter.scrolledtext as tkscrolled
 import re
-# from tkcalendar import DateEntry
+from tkcalendar import DateEntry
 
 root = tk.Tk()
 root.title("CDW Con Duplicate Label Printer") # Title of app window
@@ -379,27 +379,17 @@ def print_group_text(): # print the group text box
         #     pre_label = "^XA^LH15," + str(10 + (cfg.label_mod.get() * 8)) + "^A0N,80^FO10,40^FD"
         # else:
         suf_label = "^FS^PQ1^XZ"
-        if cfg.no_bc.get() == TRUE:
-            for x in (group_text):
-                if x == "":
-                    continue
-                pre_label = "^XA^LH15," + str(10 + (cfg.label_mod.get() * 8))
-                mid_label = txt_insert(x)
-                printing = pre_label + mid_label + suf_label
-                print(printing)
-                to_print(printing,x)
-        else:
-            pre_label = "^XA^LH15," + str(10 + (cfg.label_mod.get() * 8)) + "^FO1,20^ASN,25,25^FDDevice" + cfg.asset_type.get() + "^FS^FO3,60^BCN,80,Y,N^FD"
-            for x in (group_text):
-                if x == "":
-                    continue
-                # tag_type = cfg.asset_type.get()
-                history(x)
-                y = pre_label + x + suf_label
-                full_range += y
-                # BCPrint(y,1,y,tag_type)
-                # sleep(0.3) # sending the commands too quickly will have some disappear.. probably
-            limit_print(full_range)
+        pre_label = "^XA^LH15," + str(10 + (cfg.label_mod.get() * 8)) + "^FO1,20^ASN,25,25^FDDevice" + cfg.asset_type.get() + "^FS^FO3,60^BCN,80,Y,N^FD"
+        for x in (group_text):
+            if x == "":
+                continue
+            # tag_type = cfg.asset_type.get()
+            history(x)
+            y = pre_label + x + suf_label
+            full_range += y
+            # BCPrint(y,1,y,tag_type)
+            # sleep(0.3) # sending the commands too quickly will have some disappear.. probably
+        limit_print(full_range)
         clear_all()
         return
     else:
