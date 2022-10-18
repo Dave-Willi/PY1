@@ -17,6 +17,7 @@ from tkinter import ttk
 from tkinter import *
 from tkinter import messagebox, filedialog
 from tkinter.ttk import Notebook, Style
+from turtle import width
 from PIL import Image, ImageTk
 from configparser import ConfigParser
 import tkinter.scrolledtext as tkscrolled
@@ -609,10 +610,191 @@ except:
 # # ================= Classes ================
 # # ==========================================
 
+class Dominos(tk.Tk):
+    # enter store number
+    # each has a unique ip address
+    # 2x VM Hosts
+    # 8x Thin Clients
+    # 2x Label Printer
+    # 1x Receipt printer
+    # 1x Office Printer
+    # 1x Cash Drawer
+    def __init__(self, y):
+        self.setupDom = y
+        self.bname = tk.Button(master=tab5b,
+                        text="Dominos",
+                        command=self.bfunc,
+                        width=20)
+        self.bname.grid(pady=(0,10), padx=(0,10),row=cfg.y_row, column=cfg.x_col)
+        if cfg.x_col >= 2:
+            cfg.y_row += 1
+            cfg.x_col = 0
+        else:
+            cfg.x_col += 1
+        return
+
+    def bfunc(self):
+        def entry_window():
+            cfg.dom_col = 0
+            cfg.dom_row = 2
+            store = tk.StringVar(None,"")
+            enter_box = tk.Toplevel()
+            enter_box.title("Dominos")
+            enter_frame1 = tk.Frame(master=enter_box)
+            enter_frame1.grid(row=4, column=0, columnspan=8)
+            border = ttk.Separator(master=enter_frame1,orient='horizontal')
+            border.grid(row=1, column=0, columnspan=4, sticky=EW)
+            
+            def printDom():
+                try:
+                    storeid = store.get()
+                    if storeid == "":
+                        messagebox.showinfo("Dominos","Store ID Required")
+                    else:
+                        for widget in enter_frame1.winfo_children():
+                            if isinstance(widget, tk.Label):
+                                xy = (widget.cget("text"))
+                                if xy.startswith("HOST"):
+                                    xyz = ("VM " + storeid + " " + xy)
+                                elif xy.startswith("CL"):
+                                    try:
+                                        abc = re.split("(\d+)", xy)
+                                        xyz = (abc[0] + storeid + abc[1])
+                                    except Exception as e:
+                                        print(e)
+                                else:
+                                    xyz = xy
+                                    
+                            if isinstance(widget, tk.Entry):
+                                if widget.get() != "":
+                                    zyx = widget.get()
+                                    newText = (xyz,zyx)
+                                    txtPrint(1,"Dominos Labels",newText)
+                except Exception as e:
+                    print(e)
+
+            def clearDom():
+                try:
+                    for widget in enter_box.winfo_children():
+                        if isinstance(widget, tk.Entry):
+                            widget.delete(0, END)
+                    for widget in enter_frame1.winfo_children():
+                        if isinstance(widget, tk.Entry):
+                            widget.delete(0, END)
+                except:
+                    pass
+
+            store_label = tk.Label(master=enter_box,
+                                    text="Enter store number",
+                                    font=("calibri", 14))
+            store_label.grid(row=0, column=0, pady=(10,0))
+            store_entry = tk.Entry(master=enter_box,
+                                    textvariable=store,
+                                    width=15)
+            store_entry.grid(row=1, column=0, pady=(0,10), padx=10)
+
+            ip_label = tk.Label(master=enter_box,
+                                text="Enter IP addresses below",
+                                font=("calibri", 14))
+            ip_label.grid(row=1, column=1, pady=10, padx=15)
+
+            dom_print = tk.Button(master=enter_box,
+                                text="Clear all",
+                                command=clearDom,
+                                width=15)
+            dom_print.grid(row=0, column=2, padx=10)
+
+            dom_print = tk.Button(master=enter_box,
+                                text="Print Labels",
+                                command=printDom,
+                                width=15)
+            dom_print.grid(row=1, column=2, padx=10)
+
+            class host():
+                def __init__(self,x) -> None:
+                    domlabel = tk.Label(master=enter_frame1,
+                                            text=x)
+                    domlabel.grid(column=cfg.dom_col, row=cfg.dom_row, sticky=W, padx=5, pady=(10,0))
+                    domenter = tk.Entry(master=enter_frame1)
+                    domenter.grid(column=cfg.dom_col, row=cfg.dom_row+1, padx=5, pady=(0,10))
+                    cfg.dom_row += 2
+
+            class client():
+                def __init__(self,x) -> None:
+                    domlabel = tk.Label(master=enter_frame1,
+                                            text=x)
+                    domlabel.grid(column=cfg.dom_col, row=cfg.dom_row, sticky=W, padx=5, pady=(10,0))
+                    domenter = tk.Entry(master=enter_frame1)
+                    domenter.grid(column=cfg.dom_col, row=cfg.dom_row+1, pady=(0,10))
+                    cfg.dom_row += 2
+
+            class label():
+                def __init__(self,x) -> None:
+                    domlabel = tk.Label(master=enter_frame1,
+                                            text=x)
+                    domlabel.grid(column=cfg.dom_col, row=cfg.dom_row, sticky=W, padx=5, pady=(10,0))
+                    domenter = tk.Entry(master=enter_frame1)
+                    domenter.grid(column=cfg.dom_col, row=cfg.dom_row+1, pady=(0,10))
+                    cfg.dom_row += 2
+
+            class receipt():
+                def __init__(self,x) -> None:
+                    domlabel = tk.Label(master=enter_frame1,
+                                            text=x)
+                    domlabel.grid(column=cfg.dom_col, row=cfg.dom_row, sticky=W, padx=5, pady=(10,0))
+                    domenter = tk.Entry(master=enter_frame1)
+                    domenter.grid(column=cfg.dom_col, row=cfg.dom_row+1, pady=(0,10))
+                    cfg.dom_row += 2
+
+            class office():
+                def __init__(self,x) -> None:
+                    domlabel = tk.Label(master=enter_frame1,
+                                            text=x)
+                    domlabel.grid(column=cfg.dom_col, row=cfg.dom_row, sticky=W, padx=5, pady=(10,0))
+                    domenter = tk.Entry(master=enter_frame1)
+                    domenter.grid(column=cfg.dom_col, row=cfg.dom_row+1, pady=(0,10))
+                    cfg.dom_row += 2
+
+            class cash():
+                def __init__(self,x) -> None:
+                    domlabel = tk.Label(master=enter_frame1,
+                                            text=x)
+                    domlabel.grid(column=cfg.dom_col, row=cfg.dom_row, sticky=W, padx=5, pady=(10,0))
+                    domenter = tk.Entry(master=enter_frame1)
+                    domenter.grid(column=cfg.dom_col, row=cfg.dom_row+1, pady=(0,10))
+                    cfg.dom_row += 2
+
+            for x in self.setupDom:
+                if cfg.dom_row >= 18:
+                    cfg.dom_col += 1
+                    cfg.dom_row = 2
+                y = self.setupDom[x]
+                if x.startswith("host"):
+                    host(y)
+                elif x.startswith("client"):
+                    client(y)
+                elif x.startswith("label"):
+                    label(y)
+                elif x.startswith("receipt"):
+                    receipt(y)
+                elif x.startswith("office"):
+                    office(y)
+                elif x.startswith("cash"):
+                    cash(y)
+
+        try:
+            for widget in root.winfo_children():
+                if isinstance(widget, tk.Toplevel):
+                    widget.destroy()
+        except:
+            pass
+        entry_window()
+        
+
 class McDonald(tk.Tk):
-    store = tk.StringVar(None,"")
-    sord = tk.StringVar(None,"")
-    shipDate = tk.StringVar(None,"")
+    # store = tk.StringVar(None,"")
+    # sord = tk.StringVar(None,"")
+    # shipDate = tk.StringVar(None,"")
     def __init__(self, y):
         self.setupMcD = y
         
@@ -684,24 +866,21 @@ class McDonald(tk.Tk):
                                             text=x)
                     mcdlabel.grid(column=0, row=cfg.screen_row, sticky=W, padx=5)
                     cfg.screen_row += 1
-            pass
-
+            
             class mcdsoc():
                 def __init__(self,x) -> None:
                     mcdlabel = tk.Checkbutton(master=enter_frame1,
                                             text=x)
                     mcdlabel.grid(column=1, row=cfg.soc_row, sticky=W, padx=5)
                     cfg.soc_row += 1
-                pass
-
+                
             class mcdkvs():
                 def __init__(self,x) -> None:
                     mcdlabel = tk.Checkbutton(master=enter_frame1,
                                             text=x)
                     mcdlabel.grid(column=2, row=cfg.kvs_row, sticky=W, padx=5)
                     cfg.kvs_row += 1
-                pass
-
+                
             class mcdgroup():
                 def __init__(self,x) -> None:
                     mcdlabel = tk.Button(master=enter_frame1,
@@ -709,9 +888,7 @@ class McDonald(tk.Tk):
                                             width=20)
                     mcdlabel.grid(column=3, row=cfg.group_row, sticky=W, padx=5)
                     cfg.group_row += 1
-                pass
-
-
+                
             store_label = tk.Label(master=enter_box,
                                     text="Enter store number",
                                     font=("calibri", 14))
@@ -739,9 +916,6 @@ class McDonald(tk.Tk):
                                     date_pattern='dd/mm/y')
             date_entry.grid(row=1, column=2)
 
-            print(type(self.setupMcD))
-            print(self.setupMcD)
-
             for x in self.setupMcD:
                 y = self.setupMcD[x]
                 if x.startswith("screen"):
@@ -762,8 +936,8 @@ class McDonald(tk.Tk):
             for widget in root.winfo_children():
                 if isinstance(widget, tk.Toplevel):
                     widget.destroy()
-        except:
-            pass
+        except Exception as e:
+            print(e)
         entry_window()
 
 class button(tk.Tk):
@@ -844,7 +1018,7 @@ class button3(tk.Tk):
                 except Exception as e:
                     print(e)
                     print("Couldn't collate answers")
-                pass
+                
                 try:
                     qty = cfg.cust_quantity.get()
                     newText = ()
@@ -855,8 +1029,8 @@ class button3(tk.Tk):
                             txtPrint(qty,str(self.bhistory),newText)
                         else:
                             pass
-                except:
-                    pass
+                except Exception as e:
+                    print(e)
 
             entry_quant_label = tk.Label(master=enter_frame1, text="Enter number of labels to print")
             entry_quant_label.pack(pady=(35,0))
@@ -1050,6 +1224,9 @@ for x in trial:
         continue
     elif x == "McD":
         McDonald(trial[x])
+        continue
+    elif x == "Dominos":
+        Dominos(trial[x])
         continue
     y = trial[x]
     btype = y["btn_type"]
@@ -1551,7 +1728,7 @@ if flag_2a == "homebuild":
 # ==========================================
 
 version_label = tk.Label(master=frame1,
-                            text="Version 1.1.8",
+                            text="Version 1.1.9",
                             font=("courier new", 10))
 version_label.grid(row=10, sticky=EW, column=0, columnspan=2)
 

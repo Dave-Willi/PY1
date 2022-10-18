@@ -32,6 +32,8 @@ screen_row = 2
 soc_row = 2
 kvs_row = 2
 group_row = 2
+dom_row = 2
+dom_col = 0
 
 # ============ Printer Initial Selection ============
 
