@@ -4,8 +4,8 @@ import tkinter as tk
 
 range_prefix = tk.StringVar(None, "")
 range_suffix = tk.StringVar(None, "")
-range_start = tk.StringVar(None, "0")
-range_end = tk.StringVar(None, "0")
+range_start = tk.StringVar(None, "")
+range_end = tk.StringVar(None, "")
 printer_select = tk.StringVar(None, "LPT1")
 local_print = tk.StringVar(None, "127.0.0.1")
 tag_select = tk.IntVar(value=0)

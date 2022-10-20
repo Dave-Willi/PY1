@@ -152,7 +152,7 @@ tab7b = tk.Frame(tab7)
 tab7c = tk.Frame(tab7)
 frame2.add(tab1, text = "     Singles     ")
 frame2.add(tab2, text = "     Groups      ")
-frame2.add(tab3, text = "     Range       ")
+frame2.add(tab3, text = "  Range (Manual) ")
 frame2.add(tab4, text = "   Range (Auto)  ")
 frame2.add(tab5, text = " Customer Labels ")
 # frame2.add(tab6, text = "     Reports     ", state=DISABLED)
@@ -402,8 +402,8 @@ def clear_all(): # resets all entry boxes and spinboxes to default (Empty) value
     custom_textbox.delete("1.0", END)
     range_entry2.delete(0, END)
     range_entry3.delete(0, END)
-    cfg.range_start.set(0)
-    cfg.range_end.set(0)
+    cfg.range_start.set('')
+    cfg.range_end.set('')
     cfg.cust_quantity.set(1)
     cfg.textmod.set(0)
 
@@ -725,7 +725,7 @@ class Dominos(tk.Tk):
                                             text=x)
                     domlabel.grid(column=cfg.dom_col, row=cfg.dom_row, sticky=W, padx=5, pady=(10,0))
                     domenter = tk.Entry(master=enter_frame1)
-                    domenter.grid(column=cfg.dom_col, row=cfg.dom_row+1, pady=(0,10))
+                    domenter.grid(column=cfg.dom_col, row=cfg.dom_row+1, padx=5,pady=(0,10))
                     cfg.dom_row += 2
 
             class label():
@@ -734,7 +734,7 @@ class Dominos(tk.Tk):
                                             text=x)
                     domlabel.grid(column=cfg.dom_col, row=cfg.dom_row, sticky=W, padx=5, pady=(10,0))
                     domenter = tk.Entry(master=enter_frame1)
-                    domenter.grid(column=cfg.dom_col, row=cfg.dom_row+1, pady=(0,10))
+                    domenter.grid(column=cfg.dom_col, row=cfg.dom_row+1, padx=5,pady=(0,10))
                     cfg.dom_row += 2
 
             class receipt():
@@ -743,7 +743,7 @@ class Dominos(tk.Tk):
                                             text=x)
                     domlabel.grid(column=cfg.dom_col, row=cfg.dom_row, sticky=W, padx=5, pady=(10,0))
                     domenter = tk.Entry(master=enter_frame1)
-                    domenter.grid(column=cfg.dom_col, row=cfg.dom_row+1, pady=(0,10))
+                    domenter.grid(column=cfg.dom_col, row=cfg.dom_row+1, padx=5,pady=(0,10))
                     cfg.dom_row += 2
 
             class office():
@@ -752,7 +752,7 @@ class Dominos(tk.Tk):
                                             text=x)
                     domlabel.grid(column=cfg.dom_col, row=cfg.dom_row, sticky=W, padx=5, pady=(10,0))
                     domenter = tk.Entry(master=enter_frame1)
-                    domenter.grid(column=cfg.dom_col, row=cfg.dom_row+1, pady=(0,10))
+                    domenter.grid(column=cfg.dom_col, row=cfg.dom_row+1, padx=5,pady=(0,10))
                     cfg.dom_row += 2
 
             class cash():
@@ -761,7 +761,7 @@ class Dominos(tk.Tk):
                                             text=x)
                     domlabel.grid(column=cfg.dom_col, row=cfg.dom_row, sticky=W, padx=5, pady=(10,0))
                     domenter = tk.Entry(master=enter_frame1)
-                    domenter.grid(column=cfg.dom_col, row=cfg.dom_row+1, pady=(0,10))
+                    domenter.grid(column=cfg.dom_col, row=cfg.dom_row+1, padx=5,pady=(0,10))
                     cfg.dom_row += 2
 
             for x in self.setupDom:
@@ -1297,9 +1297,10 @@ def reset_print():
     to_print(res,"")
 
 label_mod_label = tk.Label(master=frame1,
-                            text="Label\nposition",
+                            text="Printed vertical\nposition offset",
                             anchor="w",
-                            justify=LEFT)
+                            justify=LEFT,
+                            font=("calibri", 12))
 label_mod_label.grid(row=4, column=0, sticky=W)
 
 label_mod_select = tk.Spinbox(master=frame1,
@@ -1416,15 +1417,15 @@ group_load = tk.Button(master=tab2b,
                         command=open_file)
 group_load.pack(side=LEFT, padx=(0,100))
 
-group_textmod_label = tk.Label(master=tab2c,
-                                text="Text size modifier: ")
-group_textmod_label.pack(side=LEFT)
+# group_textmod_label = tk.Label(master=tab2c,
+#                                 text="Text size modifier: ")
+# group_textmod_label.pack(side=LEFT)
 
-group_textmod = tk.Spinbox(master=tab2c,
-                            from_=-10,
-                            to=10,
-                            textvariable=cfg.textmod)
-group_textmod.pack(side=RIGHT)
+# group_textmod = tk.Spinbox(master=tab2c,
+#                             from_=-10,
+#                             to=10,
+#                             textvariable=cfg.textmod)
+# group_textmod.pack(side=RIGHT)
 
 group_textbox = tkscrolled.ScrolledText(master=tab2,
                                         wrap=WORD)
@@ -1728,7 +1729,7 @@ if flag_2a == "homebuild":
 # ==========================================
 
 version_label = tk.Label(master=frame1,
-                            text="Version 1.1.9",
+                            text="Version 1.1.10",
                             font=("courier new", 10))
 version_label.grid(row=10, sticky=EW, column=0, columnspan=2)
 
