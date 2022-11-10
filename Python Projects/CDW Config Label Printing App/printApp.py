@@ -641,18 +641,20 @@ class Dominos(tk.Tk):
             enter_box = tk.Toplevel()
             enter_box.title("Dominos")
             enter_frame1 = tk.Frame(master=enter_box)
-            enter_frame1.grid(row=4, column=0, columnspan=8)
-            border = ttk.Separator(master=enter_frame1,orient='horizontal')
-            border.grid(row=1, column=0, columnspan=4, sticky=EW)
+            enter_frame1.grid(row=4, column=0, columnspan=8, sticky=EW, pady=20, padx=20)
+            border = ttk.Separator(master=enter_box,orient='horizontal')
+            border.grid(row=3, column=0, columnspan=20, sticky=EW)
             
             def printDom():
                 try:
                     storeid = store.get()
-                    if storeid == "":
-                        messagebox.showinfo("Dominos","Store ID Required")
+                    if (int(storeid) < 4999 or int(storeid) > 100000):
+                        messagebox.showinfo("Dominos","Store ID is required and\nshould be 5 digits long")
                     else:
+                        print(storeid)
                         for widget in enter_frame1.winfo_children():
                             if isinstance(widget, tk.Label):
+                                print("1")
                                 xy = (widget.cget("text"))
                                 if xy.startswith("HOST"):
                                     xyz = ("VM " + storeid + " " + xy)
@@ -664,14 +666,23 @@ class Dominos(tk.Tk):
                                         print(e)
                                 else:
                                     xyz = xy
-                                    
+                            print("2")
                             if isinstance(widget, tk.Entry):
                                 if widget.get() != "":
                                     zyx = widget.get()
                                     newText = (xyz,zyx)
                                     txtPrint(1,"Dominos Labels",newText)
+                                    print("3")
                 except Exception as e:
                     print(e)
+
+            def selectDom():
+                try:
+                    for widget in enter_frame1.winfo_children():
+                        if isinstance(widget, tk.Checkbutton):
+                            widget.select()
+                except:
+                    pass
 
             def clearDom():
                 try:
@@ -681,6 +692,8 @@ class Dominos(tk.Tk):
                     for widget in enter_frame1.winfo_children():
                         if isinstance(widget, tk.Entry):
                             widget.delete(0, END)
+                        elif isinstance(widget, tk.Checkbutton):
+                            widget.deselect()
                 except:
                     pass
 
@@ -698,11 +711,17 @@ class Dominos(tk.Tk):
                                 font=("calibri", 14))
             ip_label.grid(row=1, column=1, pady=10, padx=15)
 
-            dom_print = tk.Button(master=enter_box,
+            dom_select = tk.Button(master=enter_box,
+                                text="Select all",
+                                command=selectDom,
+                                width=15)
+            dom_select.grid(row=0, column=1, padx=10)
+
+            dom_clear = tk.Button(master=enter_box,
                                 text="Clear all",
                                 command=clearDom,
                                 width=15)
-            dom_print.grid(row=0, column=2, padx=10)
+            dom_clear.grid(row=0, column=2, padx=10)
 
             dom_print = tk.Button(master=enter_box,
                                 text="Print Labels",
@@ -714,59 +733,75 @@ class Dominos(tk.Tk):
                 def __init__(self,x) -> None:
                     domlabel = tk.Label(master=enter_frame1,
                                             text=x)
-                    domlabel.grid(column=cfg.dom_col, row=cfg.dom_row, sticky=W, padx=5, pady=(10,0))
-                    domenter = tk.Entry(master=enter_frame1)
-                    domenter.grid(column=cfg.dom_col, row=cfg.dom_row+1, padx=5, pady=(0,10))
-                    cfg.dom_row += 2
+                    domlabel.grid(column=cfg.dom_col, row=cfg.dom_row, sticky=E, padx=5, pady=(10,0))
+                    self.cb = IntVar(value=1)
+                    domenter = tk.Checkbutton(master=enter_frame1, variable=self.cb)
+                    domenter.grid(column=cfg.dom_col+1, row=cfg.dom_row, padx=5, pady=(0,10), sticky=W)
+                    cfg.dom_row += 1
 
             class client():
                 def __init__(self,x) -> None:
                     domlabel = tk.Label(master=enter_frame1,
                                             text=x)
-                    domlabel.grid(column=cfg.dom_col, row=cfg.dom_row, sticky=W, padx=5, pady=(10,0))
-                    domenter = tk.Entry(master=enter_frame1)
-                    domenter.grid(column=cfg.dom_col, row=cfg.dom_row+1, padx=5,pady=(0,10))
-                    cfg.dom_row += 2
+                    domlabel.grid(column=cfg.dom_col, row=cfg.dom_row, sticky=E, padx=5, pady=(10,0))
+                    self.x = 1
+                    domenter = tk.Checkbutton(master=enter_frame1)
+                    domenter.grid(column=cfg.dom_col+1, row=cfg.dom_row, padx=5,pady=(0,10), sticky=W)
+                    cfg.dom_row += 1
 
             class label():
                 def __init__(self,x) -> None:
                     domlabel = tk.Label(master=enter_frame1,
                                             text=x)
-                    domlabel.grid(column=cfg.dom_col, row=cfg.dom_row, sticky=W, padx=5, pady=(10,0))
-                    domenter = tk.Entry(master=enter_frame1)
-                    domenter.grid(column=cfg.dom_col, row=cfg.dom_row+1, padx=5,pady=(0,10))
-                    cfg.dom_row += 2
+                    domlabel.grid(column=cfg.dom_col, row=cfg.dom_row, sticky=E, padx=5, pady=(10,0))
+                    self.x = 1
+                    domenter = tk.Checkbutton(master=enter_frame1)
+                    domenter.grid(column=cfg.dom_col+1, row=cfg.dom_row, padx=5,pady=(0,10), sticky=W)
+                    cfg.dom_row += 1
 
             class receipt():
                 def __init__(self,x) -> None:
                     domlabel = tk.Label(master=enter_frame1,
                                             text=x)
-                    domlabel.grid(column=cfg.dom_col, row=cfg.dom_row, sticky=W, padx=5, pady=(10,0))
-                    domenter = tk.Entry(master=enter_frame1)
-                    domenter.grid(column=cfg.dom_col, row=cfg.dom_row+1, padx=5,pady=(0,10))
-                    cfg.dom_row += 2
+                    domlabel.grid(column=cfg.dom_col, row=cfg.dom_row, sticky=E, padx=5, pady=(10,0))
+                    if cfg.receiptCount == 0:
+                        domenter = tk.Entry(master=enter_frame1, width=15)
+                        domenter.grid(column=cfg.dom_col+1, row=cfg.dom_row, padx=5,pady=(0,10), sticky=W)
+                        cfg.receiptCount += 1
+                    else:
+                        self.x = 1
+                        domenter = tk.Checkbutton(master=enter_frame1)
+                        domenter.grid(column=cfg.dom_col+1, row=cfg.dom_row, padx=5,pady=(0,10), sticky=W)
+                    cfg.dom_row += 1
 
             class office():
                 def __init__(self,x) -> None:
                     domlabel = tk.Label(master=enter_frame1,
                                             text=x)
-                    domlabel.grid(column=cfg.dom_col, row=cfg.dom_row, sticky=W, padx=5, pady=(10,0))
-                    domenter = tk.Entry(master=enter_frame1)
-                    domenter.grid(column=cfg.dom_col, row=cfg.dom_row+1, padx=5,pady=(0,10))
-                    cfg.dom_row += 2
+                    domlabel.grid(column=cfg.dom_col, row=cfg.dom_row, sticky=E, padx=5, pady=(10,0))
+                    if cfg.officeCount == 0:
+                        domenter = tk.Entry(master=enter_frame1, width=15)
+                        domenter.grid(column=cfg.dom_col+1, row=cfg.dom_row, padx=5,pady=(0,10), sticky=W)
+                        cfg.officeCount += 1
+                    else:
+                        self.x = 1
+                        domenter = tk.Checkbutton(master=enter_frame1)
+                        domenter.grid(column=cfg.dom_col+1, row=cfg.dom_row, padx=5,pady=(0,10), sticky=W)
+                    cfg.dom_row += 1
 
             class cash():
                 def __init__(self,x) -> None:
                     domlabel = tk.Label(master=enter_frame1,
                                             text=x)
-                    domlabel.grid(column=cfg.dom_col, row=cfg.dom_row, sticky=W, padx=5, pady=(10,0))
-                    domenter = tk.Entry(master=enter_frame1)
-                    domenter.grid(column=cfg.dom_col, row=cfg.dom_row+1, padx=5,pady=(0,10))
-                    cfg.dom_row += 2
+                    domlabel.grid(column=cfg.dom_col, row=cfg.dom_row, sticky=E, padx=5, pady=(10,0))
+                    self.x = 1
+                    domenter = tk.Checkbutton(master=enter_frame1)
+                    domenter.grid(column=cfg.dom_col+1, row=cfg.dom_row, padx=5,pady=(0,10), sticky=W)
+                    cfg.dom_row += 1
 
             for x in self.setupDom:
-                if cfg.dom_row >= 18:
-                    cfg.dom_col += 1
+                if cfg.dom_row >= 11:
+                    cfg.dom_col += 2
                     cfg.dom_row = 2
                 y = self.setupDom[x]
                 if x.startswith("host"):
@@ -781,6 +816,8 @@ class Dominos(tk.Tk):
                     office(y)
                 elif x.startswith("cash"):
                     cash(y)
+
+            selectDom()
 
         try:
             for widget in root.winfo_children():
