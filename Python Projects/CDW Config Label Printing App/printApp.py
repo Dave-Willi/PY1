@@ -1033,10 +1033,13 @@ class button3(tk.Tk):
             enter_frame1 = tk.Frame(master=enter_box)
             enter_frame1.pack()
             self.tags = []
+            self.checks = []
             for x in self.qt:
                 z = str(x)
                 if z.startswith("tag"):
                     self.tags.append(self.qt[z])
+                elif z.startswith("check"):
+                    self.checks.append(self.qt[z])
                 else:
                     pass
             for i in self.tags:
@@ -1045,6 +1048,10 @@ class button3(tk.Tk):
                 dataEntry = tk.Entry(master=enter_frame1)
                 dataEntry.pack()
                 pass
+            for i in self.checks:
+                checkVar= tk.IntVar()
+                check = tk.Checkbutton(master=enter_frame1,text=i,variable=checkVar)
+                check.pack()
 
             def an_print():
                 entries = []
@@ -1052,6 +1059,9 @@ class button3(tk.Tk):
                     for widget in enter_frame1.winfo_children():
                         if isinstance(widget, tk.Entry):
                             entries.append(widget.get())
+                        elif isinstance(widget, tk.Checkbutton):
+                            if checkVar.get() == 1:
+                                print("Checkbox for ", widget)
                 except Exception as e:
                     print(e)
                     print("Couldn't collate answers")
@@ -1059,10 +1069,12 @@ class button3(tk.Tk):
                 try:
                     qty = cfg.cust_quantity.get()
                     newText = ()
+                    checkText = ()
                     for x in range(len(self.tags)):
                         print(entries[x])
                         if entries[x] != "":
                             newText = (self.tags[x],entries[x])
+                            
                             txtPrint(qty,str(self.bhistory),newText)
                         else:
                             pass
@@ -1254,10 +1266,37 @@ class btn_bcu(tk.Tk): # special class just for BCU labels
             pass
         entry_window()   
 
+class new_date_test():
+    def __init__(self):
+        self.bname = tk.Button(master=tab5b,
+                        text="Day of week",
+                        command=self.bfunc,
+                        width=20)
+        self.bname.grid(pady=(0,10), padx=(0,10),row=cfg.y_row, column=cfg.x_col)
+        if cfg.x_col >= 2:
+            cfg.y_row += 1
+            cfg.x_col = 0
+        else:
+            cfg.x_col += 1
+        return
+        
+    def bfunc(self):
+        from datetime import date
+        import calendar
+        qty = cfg.cust_quantity.get()
+        day = (date.today().weekday())
+        thisWeekday = calendar.day_name[day]
+        print_me = []
+        print_me.append(thisWeekday)
+        txtPrint(qty,"Date",print_me)
+
 trial = ConfigParser()
 trial.read("data/custom_buttons.ini")
 for x in trial:
     if x == "DEFAULT":
+        continue
+    elif x == "date":
+        new_date_test()
         continue
     elif x == "McD":
         McDonald(trial[x])
@@ -1766,7 +1805,7 @@ if flag_2a == "homebuild":
 # ==========================================
 
 version_label = tk.Label(master=frame1,
-                            text="Version 1.1.10",
+                            text="Version 1.1.11",
                             font=("courier new", 10))
 version_label.grid(row=10, sticky=EW, column=0, columnspan=2)
 
