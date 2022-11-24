@@ -112,16 +112,16 @@ frame2.pack(padx=10,pady=10, anchor=E, fill=BOTH, expand=True, side=RIGHT)
 # Creates a style for use on the notebook tabs
 Mysky = "#DCF0F2"
 Myyellow = "#F2C88B"
-MyGrey = "#FAFAFA"
+MyGrey = "#DADADA"
 style = Style()
 style.theme_create( "dummy", parent="alt", settings={
         "TNotebook": {"configure": {"tabmargins": [2, 5, 2, 0] } },
         "TNotebook.Tab": {
             "configure": {"padding": [5, 1], "background": Mysky,
                             "font":("aerial",12)},
-            "map":       {"background": [("selected", Myyellow)],
-                        # "background": [("disabled", MyGrey)],
-                          "expand": [("selected", [1, 1, 1, 0])],} } } )
+            "map":       {"background": [("selected", Myyellow),("disabled",MyGrey)],
+                          "expand": [("selected", [1, 1, 1, 0])],}
+                           } } )
 style.theme_use("dummy")
 
 
@@ -611,61 +611,6 @@ except:
 # # ================= Classes ================
 # # ==========================================
 
-class CreateToolTip(object):
-    """
-    create a tooltip for a given widget
-    """
-    def __init__(self, widget, text='widget info'):
-        self.waittime = 500     #miliseconds
-        self.wraplength = 180   #pixels
-        self.widget = widget
-        self.text = text
-        self.widget.bind("<Enter>", self.enter)
-        self.widget.bind("<Leave>", self.leave)
-        self.widget.bind("<ButtonPress>", self.leave)
-        self.id = None
-        self.tw = None
-
-    def enter(self, event=None):
-        self.schedule()
-
-    def leave(self, event=None):
-        self.unschedule()
-        self.hidetip()
-
-    def schedule(self):
-        self.unschedule()
-        self.id = self.widget.after(self.waittime, self.showtip)
-
-    def unschedule(self):
-        id = self.id
-        self.id = None
-        if id:
-            self.widget.after_cancel(id)
-
-    def showtip(self, event=None):
-        x = y = 0
-        x, y, cx, cy = self.widget.bbox("insert")
-        x += self.widget.winfo_rootx() + 25
-        y += self.widget.winfo_rooty() + 20
-        # creates a toplevel window
-        self.tw = tk.Toplevel(self.widget)
-        # Leaves only the label and removes the app window
-        self.tw.wm_overrideredirect(True)
-        self.tw.wm_geometry("+%d+%d" % (x, y))
-        label = tk.Label(self.tw, text=self.text, justify='left',
-                       background="#ffffff", relief='solid', borderwidth=1,
-                       wraplength = self.wraplength)
-        label.pack(ipadx=1)
-
-    def hidetip(self):
-        tw = self.tw
-        self.tw= None
-        if tw:
-            tw.destroy()
-
-
-
 class Dominos(tk.Tk):
     # enter store number
     # each has a unique ip address
@@ -882,7 +827,6 @@ class Dominos(tk.Tk):
         except:
             pass
         entry_window()
-        
 
 class McDonald(tk.Tk):
     # store = tk.StringVar(None,"")
@@ -1060,6 +1004,131 @@ class button(tk.Tk):
             self.newText = str(self.btext)
         cust_print(int(self.btype),str(self.bhistory),self.bcode,self.newText)
 
+class button2(tk.Tk):
+    def __init__(self, y):
+        self.btnData = y
+        self.bname = self.btnData["button_name"]
+        self.bname2 = str(self.bname)
+        self.bhistory = self.btnData["history"]
+        self.btype = self.btnData["btn_type"]
+        self.tags = []
+        self.bname = tk.Button(master=tab5b,
+                        text=self.bname,
+                        command=self.bfunc,
+                        width=20)
+        self.bname.grid(pady=(0,10), padx=(0,10),row=cfg.y_row, column=cfg.x_col)
+        if cfg.x_col >= 2:
+            cfg.y_row += 1
+            cfg.x_col = 0
+        else:
+            cfg.x_col += 1
+        return
+
+    def bfunc(self):
+        def entry_window():
+            cfg.btnCol = 0
+            cfg.btnRow = 2
+            uid = tk.StringVar(None,"")
+            enter_box = tk.Toplevel()
+            # enter_box.geometry('350x500')
+            enter_box.title(str(self.bname2))
+            enter_frame1 = tk.Frame(master=enter_box)
+            enter_frame1.grid(row=4)
+            if self.btnData.get("UID"):
+                uid_label = tk.Label(master=enter_box,
+                                    text=self.btnData["UID"],
+                                    font=("calibri", 14))
+                uid_label.grid(column=0, row=0)
+                uid_entry = tk.Entry(master=enter_box,
+                                        textvariable=uid,
+                                        width=15)
+                uid_entry.grid(row=1, column=0, pady=(0,10), padx=10)
+
+            def selectAll():
+                try:
+                    for widget in enter_frame1.winfo_children():
+                        if isinstance(widget, tk.Checkbutton):
+                            widget.select()
+                except:
+                    pass
+
+            def clearAll():
+                try:
+                    for widget in enter_box.winfo_children():
+                        if isinstance(widget, tk.Entry):
+                            widget.delete(0, END)
+                    for widget in enter_frame1.winfo_children():
+                        if isinstance(widget, tk.Entry):
+                            widget.delete(0, END)
+                        elif isinstance(widget, tk.Checkbutton):
+                            widget.deselect()
+                except:
+                    pass
+
+            allSelect = tk.Button(master=enter_box,
+                                text="Select all",
+                                command=selectAll,
+                                width=15)
+            allSelect.grid(row=0, column=1, padx=10)
+
+            allClear = tk.Button(master=enter_box,
+                                text="Clear all",
+                                command=clearAll,
+                                width=15)
+            allClear.grid(row=0, column=2, padx=10)
+
+            class btnCheckBox():
+                def __init__(self,x) -> None:
+                    named = x[:]
+                    if "{}" in named:
+                        named = named.format(uid.get())
+                    btnCheck = tk.Checkbutton(master=enter_frame1,
+                                            text=named)
+                    btnCheck.grid(column=cfg.btnCol, row=cfg.btnRow, sticky=W, padx=5)
+                    cfg.btnRow += 1
+
+            class btnEntryBox():
+                def __init__(self,x) -> None:
+                    named = x[:]
+                    if "{}" in named:
+                        named = named.format(uid.get())
+                    btnLabel = tk.Label(master=enter_frame1,
+                                        text=named)
+                    btnLabel.grid(column=cfg.btnCol, row=cfg.btnRow, padx=5, pady=(10,0))
+                    self.x = 1
+                    btnEnter = tk.Entry(master=enter_frame1)
+                    btnEnter.grid(column=cfg.btnCol+1, row=cfg.btnRow, padx=5,pady=(0,10), sticky=W)
+                    cfg.btnRow += 1
+
+            for x in self.btnData:
+                z = str(x)
+                if z.startswith("check"):
+                    btnCheckBox(self.btnData[z])
+                elif z.startswith("enter"):
+                    btnEntryBox(self.btnData[z])
+
+            def an_print():
+                pass
+
+            entry_quant_label = tk.Label(master=enter_box, text="Enter number of labels to print")
+            entry_quant_label.grid(column=0, row=5, pady=(35,0), padx=30)
+            entry_quantities = tk.Spinbox(master=enter_box, from_=1, to=999,
+                                        textvariable=cfg.cust_quantity)
+            entry_quantities.grid(column=0, row=6, pady=(10,20))
+
+            enter_print = tk.Button(master=enter_box,
+                                    text="Print",
+                                    command=an_print)
+            enter_print.grid(column=1, row=6)
+        
+        try:
+            for widget in root.winfo_children():
+                if isinstance(widget, tk.Toplevel):
+                    widget.destroy()
+        except:
+            pass
+        entry_window()
+
 class button3(tk.Tk):
     def __init__(self, y):
         self.qt = y
@@ -1092,7 +1161,7 @@ class button3(tk.Tk):
             self.checks = []
             for x in self.qt:
                 z = str(x)
-                if z.startswith("tag"):
+                if z.startswith("enter"):
                     self.tags.append(self.qt[z])
                 elif z.startswith("check"):
                     self.checks.append(self.qt[z])
@@ -1338,10 +1407,10 @@ class new_date_test():
         
     def bfunc(self):
         from datetime import date
-        import calendar
+        from calendar import day_name
         qty = cfg.cust_quantity.get()
         day = (date.today().weekday())
-        thisWeekday = calendar.day_name[day]
+        thisWeekday = day_name[day]
         print_me = []
         print_me.append(thisWeekday)
         txtPrint(qty,"Date",print_me)
@@ -1357,13 +1426,14 @@ for x in trial:
     elif x == "McD":
         McDonald(trial[x])
         continue
-    elif x == "Dominos":
-        Dominos(trial[x])
-        continue
+    # elif x == "Dominos":
+    #     Dominos(trial[x])
+    #     continue
     y = trial[x]
     btype = y["btn_type"]
     if btype == "5":
         button3(y)
+        # button2(y)
         continue
     elif btype == "6":
         btn_bcu()
@@ -1439,6 +1509,7 @@ label_mod_select = tk.Spinbox(master=frame1,
                                 from_=-10,
                                 to=10,
                                 textvariable=cfg.label_mod,
+                                increment=-1,
                                 width=3)
 label_mod_select.grid(row=4, column=1)
 
@@ -1761,20 +1832,28 @@ custom_load = tk.Button(master=tab7b,
                         width=10)
 custom_load.pack(side=LEFT, padx=40)
 
+def on_tab_change(event): # Reset text and QR printing when moving away from custom prints
+    tab_name = frame2.select()
+    tab_index = frame2.index(tab_name)
+    if tab_index != 5:
+        if custom_no_bc.config('text')[-1] != "Text&QR: All on 1 label":
+            custom_no_bc.config(text="Text or QR: All on 1", bg="#555555")
+            cfg.no_bc.set(False)
+
 def no_bc_toggle():
-    if custom_no_bc.config('text')[-1] == "Text or QR: All on 1":
-        custom_no_bc.config(text="Text only: 1 per label")
+    if custom_no_bc.config('text')[-1] == "Text&QR: All on 1 label":
+        custom_no_bc.config(text="Text: 1 line per label",bg="#DD0033")
         cfg.no_bc.set(True)
     else:
-        custom_no_bc.config(text="Text or QR: All on 1")
+        custom_no_bc.config(text="Text&QR: All on 1 label", bg="#555555")
         cfg.no_bc.set(False)
 
 custom_no_bc = tk.Button(master=tab7c,
-                            text="Text or QR: All on 1",
+                            text="Text&QR: All on 1 label",
                             command=no_bc_toggle,
                             width=20,
-                            bg="black",
-                            fg="white")
+                            bg="#555555",
+                            fg="#f0f0f0")
 custom_no_bc.pack(side=LEFT, pady=5)
 
 custom_quantity_label = tk.Label(master=tab7c,
@@ -1784,7 +1863,8 @@ custom_quantity_label.pack(padx=10, side=LEFT)
 custom_quantity = tk.Spinbox(master=tab7c,
                             from_=1,
                             to=9999,
-                            textvariable=cfg.cust_quantity)
+                            textvariable=cfg.cust_quantity,
+                            width=4)
 custom_quantity.pack(padx=10, side=LEFT)
 
 custom_textbox = tkscrolled.ScrolledText(master=tab7,
@@ -1803,7 +1883,8 @@ custom_textmod_label.pack(side=LEFT)
 custom_textmod = tk.Spinbox(master=tab7d,
                             from_=-10,
                             to=10,
-                            textvariable=cfg.textmod)
+                            textvariable=cfg.textmod,
+                            width=4)
 custom_textmod.pack(side=RIGHT)
 
 # =====================================
@@ -1871,7 +1952,7 @@ if flag_2a == "homebuild":
 # ==========================================
 
 version_label = tk.Label(master=frame1,
-                            text="Version 1.1.11",
+                            text="Version 1.1.12",
                             font=("courier new", 10))
 version_label.grid(row=10, sticky=EW, column=0, columnspan=2)
 
@@ -1886,6 +1967,7 @@ except:
 root.bind('<Return>', return_key)
 root.bind('<Control-p>', ctrl_p)
 root.bind('<Control-P>', ctrl_p)
+frame2.bind('<<NotebookTabChanged>>',on_tab_change)
 auto_entry1.bind('<Return>', return_auto1)
 auto_entry2.bind('<Return>', return_auto2)
 

@@ -34,6 +34,8 @@ kvs_row = 2
 group_row = 2
 dom_row = 2
 dom_col = 0
+btnRow = 0
+btnCol = 0
 receiptCount = 0
 officeCount = 0
 

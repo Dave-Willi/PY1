@@ -1,3 +1,37 @@
+*custom text label*
+*custom text label*
+*custom text label*
+*custom text label*
+*custom text label*
+*custom text label*
+*custom text label*
+*custom text label*
+*custom text label*
+*custom text label*
+*custom text label*
+ebay mac qr
+*custom text label*
+Battery label
+ebay mac qr
+ebay mac qr
+Date
+Date
+Date
+1234
+1234
+1234
+1234
+1234
+1234
+1234
+1234
+1234
+2435
+2345
+21345
+2345
+2354
+2345
 Date
 Battery label
 Battery label
@@ -964,37 +998,3 @@ gfnhfh
 *custom QR label*
 *custom QR label*
 *custom QR label*
-asrgr4f
-*custom QR label*
-*custom QR label*
-*custom QR label*
-*custom QR label*
-*custom QR label*
-*custom QR label*
-*custom QR label*
-*custom QR label*
-ASDF
-*custom QR label*
-*custom QR label*
-*custom QR label*
-*custom QR label*
-*custom QR label*
-*custom QR label*
-*custom QR label*
-*custom QR label*
-asdfarv
-*custom QR label*
-*custom text label*
-asdt
-35241
-asdfg
-asdf
-*Ebay MAC QR tag* x1
-*Ebay MAC QR tag* x1
-sdfgwse45
-asdfeasdg
-3
-2
-1
-0
-1
