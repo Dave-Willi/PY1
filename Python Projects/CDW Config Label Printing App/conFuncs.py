@@ -116,20 +116,22 @@ def txt_import(dud,more):
     try:
         font_size_max = max(more, key=len)
         txt_length = len(font_size_max)
-        font_size = min(round(190/(sub_total)),round(dud_length/txt_length),60) + (int(cfg.textmod.get())*5)
+        font_size = min(round(180/(sub_total)),round(dud_length/txt_length),60) + (int(cfg.textmod.get())*5)
     except:
-        font_size = min(round(190/(sub_total)),100) + (int(cfg.textmod.get())*5)
+        font_size = min(round(180/(sub_total)),100) + (int(cfg.textmod.get())*5)
     txt_printing = ""
     if cfg.no_bc.get() == True:
         quant = str(cfg.cust_quantity.get())
         for x in (more):
+            txt_length = len(x)
+            font_size = min(round(dud_length/txt_length),60) + (int(cfg.textmod.get())*5)
             txt_printing += "^XA" # Start of label
             txt_printing += "^LH15," + str(10 + (cfg.label_mod.get() * 8))
             txt_printing += "^A0N," + str(font_size)
-            if sub_total== 1:
-                txt_printing += "^FO10," + str((100-(font_size/2)))
-            else:
-                txt_printing += "^FO10," + str((10+(font_size*index)))
+            # if sub_total== 1:
+            txt_printing += "^FO10," + str((100-(font_size/2)))
+            # else:
+            #     txt_printing += "^FO10," + str((10+(font_size*index)))
             txt_printing += "^FD"
             txt_printing += str(x)
             txt_printing += "^FS"
@@ -176,19 +178,11 @@ def QRPrint(code,quant,hist,*more):
 def txtPrint(quant,hist,*more):
     if cfg.no_bc.get() == True:
         printing = ""
-        # for x in more:
-            # print("Length")
-            # print(len(*more))
-            # printing += "^XA" # Start of label
-            # printing += "^LH15," + str(10 + (cfg.label_mod.get() * 8)) # Label Home | position of start of label
-        # printing += txt_import(1,*more)
         try:
             printing += txt_import(1,*more)
         except:
             printing += txt_import(1,more)
-            # printing += "^PQ"
-            # printing += str(quant) # Selected quantity
-            # printing += "^XZ" # End of label
+
     else:
         printing = "^XA" # Start of label
         printing += "^LH15," + str(10 + (cfg.label_mod.get() * 8)) # Label Home | position of start of label

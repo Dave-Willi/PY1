@@ -362,6 +362,12 @@ def open_file(): # opens selected file for group textbox insertion
     group_textbox.insert("1.0", File2.read())
     File2.close()  # Make sure you close the file when done
 
+def open_file(): # opens selected file for group textbox insertion
+    File1 = filedialog.askopenfilename()
+    File2 = open(File1, "r")
+    custom_textbox.insert("1.0", File2.read())
+    File2.close()  # Make sure you close the file when done
+
 def print_group_text(): # print the group text box
     if group_textbox.get("1.0", END) == "\n":
         return
@@ -1513,15 +1519,19 @@ label_mod_select = tk.Spinbox(master=frame1,
                                 width=3)
 label_mod_select.grid(row=4, column=1)
 
-# reset_printer_btn = tk.Button(master=frame1,
-#                     text="Reset Printer",
-#                     command=reset_print)
-# reset_printer_btn.grid(row=4, sticky=EW)
+textmod_label = tk.Label(master=frame1,
+                                anchor="w",
+                                justify=LEFT,
+                                font=("calibri", 12),
+                                text="Text size\nmodifier: ")
+textmod_label.grid(row=5, column=0, pady=(0,20), padx= 10)
 
-# set_printer_btn = tk.Button(master=frame1,
-#                     text="Map Printers",
-#                     command=set_print)
-# set_printer_btn.grid(row=5, sticky=EW)
+textmod = tk.Spinbox(master=frame1,
+                            from_=-10,
+                            to=10,
+                            textvariable=cfg.textmod,
+                            width=3)
+textmod.grid(row=5, column=1, pady=(0,10), padx= 10)
 
 asset_label = tk.Label(master=frame1,
                             text="Asset or serial?")
@@ -1547,7 +1557,8 @@ set_serial_button.grid(row=8, sticky=W, column=0, columnspan=2)
 
 exit_button = tk.Button(master=frame1,
                     text="Quit",
-                    command=quit)
+                    command=quit,
+                    width=12)
 exit_button.grid(row=11, sticky=EW, column=0, columnspan=2)
 
 # ==========================================
@@ -1598,11 +1609,6 @@ group_entry = tk.Entry(master=tab2a,
                         bg=cfg.bg_col)
 group_entry.pack(side=LEFT, padx=10, pady=(20,0))
 
-# group_no_bc = tk.Checkbutton(master=tab2b,
-#                             text="Plain text only",
-#                             variable=cfg.no_bc)
-# group_no_bc.pack(side=BOTTOM, pady=5)
-
 group_clear = tk.Button(master=tab2b,
                         text="Clear",
                         command=clear_all,
@@ -1619,16 +1625,6 @@ group_load = tk.Button(master=tab2b,
                         text="Load from file",
                         command=open_file)
 group_load.pack(side=LEFT, padx=(0,100))
-
-# group_textmod_label = tk.Label(master=tab2c,
-#                                 text="Text size modifier: ")
-# group_textmod_label.pack(side=LEFT)
-
-# group_textmod = tk.Spinbox(master=tab2c,
-#                             from_=-10,
-#                             to=10,
-#                             textvariable=cfg.textmod)
-# group_textmod.pack(side=RIGHT)
 
 group_textbox = tkscrolled.ScrolledText(master=tab2,
                                         wrap=WORD)
@@ -1739,56 +1735,58 @@ print_quantity_label = tk.Label(master=tab5a,
 print_quantity_label.grid(row=0, column=1, pady=20, padx= 10)
 
 print_quantity = tk.Spinbox(master=tab5a, from_=1, to=9999,
-                            textvariable=cfg.cust_quantity)
+                            textvariable=cfg.cust_quantity,
+                            width=4)
 print_quantity.grid(row=0, column=2, pady=10, padx= 10)
 
 # ==========================================
 # ========== Reports Tab (tab6) ============
 # ==========================================
 
-tab6a = tk.Frame(master=tab6)
-tab6a.pack(pady=20)
-tab6b = tk.Frame(master=tab6)
-tab6b.pack(pady=20)
+# tab6a = tk.Frame(master=tab6)
+# tab6a.pack(pady=20)
+# tab6b = tk.Frame(master=tab6)
+# tab6b.pack(pady=20)
 
-label_6a = tk.Label(master=tab6a,
-                    text="Less than 5 rolls of labels remaining?")
-label_6a.grid(row=0, column=0)
+# label_6a = tk.Label(master=tab6a,
+#                     text="Less than 5 rolls of labels remaining?")
+# label_6a.grid(row=0, column=0)
 
-labels_ribbon = tk.Checkbutton(master=tab6a,
-                            text="Also ribbons?")
-labels_ribbon.grid(row=1, column=1)
+# labels_ribbon = tk.Checkbutton(master=tab6a,
+#                             text="Also ribbons?")
+# labels_ribbon.grid(row=1, column=1)
 
-labels_remain = tk.Spinbox(master=tab6a,
-                            from_=0,
-                            to=5,
-                            wrap=True)
-labels_remain.grid(row=0, column=1)
+# labels_remain = tk.Spinbox(master=tab6a,
+#                             from_=0,
+#                             to=5,
+#                             wrap=True)
+# labels_remain.grid(row=0, column=1)
 
-labels_alert = tk.Button(master=tab6a,
-                        text="Report labels")
-labels_alert.grid(row=1, column=0)
+# labels_alert = tk.Button(master=tab6a,
+#                         text="Report labels")
+# labels_alert.grid(row=1, column=0)
 
-label_6b = tk.Label(master=tab6b,
-                    text="Faulty Network port:")
-label_6b.grid(row=1, column=0)
+# label_6b = tk.Label(master=tab6b,
+#                     text="Faulty Network port:")
+# label_6b.grid(row=1, column=0)
 
-label_6bb = tk.Label(master=tab6b,
-                    text="enter switch number and full port number (i.e. SW5 Gi2/0/4)")
-label_6bb.grid(row=0, column=0, columnspan=3)
+# label_6bb = tk.Label(master=tab6b,
+#                     text="enter switch number and full port number (i.e. SW5 Gi2/0/4)")
+# label_6bb.grid(row=0, column=0, columnspan=3)
 
-port_entry = tk.Entry(master=tab6b)
-port_entry.grid(row=1, column=2)
+# port_entry = tk.Entry(master=tab6b)
+# port_entry.grid(row=1, column=2)
 
-ports_alert = tk.Button(master=tab6b,
-                        text="Report port")
-ports_alert.grid(row=2, column=2)
+# ports_alert = tk.Button(master=tab6b,
+#                         text="Report port")
+# ports_alert.grid(row=2, column=2)
 
-label_6b = tk.Label(master=tab6b,
-                    text="Nothing works on this page yet so don't waste your time",
-                    font=38,
-                    fg="red")
-label_6b.grid(row=5, column=0, columnspan=4, rowspan=2)
+# label_6b = tk.Label(master=tab6b,
+#                     text="Nothing works on this page yet so don't waste your time",
+#                     font=38,
+#                     fg="red")
+# label_6b.grid(row=5, column=0, columnspan=4, rowspan=2)
+
 
 # ==========================================
 # =========== Custom Tab (tab7) ============
@@ -1812,13 +1810,13 @@ custom_clear = tk.Button(master=tab7b,
                         text="Clear QR Code",
                         command=clear_custom_qr,
                         width=15)
-custom_clear.pack(side=LEFT, padx=(40,0))
+custom_clear.pack(side=LEFT, padx=(20,0))
 
 custom_print = tk.Button(master=tab7b,
                         text="Print one",
                         command=print_custom_one,
                         width=10)
-custom_print.pack(side=LEFT, padx=40)
+custom_print.pack(side=LEFT, padx=20)
 
 custom_print_many = tk.Button(master=tab7b,
                         text="Print many",
@@ -1830,15 +1828,20 @@ custom_load = tk.Button(master=tab7b,
                         text="Clear all",
                         command=clear_all,
                         width=10)
-custom_load.pack(side=LEFT, padx=40)
+custom_load.pack(side=LEFT, padx=20)
+
+custom_load = tk.Button(master=tab7b,
+                        text="Load from file",
+                        command=open_file)
+custom_load.pack(side=LEFT, padx=(0,20))
 
 def on_tab_change(event): # Reset text and QR printing when moving away from custom prints
-    tab_name = frame2.select()
-    tab_index = frame2.index(tab_name)
-    if tab_index != 5:
-        if custom_no_bc.config('text')[-1] != "Text&QR: All on 1 label":
-            custom_no_bc.config(text="Text or QR: All on 1", bg="#555555")
-            cfg.no_bc.set(False)
+    # tab_name = frame2.select()
+    # tab_index = frame2.index(tab_name)
+    # if tab_index != 5:
+    cfg.textmod.set(0)
+    custom_no_bc.config(text="Text&QR: All on 1 label", bg="#555555")
+    cfg.no_bc.set(False)
 
 def no_bc_toggle():
     if custom_no_bc.config('text')[-1] == "Text&QR: All on 1 label":
@@ -1873,19 +1876,19 @@ custom_textbox = tkscrolled.ScrolledText(master=tab7,
                                         height=10)
 custom_textbox.pack(side=TOP, padx=5, pady=(10,30))
 
-tab7d = tk.Frame(tab7)
-tab7d.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
+# tab7d = tk.Frame(tab7)
+# tab7d.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
 
-custom_textmod_label = tk.Label(master=tab7d,
-                                text="Text size modifier: ")
-custom_textmod_label.pack(side=LEFT)
+# custom_textmod_label = tk.Label(master=tab7d,
+#                                 text="Text size modifier: ")
+# custom_textmod_label.pack(side=LEFT)
 
-custom_textmod = tk.Spinbox(master=tab7d,
-                            from_=-10,
-                            to=10,
-                            textvariable=cfg.textmod,
-                            width=4)
-custom_textmod.pack(side=RIGHT)
+# custom_textmod = tk.Spinbox(master=tab7d,
+#                             from_=-10,
+#                             to=10,
+#                             textvariable=cfg.textmod,
+#                             width=4)
+# custom_textmod.pack(side=RIGHT)
 
 # =====================================
 # ==== Generate external file list ====
@@ -1924,9 +1927,9 @@ File1.close()
 # ========== Tooltips ===========
 # ===============================
 
-from idlelib.tooltip import Hovertip
+# from idlelib.tooltip import Hovertip
     
-myTip = Hovertip(tab3,'This is \na multiline tooltip.')
+# myTip = Hovertip(tab3,'This is \na multiline tooltip.')
 
 
 
@@ -1937,7 +1940,8 @@ myTip = Hovertip(tab3,'This is \na multiline tooltip.')
 if flag_2a == "homebuild":
     reset_button = tk.Button(master=frame1,
                         text="Restart App",
-                        command=reset)
+                        command=reset,
+                        width=12)
     reset_button.grid(row=9, sticky=EW, column=0, columnspan=2)
 
     test_print_button = tk.Radiobutton(master=frame1,
@@ -1952,7 +1956,7 @@ if flag_2a == "homebuild":
 # ==========================================
 
 version_label = tk.Label(master=frame1,
-                            text="Version 1.1.12",
+                            text="Version 1.1.15",
                             font=("courier new", 10))
 version_label.grid(row=10, sticky=EW, column=0, columnspan=2)
 
