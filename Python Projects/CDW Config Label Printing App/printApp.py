@@ -1658,7 +1658,7 @@ group_load.pack(side=LEFT, padx=(0,100))
 
 group_textbox = tkscrolled.ScrolledText(master=tab2c,
                                         wrap=WORD,
-                                        height=13)
+                                        height=12)
 group_textbox.pack(fill=BOTH, expand=True, padx=30, pady=(5,20))
 
 serial_radio2a = tk.Label(master=tab2d,
