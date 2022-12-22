@@ -1,11 +1,9 @@
-from logging import exception
 from random import randint
 from playsound import playsound
 import socket
 import subprocess
 import sys
 from tkinter import messagebox
-import re
 import win32print
 import win32ui
 from PIL import Image, ImageWin
@@ -38,8 +36,9 @@ def ctrl_p(event):
         elif cfg.pCounter == 5:
             messagebox.showinfo("Ctrl+P","Fine, be that way. Don't say I didn't warn you")
             playsound("data/8dheowme.mp3")
+            cfg.pCounter = 0
             return
-    except exception as e:
+    except Exception as e:
         print(e)
 
 def quit(): # simple shutdown of program
@@ -126,7 +125,7 @@ def txt_import(dud,more):
             txt_length = len(x)
             font_size = min(round(dud_length/txt_length),60) + (int(cfg.textmod.get())*5)
             txt_printing += "^XA" # Start of label
-            txt_printing += "^LH15," + str(10 + (cfg.label_mod.get() * 8))
+            txt_printing += "^LH" + str(15+(cfg.horz_label_mod.get() * 5)) + "," + str(10 + (cfg.label_mod.get() * 8))
             txt_printing += "^A0N," + str(font_size)
             # if sub_total== 1:
             txt_printing += "^FO10," + str((100-(font_size/2)))
@@ -156,7 +155,7 @@ def txt_import(dud,more):
 
 def QRPrint(code,quant,hist,*more):
     printing = "^XA" # Start of label
-    printing += "^LH15," + str(10 + (cfg.label_mod.get() * 8)) # Label Home | position of start of label
+    printing += "^LH" + str(15+(cfg.horz_label_mod.get() * 5)) + "," + str(10 + (cfg.label_mod.get() * 8)) # Label Home | position of start of label
     try:
         printing += txt_import(0,*more)
     except:
@@ -185,7 +184,7 @@ def txtPrint(quant,hist,*more):
 
     else:
         printing = "^XA" # Start of label
-        printing += "^LH15," + str(10 + (cfg.label_mod.get() * 8)) # Label Home | position of start of label
+        printing += "^LH" + str(15+(cfg.horz_label_mod.get() * 5)) + "," + str(10 + (cfg.label_mod.get() * 8)) # Label Home | position of start of label
         try:
             printing += txt_import(1,*more)
         except:
@@ -200,11 +199,11 @@ def txtPrint(quant,hist,*more):
 
 def BCPrint(code,quant,hist,sa):
     printing = "^XA" # Start of label
-    printing += "^LH15," + str(10 + (cfg.label_mod.get() * 8)) # Label Home | position of start of label
+    printing += "^LH" + str(15+(cfg.horz_label_mod.get() * 5)) + "," + str(10 + (cfg.label_mod.get() * 8)) # Label Home | position of start of label
     printing += "^FO1,20" # Field position
     printing += "^ASN,25,25" # Font to use for this field | font, orientation, height, width
     printing += "^FD" # Field initiator
-    printing += "Device "
+    printing += cfg.device_label.get() + " "
     printing += str(sa) # Serial or asset tag
     printing += "^FS" # end of field
     printing += "^FO3,60" # Position of Barcode code

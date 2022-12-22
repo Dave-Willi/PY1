@@ -24,7 +24,7 @@ import re
 from tkcalendar import DateEntry
 
 root = tk.Tk()
-root.title("CDW Con Duplicate Label Printer") # Title of app window
+root.title("CDW Config Label Printer") # Title of app window
 
 w = 1080 # width for the App
 h = 720 # height for the App
@@ -134,7 +134,8 @@ tab1 = tk.Frame(frame2) # singles
 tab2 = tk.Frame(frame2) # groups
 tab2a = tk.Frame(tab2)
 tab2b = tk.Frame(tab2)
-tab2c = tk.Frame(tab2)
+tab2c = tk.Frame(tab2, height=45)
+tab2d = tk.Frame(tab2)
 tab3 = tk.Frame(frame2) # range
 tab3a = tk.Frame(tab3)
 tab4 = tk.Frame(frame2) # range auto
@@ -156,12 +157,12 @@ frame2.add(tab2, text = "     Groups      ")
 frame2.add(tab3, text = "  Range (Manual) ")
 frame2.add(tab4, text = "   Range (Auto)  ")
 frame2.add(tab5, text = " Customer Labels ")
-# frame2.add(tab6, text = "     Reports     ", state=DISABLED)
 frame2.add(tab7, text = "  Custom Labels  ")
 
 tab2a.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
 tab2b.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
-tab2c.pack(anchor=CENTER, expand=False, side=BOTTOM, pady=(10,30), padx=10)
+tab2c.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
+tab2d.pack(anchor=CENTER, expand=False, side=BOTTOM, pady=(10,30), padx=10)
 tab3a.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
 tab4a.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10, fill=BOTH)
 tab4b.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
@@ -194,11 +195,20 @@ def set_tag(): # Change between asset tag and serial number. Sets colour of entr
         frame2.tab(2, state="normal")
         frame2.tab(3, state="normal")
         bg_col = "#eef"
+        cfg.device_label.set("Device")
+        serial_radio2.configure(state=DISABLED)
+        serial_radio3.configure(state=DISABLED)
+        serial_radio2a.configure(state=DISABLED)
+        serial_radio3a.configure(state=DISABLED)
     elif cfg.tag_select.get() == 1:
         cfg.asset_type.set("Serial Number :")
         frame2.tab(2, state="disabled")
         frame2.tab(3, state="disabled")
         bg_col = "#fee"
+        serial_radio2.configure(state=NORMAL)
+        serial_radio3.configure(state=NORMAL)
+        serial_radio2a.configure(state=NORMAL)
+        serial_radio3a.configure(state=NORMAL)
     try:
         single_entry.config(bg=bg_col)
         group_entry.config(bg=bg_col)
@@ -356,13 +366,13 @@ def return_auto2(event = None):
 # ==========================================
 # miscellaneous defined commands
 
-def open_file(): # opens selected file for group textbox insertion
+def open_file1(): # opens selected file for group textbox insertion
     File1 = filedialog.askopenfilename()
     File2 = open(File1, "r")
     group_textbox.insert("1.0", File2.read())
     File2.close()  # Make sure you close the file when done
 
-def open_file(): # opens selected file for group textbox insertion
+def open_file2(): # opens selected file for custom textbox insertion
     File1 = filedialog.askopenfilename()
     File2 = open(File1, "r")
     custom_textbox.insert("1.0", File2.read())
@@ -386,7 +396,7 @@ def print_group_text(): # print the group text box
     if answer == True:
         full_range = ""
         suf_label = "^FS^PQ1^XZ"
-        pre_label = "^XA^LH15," + str(10 + (cfg.label_mod.get() * 8)) + "^FO1,20^ASN,25,25^FDDevice" + cfg.asset_type.get() + "^FS^FO3,60^BCN,80,Y,N^FD"
+        pre_label = "^XA^LH" + str(15+(cfg.horz_label_mod.get() * 5)) + "," + str(10 + (cfg.label_mod.get() * 8)) + "^FO1,20^ASN,25,25^FD"+ cfg.device_label.get() + " " + cfg.asset_type.get() + "^FS^FO3,60^BCN,80,Y,N^FD"
         for x in (group_text):
             if x == "":
                 continue
@@ -413,6 +423,7 @@ def clear_all(): # resets all entry boxes and spinboxes to default (Empty) value
     cfg.range_end.set('')
     cfg.cust_quantity.set(1)
     cfg.textmod.set(0)
+    cfg.device_label.set("Device")
 
 def clear_custom_qr(): # clears the QR code text box
     custom_qr.delete(0, END)
@@ -430,7 +441,7 @@ def print_range(): # Print from the legacy range tab using data entered into it
         prefixed = str(cfg.range_prefix.get()).upper() # prefix entry, converted to upper case
         suffixed = str(cfg.range_suffix.get()).upper() # suffix entry, converted to lower case
         full_range = ""
-        pre_label = "^XA^LH15," + str(10 + (cfg.label_mod.get() * 8)) + "^FO1,20^ASN,25,25^FDDevice Asset Tag^FS^FO3,60^BCN,80,Y,N^FD"
+        pre_label = "^XA^LH" + str(15+(cfg.horz_label_mod.get() * 5)) + "," + str(10 + (cfg.label_mod.get() * 8)) + "^FO1,20^ASN,25,25^FDDevice Asset Tag^FS^FO3,60^BCN,80,Y,N^FD"
         suf_label = "^FS^PQ1^XZ"
         for x in range(int(cfg.range_start.get()), int(cfg.range_end.get())+1):
             y = str(x).zfill(lead_zeros)
@@ -505,7 +516,7 @@ def print_auto():
             prefixed = str(auto_prefix1).upper()
             suffixed = str(auto_suffix1).upper()
             full_range = ""
-            pre_label = "^XA^LH15," + str(10 + (cfg.label_mod.get() * 8)) + "^FO1,20^ASN,25,25^FDDevice Asset Tag^FS^FO3,60^BCN,80,Y,N^FD"
+            pre_label = "^XA^LH" + str(15+(cfg.horz_label_mod.get() * 5)) + "," + str(10 + (cfg.label_mod.get() * 8)) + "^FO1,20^ASN,25,25^FDDevice Asset Tag^FS^FO3,60^BCN,80,Y,N^FD"
             suf_label = "^FS^PQ1^XZ"
             for x in range(int(auto_start), int(auto_end)+1):
                 y = str(x).zfill(lead_zeros)
@@ -1476,8 +1487,8 @@ except:
 # ======= Settings panel (frame1a) =========
 # ==========================================
 
-frame1.grid_rowconfigure((0,1,2,4,6,7,8,10), weight=1)
-frame1.grid_rowconfigure((3,5,9), weight=8)
+frame1.grid_rowconfigure((0,1,2,4,6,7,8,11), weight=1)
+frame1.grid_rowconfigure((3,6,10), weight=8)
 frame1.grid_columnconfigure(0, weight=1)
 
 printer_label = tk.Label(master=frame1,
@@ -1505,11 +1516,11 @@ def reset_print():
     to_print(res,"")
 
 label_mod_label = tk.Label(master=frame1,
-                            text="Printed vertical\nposition offset",
+                            text="Printed position\noffset",
                             anchor="w",
                             justify=LEFT,
                             font=("calibri", 12))
-label_mod_label.grid(row=4, column=0, sticky=W)
+label_mod_label.grid(row=4, column=0, sticky=W, pady=0)
 
 label_mod_select = tk.Spinbox(master=frame1,
                                 from_=-10,
@@ -1517,63 +1528,69 @@ label_mod_select = tk.Spinbox(master=frame1,
                                 textvariable=cfg.label_mod,
                                 increment=-1,
                                 width=3)
-label_mod_select.grid(row=4, column=1)
+label_mod_select.grid(row=4, column=1, pady=0)
+
+label_mod_horizontal = tk.Scale(master=frame1,
+                                from_=-10, to=20,
+                                orient=HORIZONTAL,
+                                variable=cfg.horz_label_mod)
+label_mod_horizontal.grid(row=5, column=0, columnspan=2, pady=0)
 
 textmod_label = tk.Label(master=frame1,
                                 anchor="w",
                                 justify=LEFT,
                                 font=("calibri", 12),
                                 text="Text size\nmodifier: ")
-textmod_label.grid(row=5, column=0, pady=(0,20), padx= 10)
+textmod_label.grid(row=6, column=0, pady=(0,20), padx= 10)
 
 textmod = tk.Spinbox(master=frame1,
                             from_=-10,
                             to=10,
                             textvariable=cfg.textmod,
                             width=3)
-textmod.grid(row=5, column=1, pady=(0,10), padx= 10)
+textmod.grid(row=6, column=1, pady=(0,10), padx= 10)
 
 asset_label = tk.Label(master=frame1,
                             text="Asset or serial?")
-asset_label.grid(row=6, sticky=W, column=0, columnspan=2)
+asset_label.grid(row=7, sticky=W, column=0, columnspan=2)
 
 set_asset_button = tk.Radiobutton(master=frame1,
                     text="Asset tags",
                     variable=cfg.tag_select,
                     value=0,
                     command=set_tag)
-set_asset_button.grid(row=7, sticky=W, column=0, columnspan=2)
+set_asset_button.grid(row=8, sticky=W, column=0, columnspan=2)
 
 set_serial_button = tk.Radiobutton(master=frame1,
                     text="Serial Numbers",
                     variable=cfg.tag_select,
                     value=1,
                     command=set_tag)
-set_serial_button.grid(row=8, sticky=W, column=0, columnspan=2)
+set_serial_button.grid(row=9, sticky=W, column=0, columnspan=2)
 
-# row=9 reserved for dev reset button
+# row=10 reserved for dev reset button
 
-# row=10 reserved for current version number
+# row=11 reserved for current version number
 
 exit_button = tk.Button(master=frame1,
                     text="Quit",
                     command=quit,
                     width=12)
-exit_button.grid(row=11, sticky=EW, column=0, columnspan=2)
+exit_button.grid(row=12, sticky=EW, column=0, columnspan=2)
 
 # ==========================================
-# =========== Single Tab (tab1) ============
+# =========== Singles Tab (tab1) ===========
 # ==========================================
 
 tab1.grid_columnconfigure((0,1),weight=1)
-tab1.grid_rowconfigure((0,1,2),weight=1)
-tab1.grid_rowconfigure((3),weight=3)
+tab1.grid_rowconfigure((0,1,2,3,4),weight=1)
+tab1.grid_rowconfigure((5),weight=9)
 
 single_descript = tk.Label(master=tab1,
                         text="To print a single label",
                         font=12,
                         fg="blue")
-single_descript.grid(row=0, column=0, columnspan=2,)
+single_descript.grid(row=0, column=0, columnspan=2)
 
 single_label = tk.Label(master=tab1,
                         textvariable=cfg.asset_type)
@@ -1589,6 +1606,19 @@ single_btn = tk.Button(master=tab1,
                         command=return_key)
 single_btn.grid(row=2, column=0, columnspan=2, sticky=N)
 
+serial_radio2 = tk.Label(master=tab1,
+                        text="Device or custom serial number")
+serial_radio2.grid(row=3, column=0, columnspan=2)
+
+serial_radio1 = tk.Radiobutton(master=tab1,
+                                text="Device (default)",
+                                variable=cfg.device_label,
+                                value="Device")
+serial_radio1.grid(row=4, column=0, sticky=E)           
+
+serial_radio3 = tk.Entry(master=tab1,
+                        textvariable=cfg.device_label)
+serial_radio3.grid(row=4, column=1, stick=W, padx=40)
 
 
 # ==========================================
@@ -1623,12 +1653,27 @@ group_print.pack(side=LEFT, padx=100)
 
 group_load = tk.Button(master=tab2b,
                         text="Load from file",
-                        command=open_file)
+                        command=open_file1)
 group_load.pack(side=LEFT, padx=(0,100))
 
-group_textbox = tkscrolled.ScrolledText(master=tab2,
-                                        wrap=WORD)
-group_textbox.pack(side=BOTTOM, fill=BOTH, expand=True, padx=30, pady=(5,20))
+group_textbox = tkscrolled.ScrolledText(master=tab2c,
+                                        wrap=WORD,
+                                        height=13)
+group_textbox.pack(fill=BOTH, expand=True, padx=30, pady=(5,20))
+
+serial_radio2a = tk.Label(master=tab2d,
+                        text="Device or custom serial number")
+serial_radio2a.grid(row=1, column=0, columnspan=2)
+
+serial_radio1a = tk.Radiobutton(master=tab2d,
+                                text="Device (default)",
+                                variable=cfg.device_label,
+                                value="Device")
+serial_radio1a.grid(row=2, column=0, sticky=E)           
+
+serial_radio3a = tk.Entry(master=tab2d,
+                        textvariable=cfg.device_label)
+serial_radio3a.grid(row=2, column=1, stick=W, padx=40)
 
 # ==========================================
 # ============ Range Tab (tab3) ============
@@ -1832,7 +1877,7 @@ custom_load.pack(side=LEFT, padx=20)
 
 custom_load = tk.Button(master=tab7b,
                         text="Load from file",
-                        command=open_file)
+                        command=open_file2)
 custom_load.pack(side=LEFT, padx=(0,20))
 
 def on_tab_change(event): # Reset text and QR printing when moving away from custom prints
@@ -1842,6 +1887,7 @@ def on_tab_change(event): # Reset text and QR printing when moving away from cus
     cfg.textmod.set(0)
     custom_no_bc.config(text="Text&QR: All on 1 label", bg="#555555")
     cfg.no_bc.set(False)
+    clear_all()
 
 def no_bc_toggle():
     if custom_no_bc.config('text')[-1] == "Text&QR: All on 1 label":
@@ -1876,19 +1922,6 @@ custom_textbox = tkscrolled.ScrolledText(master=tab7,
                                         height=10)
 custom_textbox.pack(side=TOP, padx=5, pady=(10,30))
 
-# tab7d = tk.Frame(tab7)
-# tab7d.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
-
-# custom_textmod_label = tk.Label(master=tab7d,
-#                                 text="Text size modifier: ")
-# custom_textmod_label.pack(side=LEFT)
-
-# custom_textmod = tk.Spinbox(master=tab7d,
-#                             from_=-10,
-#                             to=10,
-#                             textvariable=cfg.textmod,
-#                             width=4)
-# custom_textmod.pack(side=RIGHT)
 
 # =====================================
 # ==== Generate external file list ====
@@ -1942,7 +1975,7 @@ if flag_2a == "homebuild":
                         text="Restart App",
                         command=reset,
                         width=12)
-    reset_button.grid(row=9, sticky=EW, column=0, columnspan=2)
+    reset_button.grid(row=10, sticky=EW, column=0, columnspan=2)
 
     test_print_button = tk.Radiobutton(master=frame1,
                         text="Test Printer",
@@ -1956,9 +1989,9 @@ if flag_2a == "homebuild":
 # ==========================================
 
 version_label = tk.Label(master=frame1,
-                            text="Version 1.1.15",
+                            text="Version 1.1.16",
                             font=("courier new", 10))
-version_label.grid(row=10, sticky=EW, column=0, columnspan=2)
+version_label.grid(row=11, sticky=EW, column=0, columnspan=2)
 
 # ==========================================
 # ========= Start up the routine ===========
