@@ -154,8 +154,8 @@ tab7b = tk.Frame(tab7)
 tab7c = tk.Frame(tab7)
 frame2.add(tab1, text = "     Singles     ")
 frame2.add(tab2, text = "     Groups      ")
-frame2.add(tab3, text = "  Range (Manual) ")
-frame2.add(tab4, text = "   Range (Auto)  ")
+#frame2.add(tab3, text = "  Range (Manual) ")
+frame2.add(tab4, text = "      Range      ")
 frame2.add(tab5, text = " Customer Labels ")
 frame2.add(tab7, text = "  Custom Labels  ")
 
@@ -1487,8 +1487,8 @@ except:
 # ======= Settings panel (frame1a) =========
 # ==========================================
 
-frame1.grid_rowconfigure((0,1,2,4,6,7,8,11), weight=1)
-frame1.grid_rowconfigure((3,6,10), weight=8)
+frame1.grid_rowconfigure((0,1,2,3,5,7,9,12), weight=1)
+frame1.grid_rowconfigure((4,8,11), weight=8)
 frame1.grid_columnconfigure(0, weight=1)
 
 printer_label = tk.Label(master=frame1,
@@ -1502,14 +1502,21 @@ config_print_button = tk.Radiobutton(master=frame1,
                     command=con_update)
 config_print_button.grid(row=1, sticky=W, column=0, columnspan=2)
 
+config_print_button = tk.Radiobutton(master=frame1,
+                    text="Config Alt Printer",
+                    variable=cfg.printer_select,
+                    value="LPT2",
+                    command=con_update)
+config_print_button.grid(row=2, sticky=W, column=0, columnspan=2)
+
 mezz_print_button = tk.Radiobutton(master=frame1,
                     text="MEZZ Printer",
                     variable=cfg.printer_select,
                     value="LPT7",
                     command=con_update)
-mezz_print_button.grid(row=2, sticky=W, column=0, columnspan=2)
+mezz_print_button.grid(row=3, sticky=W, column=0, columnspan=2)
 
-#row=3 is reserved for test printer
+#row=4 is reserved for test printer
 
 def reset_print():
     res = str("^MNY")
@@ -1520,7 +1527,7 @@ label_mod_label = tk.Label(master=frame1,
                             anchor="w",
                             justify=LEFT,
                             font=("calibri", 12))
-label_mod_label.grid(row=4, column=0, sticky=W, pady=0)
+label_mod_label.grid(row=5, column=0, sticky=W, pady=0)
 
 label_mod_select = tk.Spinbox(master=frame1,
                                 from_=-10,
@@ -1528,55 +1535,55 @@ label_mod_select = tk.Spinbox(master=frame1,
                                 textvariable=cfg.label_mod,
                                 increment=-1,
                                 width=3)
-label_mod_select.grid(row=4, column=1, pady=0)
+label_mod_select.grid(row=5, column=1, pady=0)
 
 label_mod_horizontal = tk.Scale(master=frame1,
                                 from_=-10, to=20,
                                 orient=HORIZONTAL,
                                 variable=cfg.horz_label_mod)
-label_mod_horizontal.grid(row=5, column=0, columnspan=2, pady=0)
+label_mod_horizontal.grid(row=6, column=0, columnspan=2, pady=0)
 
 textmod_label = tk.Label(master=frame1,
                                 anchor="w",
                                 justify=LEFT,
                                 font=("calibri", 12),
                                 text="Text size\nmodifier: ")
-textmod_label.grid(row=6, column=0, pady=(0,20), padx= 10)
+textmod_label.grid(row=7, column=0, pady=(0,20), padx= 10)
 
 textmod = tk.Spinbox(master=frame1,
                             from_=-10,
                             to=10,
                             textvariable=cfg.textmod,
                             width=3)
-textmod.grid(row=6, column=1, pady=(0,10), padx= 10)
+textmod.grid(row=7, column=1, pady=(0,10), padx= 10)
 
 asset_label = tk.Label(master=frame1,
                             text="Asset or serial?")
-asset_label.grid(row=7, sticky=W, column=0, columnspan=2)
+asset_label.grid(row=8, sticky=W, column=0, columnspan=2)
 
 set_asset_button = tk.Radiobutton(master=frame1,
                     text="Asset tags",
                     variable=cfg.tag_select,
                     value=0,
                     command=set_tag)
-set_asset_button.grid(row=8, sticky=W, column=0, columnspan=2)
+set_asset_button.grid(row=9, sticky=W, column=0, columnspan=2)
 
 set_serial_button = tk.Radiobutton(master=frame1,
                     text="Serial Numbers",
                     variable=cfg.tag_select,
                     value=1,
                     command=set_tag)
-set_serial_button.grid(row=9, sticky=W, column=0, columnspan=2)
+set_serial_button.grid(row=10, sticky=W, column=0, columnspan=2)
 
-# row=10 reserved for dev reset button
+# row=11 reserved for dev reset button
 
-# row=11 reserved for current version number
+# row=12 reserved for current version number
 
 exit_button = tk.Button(master=frame1,
                     text="Quit",
                     command=quit,
                     width=12)
-exit_button.grid(row=12, sticky=EW, column=0, columnspan=2)
+exit_button.grid(row=13, sticky=EW, column=0, columnspan=2)
 
 # ==========================================
 # =========== Singles Tab (tab1) ===========
@@ -1975,23 +1982,23 @@ if flag_2a == "homebuild":
                         text="Restart App",
                         command=reset,
                         width=12)
-    reset_button.grid(row=10, sticky=EW, column=0, columnspan=2)
+    reset_button.grid(row=11, sticky=EW, column=0, columnspan=2)
 
     test_print_button = tk.Radiobutton(master=frame1,
                         text="Test Printer",
                         value="local",
                         variable=cfg.printer_select,
                         command=con_update)
-    test_print_button.grid(row=3, sticky=W, column=0, columnspan=2)
+    test_print_button.grid(row=4, sticky=W, column=0, columnspan=2)
 
 # ==========================================
 # ======== Current version number ==========
 # ==========================================
 
 version_label = tk.Label(master=frame1,
-                            text="Version 1.1.16",
+                            text="Version 1.1.17",
                             font=("courier new", 10))
-version_label.grid(row=11, sticky=EW, column=0, columnspan=2)
+version_label.grid(row=12, sticky=EW, column=0, columnspan=2)
 
 # ==========================================
 # ========= Start up the routine ===========
