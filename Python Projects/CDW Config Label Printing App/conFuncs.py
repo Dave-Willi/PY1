@@ -4,6 +4,7 @@ import socket
 import subprocess
 import sys
 from tkinter import messagebox
+import tkinter as tk
 import win32print
 import win32ui
 from PIL import Image, ImageWin
@@ -228,22 +229,24 @@ def imgPrint(code,quant,hist):
     size = im.size
     sidex = size[0]
     sidey = size[1]
+    target = 9000 # 500 default
+    scale = 220 # 220 = LPT2, 180 = LPT1
     if sidex < sidey:
         im = im.rotate(270, expand=True)
         size = im.size
         sidex = size[0]
         sidey = size[1]
         ratio = sidey / sidex
-        if (180 * ratio) > 500:
-            newsize = (round(500/ratio), 500)
+        if (scale * ratio) > target:
+            newsize = (round(target/ratio) , round(target))
         else:
-            newsize = (180, round(180*ratio))
+            newsize = (round(scale), round(scale*ratio))
     else:
         ratio = sidex / sidey
-        if (180 * ratio) > 500:
-            newsize = (500, round(500/ratio))
+        if (scale * ratio) > target:
+            newsize = (round(target), round(target/ratio))
         else:
-            newsize = (round(180*ratio),180)
+            newsize = (round(scale*ratio),round(scale))
 
     pic = im.resize(newsize)
 

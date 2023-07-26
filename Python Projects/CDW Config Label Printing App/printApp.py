@@ -21,7 +21,7 @@ from PIL import Image, ImageTk
 from configparser import ConfigParser
 import tkinter.scrolledtext as tkscrolled
 import re
-from tkcalendar import DateEntry
+# from tkcalendar import DateEntry
 
 root = tk.Tk()
 root.title("CDW Config Label Printer") # Title of app window
@@ -1996,7 +1996,7 @@ if flag_2a == "homebuild":
 # ==========================================
 
 version_label = tk.Label(master=frame1,
-                            text="Version 1.1.17",
+                            text="Version 1.1.18",
                             font=("courier new", 10))
 version_label.grid(row=12, sticky=EW, column=0, columnspan=2)
 
