@@ -305,12 +305,22 @@ def limit_print(zyx):
     print_me = zyx
     try:
         if host == "local":
-            host = str(cfg.local_print.get())
-            print_me = bytes(zyx, 'utf-8')
-            mysocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-            mysocket.connect((host, cfg.port)) #connecting to host
-            mysocket.send(print_me)
-            mysocket.close() #closing connection
+            print("1")
+            # host = str(cfg.local_print.get())
+            # print_me = bytes(zyx, 'utf-8')
+            print("2")
+            # mysocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+            # mysocket.connect((host, cfg.port)) #connecting to host
+            # mysocket.send(print_me)
+            # mysocket.close() #closing connection
+            toSaveHere = "printed.txt"
+            print("3")
+            FileSave = open(toSaveHere, "w")
+            print("4")
+            FileSave.write(zyx)
+            print("5")
+            FileSave.close()
+            print("Saved")
             return
         else:
             try:

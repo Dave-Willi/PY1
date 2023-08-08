@@ -1,3 +1,118 @@
+.
+=
+FLAG_2
+1
+=
+FLAG_1
+[FLAGS]
+0
+=
+TAG_SELECT
+[TAG-TYPE]
+127.0.0.1
+=
+LOCAL_PRINT
+LPT2
+=
+PRINTER_SELECT
+[PRINTER]
+SDFGTY
+.
+=
+FLAG_2
+1
+=
+FLAG_1
+[FLAGS]
+0
+=
+TAG_SELECT
+[TAG-TYPE]
+127.0.0.1
+=
+LOCAL_PRINT
+LPT2
+=
+PRINTER_SELECT
+[PRINTER]
+SDGFSDFG
+ASDFASDF
+AFERWSCD
+XDFDFGH
+.
+=
+FLAG_2
+1
+=
+FLAG_1
+[FLAGS]
+0
+=
+TAG_SELECT
+[TAG-TYPE]
+127.0.0.1
+=
+LOCAL_PRINT
+LPT2
+=
+PRINTER_SELECT
+[PRINTER]
+.
+=
+FLAG_2
+1
+=
+FLAG_1
+[FLAGS]
+0
+=
+TAG_SELECT
+[TAG-TYPE]
+127.0.0.1
+=
+LOCAL_PRINT
+LPT2
+=
+PRINTER_SELECT
+[PRINTER]
+.
+=
+FLAG_2
+1
+=
+FLAG_1
+[FLAGS]
+0
+=
+TAG_SELECT
+[TAG-TYPE]
+127.0.0.1
+=
+LOCAL_PRINT
+LPT2
+=
+PRINTER_SELECT
+[PRINTER]
+SDFGSDFGSD
+SDFRGDSRTGYS
+.
+=
+FLAG_2
+1
+=
+FLAG_1
+[FLAGS]
+0
+=
+TAG_SELECT
+[TAG-TYPE]
+127.0.0.1
+=
+LOCAL_PRINT
+LPT2
+=
+PRINTER_SELECT
+[PRINTER]
 ASDF
 *custom text label*
 *custom text label*
@@ -882,119 +997,4 @@ Pen
 Pen
 Pen
 Pen
-Pen
-Pen
-Pen
-Pen
-Pineapple
-*custom text label*
-Pen
-*custom QR label*
-*custom QR label*
-*custom QR label*
-*custom QR label*
-*custom QR label*
-*custom text label*
-*custom text label*
-Pen
-Pen
-ebay mac qr
-DFHG
-*custom QR label*
-*custom QR label*
-*custom QR label*
-*custom QR label*
-*custom QR label*
-*custom QR label*
-*custom QR label*
-*custom QR label*
-*custom QR label*
-ASDFGHJK
-ebay mac qr
-Pen
-SDFGHJKL
-Pen
-Pen
-ebay mac qr
-ebay mac qr
-ebay mac qr
-Pen
-ebay mac qr
-Pen
-Pen
-Pen
-Pen
-Pen
-Pen
-Pen
-Pen
-Pen
-ebay mac qr
-ebay mac qr
-Pen
-*custom text label*
-Pen
-Pen
-Pen
-Pineapple
-Pen
-Pen
-Pen
-Pen
-Pen
-Pen
-Pen
-Pen
-Pen
-Pen
-Pen
-Pen
-ebay mac qr
-Apple
-Pineapple
-Pineapple
-ASDF
-ASDF
-Pineapple
-Pen
-Pen
-ebay mac qr
-Pen
-Pineapple
-Pineapple
-Pineapple
-Pen
-ebay mac qr
-ebay mac qr
-Pen
-Apple
-ebay mac qr
-Pen
-Pen
-Pineapple
-Apple
-ASDF
-Pen
-Apple
-ebay mac qr
-Pen
-Pen
-Pen
-Pen
-ebay mac qr
-Pen
-Pineapple
-Pen
-Pineapple
-Pineapple
-Apple
-Pineapple
-ebay mac qr
-*custom text label*
-*custom text label*
-*custom text label*
-ASDF
-Pen
-Pineapple
-ebay mac qr
 Pen

@@ -1356,7 +1356,7 @@ if flag_2a == "homebuild":
 # ==========================================
 
 version_label = tk.Label(master=frame1,
-                            text="Version 1.1",
+                            text="Version 1.1.1",
                             font=("courier new", 10))
 version_label.grid(row=10, sticky=EW)
 

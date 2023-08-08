@@ -196,10 +196,10 @@ def set_tag(): # Change between asset tag and serial number. Sets colour of entr
         frame2.tab(3, state="normal")
         bg_col = "#eef"
         cfg.device_label.set("Device")
-        serial_radio2.configure(state=DISABLED)
-        serial_radio3.configure(state=DISABLED)
-        serial_radio2a.configure(state=DISABLED)
-        serial_radio3a.configure(state=DISABLED)
+        serial_radio2.configure(state=NORMAL)
+        serial_radio3.configure(state=NORMAL)
+        serial_radio2a.configure(state=NORMAL)
+        serial_radio3a.configure(state=NORMAL)
     elif cfg.tag_select.get() == 1:
         cfg.asset_type.set("Serial Number :")
         frame2.tab(2, state="disabled")
@@ -209,18 +209,21 @@ def set_tag(): # Change between asset tag and serial number. Sets colour of entr
         serial_radio3.configure(state=NORMAL)
         serial_radio2a.configure(state=NORMAL)
         serial_radio3a.configure(state=NORMAL)
-    try:
+    try: # Disables printer selections based on config setting
         single_entry.config(bg=bg_col)
         group_entry.config(bg=bg_col)
         if cfg.flag_1 == 1:
             mezz_print_button.configure(state=DISABLED)
             config_print_button.configure(state=NORMAL)
+            config_print_button2.configure(state=NORMAL)
         elif cfg.flag_1 == 2:
             config_print_button.configure(state=DISABLED)
+            config_print_button2.configure(state=DISABLED)
             mezz_print_button.configure(state=NORMAL)
         elif cfg.flag_1 == 0:
             mezz_print_button.configure(state=NORMAL)
             config_print_button.configure(state=NORMAL)
+            config_print_button2.configure(state=NORMAL)
     except:
         pass
     con_update()
@@ -1502,12 +1505,12 @@ config_print_button = tk.Radiobutton(master=frame1,
                     command=con_update)
 config_print_button.grid(row=1, sticky=W, column=0, columnspan=2)
 
-config_print_button = tk.Radiobutton(master=frame1,
+config_print_button2 = tk.Radiobutton(master=frame1,
                     text="Config Alt Printer",
                     variable=cfg.printer_select,
                     value="LPT2",
                     command=con_update)
-config_print_button.grid(row=2, sticky=W, column=0, columnspan=2)
+config_print_button2.grid(row=2, sticky=W, column=0, columnspan=2)
 
 mezz_print_button = tk.Radiobutton(master=frame1,
                     text="MEZZ Printer",
@@ -1996,7 +1999,7 @@ if flag_2a == "homebuild":
 # ==========================================
 
 version_label = tk.Label(master=frame1,
-                            text="Version 1.1.18",
+                            text="Version 1.1.19",
                             font=("courier new", 10))
 version_label.grid(row=12, sticky=EW, column=0, columnspan=2)
 
