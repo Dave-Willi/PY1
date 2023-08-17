@@ -145,19 +145,22 @@ tab4c = tk.Frame(tab4)
 tab5 = tk.Frame(frame2) # customer labels
 tab5a = tk.Frame(tab5)
 tab5b = tk.Frame(tab5)
-tab6 = tk.Frame(frame2) # reports
+# tab6 = tk.Frame(frame2) # reports
 tab7 = tk.Frame(frame2) # custom labels
 tab7a = tk.Frame(tab7)
 tab7aa = tk.Frame(tab7)
 tab7ab = tk.Frame(tab7)
 tab7b = tk.Frame(tab7)
 tab7c = tk.Frame(tab7)
+tab8 = tk.Frame(frame2) # Larger Labels
+
 frame2.add(tab1, text = "     Singles     ")
 frame2.add(tab2, text = "     Groups      ")
 #frame2.add(tab3, text = "  Range (Manual) ")
 frame2.add(tab4, text = "      Range      ")
 frame2.add(tab5, text = " Customer Labels ")
 frame2.add(tab7, text = "  Custom Labels  ")
+frame2.add(tab8, text = "  Larger Labels  ")
 
 tab2a.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
 tab2b.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
@@ -296,16 +299,18 @@ def set_config(tab=""): # additional window with extra info such as print log
                 cfg.range_image = ImageTk.PhotoImage(Image.open("data/single_helper.jpg").resize((300,400)))
             if tab == 1: # groups tab
                 cfg.range_image = ImageTk.PhotoImage(Image.open("data/groups_helper.jpg").resize((300,400)))
-            if tab == 2: # Range tab
-                cfg.range_image = ImageTk.PhotoImage(Image.open("data/range_helper.jpg").resize((300,400)))
-            if tab == 3: # Range (auto) tab
+            # if tab == 2: # Range tab
+            #     cfg.range_image = ImageTk.PhotoImage(Image.open("data/range_helper.jpg").resize((300,400)))
+            if tab == 2: # Range (auto) tab
                 cfg.range_image = ImageTk.PhotoImage(Image.open("data/range_auto_helper.jpg").resize((300,400)))
-            if tab == 4: # customer labels tab
+            if tab == 3: # customer labels tab
                 cfg.range_image = ImageTk.PhotoImage(Image.open("data/cust_helper.jpg").resize((300,400)))
-            if tab == 5: # reports tab
-                cfg.range_image = ImageTk.PhotoImage(Image.open("data/reports_helper.jpg").resize((300,400)))
-            if tab == 6: # custom labels tab
+            # if tab == 4: # reports tab
+            #     cfg.range_image = ImageTk.PhotoImage(Image.open("data/reports_helper.jpg").resize((300,400)))
+            if tab == 4: # custom labels tab
                 cfg.range_image = ImageTk.PhotoImage(Image.open("data/custom_helper.jpg").resize((300,400)))
+            if tab == 4: # custom labels tab
+                cfg.range_image = ImageTk.PhotoImage(Image.open("data/largelabel_helper.jpg").resize((300,400)))
             canvas.create_image(0, 0, anchor=NW, image=cfg.range_image)
         except:
             logo_text = tk.Label(omni_box, text="Image is missing", font=("Helvetica",16))
@@ -355,13 +360,13 @@ def return_key(event = None):
 def return_auto1(event = None):
     tab_name = frame2.select()
     tab_index = frame2.index(tab_name)
-    if tab_index == 3: # auto range
+    if tab_index == 2: # auto range
         auto_entry2.focus()
 
 def return_auto2(event = None):
     tab_name = frame2.select()
     tab_index = frame2.index(tab_name)
-    if tab_index == 3: # auto range
+    if tab_index == 2: # auto range
         auto_entry1.focus()
 
 # ==========================================
@@ -1932,6 +1937,31 @@ custom_textbox = tkscrolled.ScrolledText(master=tab7,
                                         height=10)
 custom_textbox.pack(side=TOP, padx=5, pady=(10,30))
 
+# ==========================================
+# ========= Larger Labels (tab8) ===========
+# ==========================================
+
+large_labels_label = tk.Label(master=tab8,
+                              text="For large labels only")
+large_labels_label.pack(side=TOP, padx=5)
+
+large_labels_textbox = tkscrolled.ScrolledText(master=tab8,
+                                        wrap=WORD,
+                                        width=60,
+                                        height=10)
+large_labels_textbox.pack(side=TOP, padx=5, pady=(10,30))
+
+large_labels_print = tk.Button(master=tab8,
+                        text="Print one",
+                        # command=print_large_labels_one,
+                        width=10)
+large_labels_print.pack(side=LEFT, padx=(300,20))
+
+large_labels_print_many = tk.Button(master=tab8,
+                        text="Print many",
+                        # command=print_large_labels_many,
+                        width=10)
+large_labels_print_many.pack(side=LEFT, padx=0)
 
 # =====================================
 # ==== Generate external file list ====
@@ -1954,7 +1984,8 @@ files += "data/groups_helper.jpg      # Help image for groups tab (320x600)\n"
 files += "data/logs.txt               # list of previously printed labels\n"
 files += "data/range_auto_helper.jpg  # Help image for range auto tab (320x600)\n"
 files += "data/range_helper.jpg       # Help image for range tab (320x600)\n"
-files += "data/reports_helper.jpg     # Help image for reports tab (320x600)\n"
+files += "data/largelabel_helper.jpg       # Help image for range tab (320x600)\n"
+# files += "data/reports_helper.jpg     # Help image for reports tab (320x600)\n"
 files += "data/single_helper.jpg      # Help image for singles tab (320x600)\n"
 
 # Step 2, name your file
@@ -1999,7 +2030,7 @@ if flag_2a == "homebuild":
 # ==========================================
 
 version_label = tk.Label(master=frame1,
-                            text="Version 1.1.19",
+                            text="Version 1.2.0",
                             font=("courier new", 10))
 version_label.grid(row=12, sticky=EW, column=0, columnspan=2)
 

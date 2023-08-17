@@ -14,5 +14,5 @@ data/groups_helper.jpg      # Help image for groups tab (320x600)
 data/logs.txt               # list of previously printed labels
 data/range_auto_helper.jpg  # Help image for range auto tab (320x600)
 data/range_helper.jpg       # Help image for range tab (320x600)
-data/reports_helper.jpg     # Help image for reports tab (320x600)
+data/largelabel_helper.jpg       # Help image for range tab (320x600)
 data/single_helper.jpg      # Help image for singles tab (320x600)
