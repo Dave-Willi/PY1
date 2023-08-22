@@ -309,7 +309,7 @@ def set_config(tab=""): # additional window with extra info such as print log
             #     cfg.range_image = ImageTk.PhotoImage(Image.open("data/reports_helper.jpg").resize((300,400)))
             if tab == 4: # custom labels tab
                 cfg.range_image = ImageTk.PhotoImage(Image.open("data/custom_helper.jpg").resize((300,400)))
-            if tab == 4: # custom labels tab
+            if tab == 5: # large labels tab
                 cfg.range_image = ImageTk.PhotoImage(Image.open("data/largelabel_helper.jpg").resize((300,400)))
             canvas.create_image(0, 0, anchor=NW, image=cfg.range_image)
         except:
@@ -635,7 +635,7 @@ except:
 # # ==========================================
 # # ================= Classes ================
 # # ==========================================
-
+"""
 class Dominos(tk.Tk):
     # enter store number
     # each has a unique ip address
@@ -853,6 +853,7 @@ class Dominos(tk.Tk):
             pass
         entry_window()
 
+
 class McDonald(tk.Tk):
     # store = tk.StringVar(None,"")
     # sord = tk.StringVar(None,"")
@@ -905,18 +906,18 @@ class McDonald(tk.Tk):
             # or select from defaults (ODMB, COTF etc)
             # Print 25mm labels
             # Print 65mm labels
-            """
-            config parse the custom_buttons.ini
-            [McD]/[SBucks] will be used to initiate the button in the main app
-            then the variables will define the screens and socs
-            groups will need more consideration but should be doable all the same
-            screen1 = BackOfBar 1
-            screen2 = DailyOrderBoard 1
-            soc1 = BackOfBar 1 SOC
-            soc2 = DailyOrderBoard 1 SOC
-            group1 = ODmB
-            group1a = screen1, screen2, soc1, soc2
-            """
+            
+            # config parse the custom_buttons.ini
+            # [McD]/[SBucks] will be used to initiate the button in the main app
+            # then the variables will define the screens and socs
+            # groups will need more consideration but should be doable all the same
+            # screen1 = BackOfBar 1
+            # screen2 = DailyOrderBoard 1
+            # soc1 = BackOfBar 1 SOC
+            # soc2 = DailyOrderBoard 1 SOC
+            # group1 = ODmB
+            # group1a = screen1, screen2, soc1, soc2
+            
             def an_print():
                 print(store.get())
                 print(sord.get())
@@ -1001,7 +1002,8 @@ class McDonald(tk.Tk):
         except Exception as e:
             print(e)
         entry_window()
-
+"""
+        
 class button(tk.Tk):
     def __init__(self, y):
         self.bname = y["button_name"]
@@ -1802,51 +1804,51 @@ print_quantity.grid(row=0, column=2, pady=10, padx= 10)
 # ==========================================
 # ========== Reports Tab (tab6) ============
 # ==========================================
+"""
+tab6a = tk.Frame(master=tab6)
+tab6a.pack(pady=20)
+tab6b = tk.Frame(master=tab6)
+tab6b.pack(pady=20)
 
-# tab6a = tk.Frame(master=tab6)
-# tab6a.pack(pady=20)
-# tab6b = tk.Frame(master=tab6)
-# tab6b.pack(pady=20)
+label_6a = tk.Label(master=tab6a,
+                    text="Less than 5 rolls of labels remaining?")
+label_6a.grid(row=0, column=0)
 
-# label_6a = tk.Label(master=tab6a,
-#                     text="Less than 5 rolls of labels remaining?")
-# label_6a.grid(row=0, column=0)
+labels_ribbon = tk.Checkbutton(master=tab6a,
+                            text="Also ribbons?")
+labels_ribbon.grid(row=1, column=1)
 
-# labels_ribbon = tk.Checkbutton(master=tab6a,
-#                             text="Also ribbons?")
-# labels_ribbon.grid(row=1, column=1)
+labels_remain = tk.Spinbox(master=tab6a,
+                            from_=0,
+                            to=5,
+                            wrap=True)
+labels_remain.grid(row=0, column=1)
 
-# labels_remain = tk.Spinbox(master=tab6a,
-#                             from_=0,
-#                             to=5,
-#                             wrap=True)
-# labels_remain.grid(row=0, column=1)
+labels_alert = tk.Button(master=tab6a,
+                        text="Report labels")
+labels_alert.grid(row=1, column=0)
 
-# labels_alert = tk.Button(master=tab6a,
-#                         text="Report labels")
-# labels_alert.grid(row=1, column=0)
+label_6b = tk.Label(master=tab6b,
+                    text="Faulty Network port:")
+label_6b.grid(row=1, column=0)
 
-# label_6b = tk.Label(master=tab6b,
-#                     text="Faulty Network port:")
-# label_6b.grid(row=1, column=0)
+label_6bb = tk.Label(master=tab6b,
+                    text="enter switch number and full port number (i.e. SW5 Gi2/0/4)")
+label_6bb.grid(row=0, column=0, columnspan=3)
 
-# label_6bb = tk.Label(master=tab6b,
-#                     text="enter switch number and full port number (i.e. SW5 Gi2/0/4)")
-# label_6bb.grid(row=0, column=0, columnspan=3)
+port_entry = tk.Entry(master=tab6b)
+port_entry.grid(row=1, column=2)
 
-# port_entry = tk.Entry(master=tab6b)
-# port_entry.grid(row=1, column=2)
+ports_alert = tk.Button(master=tab6b,
+                        text="Report port")
+ports_alert.grid(row=2, column=2)
 
-# ports_alert = tk.Button(master=tab6b,
-#                         text="Report port")
-# ports_alert.grid(row=2, column=2)
-
-# label_6b = tk.Label(master=tab6b,
-#                     text="Nothing works on this page yet so don't waste your time",
-#                     font=38,
-#                     fg="red")
-# label_6b.grid(row=5, column=0, columnspan=4, rowspan=2)
-
+label_6b = tk.Label(master=tab6b,
+                    text="Nothing works on this page yet so don't waste your time",
+                    font=38,
+                    fg="red")
+label_6b.grid(row=5, column=0, columnspan=4, rowspan=2)
+"""
 
 # ==========================================
 # =========== Custom Tab (tab7) ============
@@ -1942,8 +1944,10 @@ custom_textbox.pack(side=TOP, padx=5, pady=(10,30))
 # ==========================================
 
 large_labels_label = tk.Label(master=tab8,
-                              text="For large labels only")
-large_labels_label.pack(side=TOP, padx=5)
+                              text="For larger labels only",
+                              font=12,
+                            fg="blue")
+large_labels_label.pack(side=TOP, padx=5, pady=15)
 
 large_labels_textbox = tkscrolled.ScrolledText(master=tab8,
                                         wrap=WORD,
