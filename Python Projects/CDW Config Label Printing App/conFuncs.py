@@ -110,6 +110,9 @@ def txt_import(dud,more):
         dud_length = 640
     elif dud == 1:
         dud_length = 850
+    elif dud == 2:
+        dud_length = 2000
+        cfg.no_bc.set(False)
     if sub_total == 0:
         return ""
     index = 0

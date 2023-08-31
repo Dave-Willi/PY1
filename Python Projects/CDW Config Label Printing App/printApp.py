@@ -539,6 +539,34 @@ def print_auto():
             return
     clear_all()
 
+def print_large_labels_one():
+    from conFuncs import txt_import
+    txt = large_labels_textbox.get("1.0", END)
+    if txt.isspace():
+        return
+    host = str("LPT3")
+    customtxt = list()
+    txt = re.split("\n",txt)
+    for x in (txt):
+        if x == "":
+            continue
+        customtxt.append(x)
+    print_me = "^XA^LH15,10"
+    try:
+        print_me += txt_import(2,*tuple(customtxt))
+    except:
+        print_me += txt_import(2,tuple(customtxt))
+    print_me += "PQ1^XZ" 
+    try:
+        chisel = open(host, "w")
+        chisel.write(print_me)
+        chisel.close()
+        history(txt)
+    except Exception as e:
+        print(e)
+    return
+    
+
 def print_custom_one(): # print one custom label
     qr = custom_qr.get()
     txt = custom_textbox.get("1.0", END)
@@ -1956,16 +1984,16 @@ large_labels_textbox = tkscrolled.ScrolledText(master=tab8,
 large_labels_textbox.pack(side=TOP, padx=5, pady=(10,30))
 
 large_labels_print = tk.Button(master=tab8,
-                        text="Print one",
-                        # command=print_large_labels_one,
+                        text="Print",
+                        command=print_large_labels_one,
                         width=10)
-large_labels_print.pack(side=LEFT, padx=(300,20))
+large_labels_print.pack(side=TOP, pady= 120)
 
-large_labels_print_many = tk.Button(master=tab8,
-                        text="Print many",
-                        # command=print_large_labels_many,
-                        width=10)
-large_labels_print_many.pack(side=LEFT, padx=0)
+# large_labels_print_many = tk.Button(master=tab8,
+#                         text="Print many",
+#                         # command=print_large_labels_many,
+#                         width=10)
+# large_labels_print_many.pack(side=LEFT, padx=0)
 
 # =====================================
 # ==== Generate external file list ====
