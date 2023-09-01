@@ -1,3 +1,41 @@
+['asdfggdfghjgdfhjsdfghsdfgh', '']
+['asdfggdfghjgdfhj', '']
+['asdfsdfghsdfghsdfghdfgh', '']
+['asdfsdfghsdfghsdfghdfgh', '']
+['asdfsdfghsdfghsdfghdfgh', '']
+['asdfsdfghsdfgh', '']
+['asdf', '']
+['asdf', 'asdg', '']
+['asdf', '']
+['asdf', '']
+['asdf', '']
+['asdfgasdfg', '']
+['sdfgsdfgdfghdfghsrtsrhj', '']
+['sdfgsdfg', '']
+['asdgadfg', 'dsgfgdsf', '']
+['asdgadfg', '']
+['asdf', '', '']
+['asdf', 'dsfgh', '']
+['asdf', '']
+['asdf', '']
+['asdf', 'dgfh', '']
+['asdf', '']
+['asdf', 'qwer', '']
+['asdf', '']
+['asdf', 'hgsew', 'srytjdgh', '']
+['asdf', 'hgsew', '']
+['asdf', '']
+['asdf', '']
+['sdfhgsdft', '']
+['asdfg', 'adsf', '']
+['asdfg', '']
+['fxczv', 'vzxcv', '']
+['fxczv', 'v', '']
+['fxczv', '']
+['f', '']
+['qwertyuiop', 'zxvc', '']
+['qwertyuiop', '']
+['zdfgsdtcvb', 'sdftghydfxgt', '']
 .
 =
 FLAG_2
@@ -960,41 +998,3 @@ Pen
 *custom text label*
 *custom text label*
 *custom text label*
-*custom text label*
-*custom text label*
-Pen
-Pen
-Pen
-Pen
-Pen
-*custom text label*
-*custom text label*
-Pineapple
-Pen
-Pen
-*custom text label*
-Apple
-Pen
-Pen
-Pen
-Pen
-ebay mac qr
-Pen
-Pen
-Pen
-Pen
-*custom text label*
-*custom text label*
-*custom text label*
-*custom text label*
-Pen
-*custom text label*
-Pen
-Pen
-*custom text label*
-*custom text label*
-*custom text label*
-Pen
-Pen
-Pen
-Pen

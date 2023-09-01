@@ -547,18 +547,20 @@ def print_large_labels_one():
     host = str("LPT3")
     customtxt = list()
     txt = re.split("\n",txt)
+    print(tuple(txt))
     for x in (txt):
         if x == "":
             continue
         customtxt.append(x)
     print_me = "^XA^LH15,10"
     try:
-        print_me += txt_import(2,*tuple(customtxt))
-    except:
         print_me += txt_import(2,tuple(customtxt))
-    print_me += "PQ1^XZ" 
+    except:
+        print_me += txt_import(2,*tuple(customtxt))
+    print_me += "^PQ1^XZ" 
     try:
         chisel = open(host, "w")
+        # chisel = open("host.txt", "w")
         chisel.write(print_me)
         chisel.close()
         history(txt)

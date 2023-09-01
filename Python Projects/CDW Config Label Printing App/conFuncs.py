@@ -105,13 +105,20 @@ def txt_import(dud,more):
     #     more = more.split(',')
     #     print(type(more))
     # prints extra ("(' at start and ')") at end
+    
     sub_total = len(more)
     if dud == 0:
         dud_length = 640
+        max_font = 60
+        max_lines = 180
     elif dud == 1:
         dud_length = 850
+        max_font = 60
+        max_lines = 180
     elif dud == 2:
-        dud_length = 2000
+        dud_length = 3500
+        max_font = 260
+        max_lines = 280
         cfg.no_bc.set(False)
     if sub_total == 0:
         return ""
@@ -119,15 +126,15 @@ def txt_import(dud,more):
     try:
         font_size_max = max(more, key=len)
         txt_length = len(font_size_max)
-        font_size = min(round(180/(sub_total)),round(dud_length/txt_length),60) + (int(cfg.textmod.get())*5)
+        font_size = min(round(max_lines/(sub_total)),round(dud_length/txt_length),max_font) + (int(cfg.textmod.get())*5)
     except:
-        font_size = min(round(180/(sub_total)),100) + (int(cfg.textmod.get())*5)
+        font_size = min(round(max_lines/(sub_total)),100) + (int(cfg.textmod.get())*5)
     txt_printing = ""
     if cfg.no_bc.get() == True:
         quant = str(cfg.cust_quantity.get())
         for x in (more):
             txt_length = len(x)
-            font_size = min(round(dud_length/txt_length),60) + (int(cfg.textmod.get())*5)
+            font_size = min(round(dud_length/txt_length),max_font) + (int(cfg.textmod.get())*5)
             txt_printing += "^XA" # Start of label
             txt_printing += "^LH" + str(15+(cfg.horz_label_mod.get() * 5)) + "," + str(10 + (cfg.label_mod.get() * 8))
             txt_printing += "^A0N," + str(font_size)
@@ -143,9 +150,10 @@ def txt_import(dud,more):
             txt_printing += "^XZ" # End of label
     else:
         for x in (more):
+            print(sub_total)
             txt_printing += "^A0N," + str(font_size)
             if sub_total== 1:
-                txt_printing += "^FO10," + str((100-(font_size/2)))
+                txt_printing += "^FO10," + str((max_lines-(font_size/2)))
             else:
                 txt_printing += "^FO10," + str((10+(font_size*index)))
             txt_printing += "^FD"
