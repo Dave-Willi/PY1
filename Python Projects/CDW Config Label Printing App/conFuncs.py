@@ -116,8 +116,8 @@ def txt_import(dud,more):
         max_font = 60
         max_lines = 180
     elif dud == 2:
-        dud_length = 3500
-        max_font = 260
+        dud_length = 1500
+        max_font = 160
         max_lines = 280
         cfg.no_bc.set(False)
     if sub_total == 0:
@@ -153,7 +153,7 @@ def txt_import(dud,more):
             print(sub_total)
             txt_printing += "^A0N," + str(font_size)
             if sub_total== 1:
-                txt_printing += "^FO10," + str((max_lines-(font_size/2)))
+                txt_printing += "^FO10," + str((max_lines/2 - (font_size/2)))
             else:
                 txt_printing += "^FO10," + str((10+(font_size*index)))
             txt_printing += "^FD"
