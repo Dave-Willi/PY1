@@ -13,7 +13,7 @@ import os
 import subprocess
 import sys
 import tkinter as tk
-from tkinter import ttk
+# from tkinter import ttk
 from tkinter import *
 from tkinter import messagebox, filedialog
 from tkinter.ttk import Notebook, Style
@@ -153,6 +153,8 @@ tab7ab = tk.Frame(tab7)
 tab7b = tk.Frame(tab7)
 tab7c = tk.Frame(tab7)
 tab8 = tk.Frame(frame2) # Larger Labels
+tab8a = tk.Frame(tab8)
+tab8b = tk.Frame(tab8)
 
 frame2.add(tab1, text = "     Singles     ")
 frame2.add(tab2, text = "     Groups      ")
@@ -177,6 +179,8 @@ tab7aa.pack(anchor=CENTER, expand=False, side=TOP)
 tab7ab.pack(anchor=CENTER, expand=False, side=TOP)
 tab7b.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
 tab7c.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
+tab8a.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
+tab8b.pack(anchor=CENTER, expand=False, side=TOP, pady=10, padx=10)
 
 # *******************************************************
 # explicit import conFuncs functions after setting frames
@@ -219,14 +223,17 @@ def set_tag(): # Change between asset tag and serial number. Sets colour of entr
             mezz_print_button.configure(state=DISABLED)
             config_print_button.configure(state=NORMAL)
             config_print_button2.configure(state=NORMAL)
+            frame2.tab(5, state="normal")
         elif cfg.flag_1 == 2:
             config_print_button.configure(state=DISABLED)
             config_print_button2.configure(state=DISABLED)
             mezz_print_button.configure(state=NORMAL)
+            frame2.tab(5, state="disabled")
         elif cfg.flag_1 == 0:
             mezz_print_button.configure(state=NORMAL)
             config_print_button.configure(state=NORMAL)
             config_print_button2.configure(state=NORMAL)
+            frame2.tab(5, state="normal")
     except:
         pass
     con_update()
@@ -386,6 +393,12 @@ def open_file2(): # opens selected file for custom textbox insertion
     custom_textbox.insert("1.0", File2.read())
     File2.close()  # Make sure you close the file when done
 
+def open_file3(): # opens selected file for custom textbox insertion
+    File1 = filedialog.askopenfilename()
+    File2 = open(File1, "r")
+    large_labels_textbox.insert("1.0", File2.read())
+    File2.close()  # Make sure you close the file when done
+
 def print_group_text(): # print the group text box
     if group_textbox.get("1.0", END) == "\n":
         return
@@ -425,6 +438,7 @@ def clear_all(): # resets all entry boxes and spinboxes to default (Empty) value
     auto_entry2.delete(0, END)
     group_textbox.delete("1.0", END)
     custom_textbox.delete("1.0", END)
+    large_labels_textbox.delete("1.0", END)
     range_entry2.delete(0, END)
     range_entry3.delete(0, END)
     cfg.range_start.set('')
@@ -432,6 +446,9 @@ def clear_all(): # resets all entry boxes and spinboxes to default (Empty) value
     cfg.cust_quantity.set(1)
     cfg.textmod.set(0)
     cfg.device_label.set("Device")
+
+def clear_large():
+    large_labels_textbox.delete("1.0", END)
 
 def clear_custom_qr(): # clears the QR code text box
     custom_qr.delete(0, END)
@@ -568,7 +585,6 @@ def print_large_labels_one():
         print(e)
     return
     
-
 def print_custom_one(): # print one custom label
     qr = custom_qr.get()
     txt = custom_textbox.get("1.0", END)
@@ -1101,82 +1117,28 @@ class button2(tk.Tk):
                                         width=15)
                 uid_entry.grid(row=1, column=0, pady=(0,10), padx=10)
 
-            def selectAll():
-                try:
-                    for widget in enter_frame1.winfo_children():
-                        if isinstance(widget, tk.Checkbutton):
-                            widget.select()
-                except:
-                    pass
+            def load_from_file():
+                File1 = filedialog.askopenfilename()
+                File2 = open(File1, "r")
+                large_labels_textbox.insert("1.0", File2.read())
+                File2.close()  # Make sure you close the file when done
 
-            def clearAll():
-                try:
-                    for widget in enter_box.winfo_children():
-                        if isinstance(widget, tk.Entry):
-                            widget.delete(0, END)
-                    for widget in enter_frame1.winfo_children():
-                        if isinstance(widget, tk.Entry):
-                            widget.delete(0, END)
-                        elif isinstance(widget, tk.Checkbutton):
-                            widget.deselect()
-                except:
-                    pass
+            def cancelMe():
+                pass
 
             allSelect = tk.Button(master=enter_box,
-                                text="Select all",
-                                command=selectAll,
+                                text="Print from file",
+                                command=load_from_file,
                                 width=15)
-            allSelect.grid(row=0, column=1, padx=10)
+            allSelect.grid(row=0, column=1, padx=10, pady=10)
 
             allClear = tk.Button(master=enter_box,
-                                text="Clear all",
-                                command=clearAll,
+                                text="Cancel",
+                                command=cancelMe,
                                 width=15)
             allClear.grid(row=0, column=2, padx=10)
 
-            class btnCheckBox():
-                def __init__(self,x) -> None:
-                    named = x[:]
-                    if "{}" in named:
-                        named = named.format(uid.get())
-                    btnCheck = tk.Checkbutton(master=enter_frame1,
-                                            text=named)
-                    btnCheck.grid(column=cfg.btnCol, row=cfg.btnRow, sticky=W, padx=5)
-                    cfg.btnRow += 1
-
-            class btnEntryBox():
-                def __init__(self,x) -> None:
-                    named = x[:]
-                    if "{}" in named:
-                        named = named.format(uid.get())
-                    btnLabel = tk.Label(master=enter_frame1,
-                                        text=named)
-                    btnLabel.grid(column=cfg.btnCol, row=cfg.btnRow, padx=5, pady=(10,0))
-                    self.x = 1
-                    btnEnter = tk.Entry(master=enter_frame1)
-                    btnEnter.grid(column=cfg.btnCol+1, row=cfg.btnRow, padx=5,pady=(0,10), sticky=W)
-                    cfg.btnRow += 1
-
-            for x in self.btnData:
-                z = str(x)
-                if z.startswith("check"):
-                    btnCheckBox(self.btnData[z])
-                elif z.startswith("enter"):
-                    btnEntryBox(self.btnData[z])
-
-            def an_print():
-                pass
-
-            entry_quant_label = tk.Label(master=enter_box, text="Enter number of labels to print")
-            entry_quant_label.grid(column=0, row=5, pady=(35,0), padx=30)
-            entry_quantities = tk.Spinbox(master=enter_box, from_=1, to=999,
-                                        textvariable=cfg.cust_quantity)
-            entry_quantities.grid(column=0, row=6, pady=(10,20))
-
-            enter_print = tk.Button(master=enter_box,
-                                    text="Print",
-                                    command=an_print)
-            enter_print.grid(column=1, row=6)
+            
         
         try:
             for widget in root.winfo_children():
@@ -1480,9 +1442,9 @@ for x in trial:
     elif x == "date":
         new_date_test()
         continue
-    elif x == "McD":
-        McDonald(trial[x])
-        continue
+    # elif x == "McD":
+    #     McDonald(trial[x])
+    #     continue
     # elif x == "Dominos":
     #     Dominos(trial[x])
     #     continue
@@ -1490,10 +1452,12 @@ for x in trial:
     btype = y["btn_type"]
     if btype == "5":
         button3(y)
-        # button2(y)
         continue
     elif btype == "6":
         btn_bcu()
+        continue
+    elif btype == "4":
+        button2(y)
         continue
     else:
         button(y)
@@ -1973,23 +1937,41 @@ custom_textbox.pack(side=TOP, padx=5, pady=(10,30))
 # ========= Larger Labels (tab8) ===========
 # ==========================================
 
-large_labels_label = tk.Label(master=tab8,
+large_labels_label = tk.Label(master=tab8a,
                               text="For larger labels only",
                               font=12,
                             fg="blue")
 large_labels_label.pack(side=TOP, padx=5, pady=15)
 
-large_labels_textbox = tkscrolled.ScrolledText(master=tab8,
+large_labels_sublabel = tk.Label(master=tab8a,
+                                 text="Print one label at a time",
+                                 font=10,
+                                 fg="black")
+large_labels_sublabel.pack(side=TOP, padx=5, pady=(0,15))
+
+large_labels_textbox = tkscrolled.ScrolledText(master=tab8a,
                                         wrap=WORD,
                                         width=60,
                                         height=10)
 large_labels_textbox.pack(side=TOP, padx=5, pady=(10,30))
 
-large_labels_print = tk.Button(master=tab8,
+large_labels_print = tk.Button(master=tab8b,
                         text="Print",
                         command=print_large_labels_one,
-                        width=10)
-large_labels_print.pack(side=TOP, pady= 120)
+                        width=18)
+large_labels_print.pack(side=LEFT, padx=(0,25))
+
+large_labels_load_from_file = tk.Button(master=tab8b,
+                                        text="Load from File",
+                                        command=open_file3,
+                                        width=18)
+large_labels_load_from_file.pack(side=LEFT)
+
+large_labels_clear = tk.Button(master=tab8a,
+                               text="Clear",
+                               command=clear_large,
+                               width=18)
+large_labels_clear.pack(side=BOTTOM)
 
 # large_labels_print_many = tk.Button(master=tab8,
 #                         text="Print many",
@@ -2064,7 +2046,7 @@ if flag_2a == "homebuild":
 # ==========================================
 
 version_label = tk.Label(master=frame1,
-                            text="Version 1.2.1",
+                            text="Version 1.2.2",
                             font=("courier new", 10))
 version_label.grid(row=12, sticky=EW, column=0, columnspan=2)
 
