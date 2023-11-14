@@ -10,12 +10,11 @@
 # List of imports #
 ###################
 
-import os, sys
-import win32print
-from PIL import Image, ImageTk
 import tkinter as tk
+# import tkinter.scrolledtext as tkscrolled
 
-
+# from PrintAppFunctions import rangeToList
+# from functools import partial
 ########################
 # Initialising Program #
 ########################
@@ -38,11 +37,25 @@ root.geometry('%dx%d+%d+%d' % (appWidth, appHeight, x, y))
 root.resizable(False,False) # Disable resizing of window
 
 
+# rangeLabel = tk.Label(text="Range test")
+# rangeLabel.pack()
 
+# rangeInput1 = tk.Entry()
+# rangeInput1.pack()
 
+# rangeInput2 = tk.Entry()
+# rangeInput2.pack()
+
+# rangeBtn = tk.Button(command=rangeToList(rangeInput1.get(),rangeInput2.get())
+#                     ,text="Print")
+# rangeBtn.pack()
+
+# rangeList = tkscrolled.ScrolledText(height=12)
+# rangeList.pack()
 
 
 #################
 # initiate loop #
 #################
-if __name__=="__main__" : root.mainloop()
+# if __name__ == '__main__':
+#     main()
