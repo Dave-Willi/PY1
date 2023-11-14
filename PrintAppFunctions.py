@@ -1,15 +1,18 @@
 from tkinter import messagebox
 import re
 
+# is_on = True
+import settings
+
 def main():
     pass
 
 def screenSwap(screenOn): # To swap between the various screens within the application.
-    currentlist = "rangeList"
+    # settings.currentlist = screenOn
+    pass
 
 def addToList(itemsForList): # To add labels to the currently active list
-    # pass
-    rangeList.insert(itemsForList)
+    settings.currentList.set(itemsForList)
 
 def printList(): # To send the currently active list to be printed
     pass
@@ -27,9 +30,7 @@ def saveToConfig(): # To save settings to a config file
     pass
 
 def rangeToList(range1,range2): # To take 2 points of a range and create a list going from one to the other
-    print("This is not running")
-    print(range1)
-    print(range2)
+    global currentList
     if range1 == "" or range2 =="" or len(range1) != len(range2): # error out of function if one or both range values are empty or they don't match length
         return -1
     rangePrefix1 = ""
@@ -71,15 +72,20 @@ def rangeToList(range1,range2): # To take 2 points of a range and create a list 
         return
     else:
             lead_zeros = len(rangeEnd)
-            prefixed = str(rangePrefix1).upper()
-            suffixed = str(rangeSuffix1).upper()
+            if settings.is_on == True:
+                prefixed = str(rangePrefix1).upper()
+                suffixed = str(rangeSuffix1).upper()
+                pass
+            else:
+                prefixed = str(rangePrefix1)
+                suffixed = str(rangeSuffix1)
             newlist = ""
             for x in range(int(rangeStart), int(rangeEnd)+1):
                 y = str(x).zfill(lead_zeros)
-                newlist += prefixed + y + suffixed
+                newlist += prefixed + y + suffixed + "\n"
             addToList(newlist)
-            print(newlist)
             clearInputs()
+
     return
 
 def idleTimer(): # Probably redundant, used to return to the main screen after a timeout event
