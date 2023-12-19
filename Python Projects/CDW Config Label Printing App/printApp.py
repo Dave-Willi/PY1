@@ -216,6 +216,15 @@ def set_tag(): # Change between asset tag and serial number. Sets colour of entr
         serial_radio3.configure(state=NORMAL)
         serial_radio2a.configure(state=NORMAL)
         serial_radio3a.configure(state=NORMAL)
+    elif cfg.tag_select.get() == 2:
+        cfg.asset_type.set("MAC Address :")
+        frame2.tab(2, state="disabled")
+        frame2.tab(3, state="disabled")
+        bg_col = "#efe"
+        serial_radio2.configure(state=NORMAL)
+        serial_radio3.configure(state=NORMAL)
+        serial_radio2a.configure(state=NORMAL)
+        serial_radio3a.configure(state=NORMAL)
     try: # Disables printer selections based on config setting
         single_entry.config(bg=bg_col)
         group_entry.config(bg=bg_col)
@@ -1400,7 +1409,7 @@ class btn_bcu(tk.Tk): # special class just for BCU labels
             enter_print = tk.Button(master=enter_frame1,
                                     text="Print",
                                     command=an_print)
-            enter_print.grid(row=11, column=0, columnspan=2)
+            enter_print.grid(row=12, column=0, columnspan=2)
 
         try:
             for widget in root.winfo_children():
@@ -1579,15 +1588,22 @@ set_serial_button = tk.Radiobutton(master=frame1,
                     command=set_tag)
 set_serial_button.grid(row=10, sticky=W, column=0, columnspan=2)
 
-# row=11 reserved for dev reset button
+set_mac_button = tk.Radiobutton(master=frame1,
+                    text="MAC Address",
+                    variable=cfg.tag_select,
+                    value=2,
+                    command=set_tag)
+set_mac_button.grid(row=11, sticky=W, column=0, columnspan=2)
 
-# row=12 reserved for current version number
+# row=12 reserved for dev reset button
+
+# row=13 reserved for current version number
 
 exit_button = tk.Button(master=frame1,
                     text="Quit",
                     command=quit,
                     width=12)
-exit_button.grid(row=13, sticky=EW, column=0, columnspan=2)
+exit_button.grid(row=14, sticky=EW, column=0, columnspan=2)
 
 # ==========================================
 # =========== Singles Tab (tab1) ===========
@@ -2032,7 +2048,7 @@ if flag_2a == "homebuild":
                         text="Restart App",
                         command=reset,
                         width=12)
-    reset_button.grid(row=11, sticky=EW, column=0, columnspan=2)
+    reset_button.grid(row=12, sticky=EW, column=0, columnspan=2)
 
     test_print_button = tk.Radiobutton(master=frame1,
                         text="Test Printer",
@@ -2046,9 +2062,9 @@ if flag_2a == "homebuild":
 # ==========================================
 
 version_label = tk.Label(master=frame1,
-                            text="Version 1.2.2",
+                            text="Version 1.2.3",
                             font=("courier new", 10))
-version_label.grid(row=12, sticky=EW, column=0, columnspan=2)
+version_label.grid(row=13, sticky=EW, column=0, columnspan=2)
 
 # ==========================================
 # ========= Start up the routine ===========
