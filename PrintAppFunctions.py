@@ -94,5 +94,17 @@ def idleTimer(): # Probably redundant, used to return to the main screen after a
 def clearInputs(): # To clear temporary inputs but NOT active list
     pass
 
+def backBtn(): # To return to home screen
+    pass
+
+def helpBtn():
+    pass
+
+def historyBtn():
+    pass
+
+def settingsBtn():
+    pass
+
 # if __name__ == '__main__':
 #     main()
