@@ -7,9 +7,10 @@ import settings
 def main():
     pass
 
-def screenSwap(screenOn): # To swap between the various screens within the application.
-    # settings.currentlist = screenOn
-    pass
+def screenSwap(self, screenOn): # To swap between the various screens within the application.
+    settings.currentList = screenOn
+    frame = self.frames[screenOn]
+    frame.tkraise()
 
 def addToList(itemsForList): # To add labels to the currently active list
     settings.currentList.set(itemsForList)

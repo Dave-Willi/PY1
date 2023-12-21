@@ -6,18 +6,13 @@
 # Pillow
 # qrcode https://pypi.org/project/qrcode/
 
-
 ###################
 # List of imports #
 ###################
 
 import tkinter as tk
-import tkinter.ttk as ttk
 import tkinter.scrolledtext as tkscrolled
-from tkinter import PhotoImage, ttk, Frame
 from PIL import Image, ImageTk
-
-
 
 ########################
 # Initialising Program #
@@ -43,11 +38,12 @@ root.geometry('%dx%d+%d+%d' % (appWidth, appHeight, x, y))
 root.resizable(False,False) # Disable resizing of window
 root.columnconfigure(0, weight = 1)
 root.rowconfigure(0, weight = 1)
+
 #############################
 # Import additional scripts #
 #############################
 
-import PrintAppFunctions
+# import PrintAppFunctions
 from PrintAppFunctions import rangeToList, screenSwap, backBtn, helpBtn, historyBtn, settingsBtn, addToList, printerSelect, printList, clearVars, clearInputs, idleTimer
 import settings
 currentPage = settings.currentPage
@@ -58,10 +54,19 @@ tagQty = tk.StringVar(None,0)
 # Create styles #
 #################
 
-style = ttk.Style()
-style.configure('W.TButton', font = ('calibri', 10, 'bold'),
-                foreground = 'black', background = 'green', relief = 'flat')
+### Set standardised colours to use throughout
+backgroundColor = "#001F3F" # A dark blue
+controlsColor = "#083358"   # A less dark blue
+fontColor = "#9DB2BF"       # A light gray with a tint of blue
+specialColor = "#FFD717"    # Bright yellow
 
+### Standard button style
+# [buttonName] = tk.Button(LeftControlFrame, text = "buttonText", width = 15
+#                                ,command = [buttonCommand]
+#                                ,bg = controlsColor
+#                                ,fg = specialColor
+#                                ,relief = "flat")
+# [buttonName].grid(row = y, column = x, padx = 15, pady = 10)
 
 ##########################
 # Assign frames to pages #
@@ -82,23 +87,40 @@ style.configure('W.TButton', font = ('calibri', 10, 'bold'),
 #   Fonts/foreground = #9DB2BF
 #   Special Highlights = #FFD717
 
-backgroundColor = "#001F3F"
-controlsColor = "#083358"
-fontColor = "#9DB2BF"
-specialColor = "#FFD717"
-
+# Primary container splits between Titlebar and lower
 PrimaryContainer = tk.Frame(root, bg = backgroundColor)
 PrimaryContainer.columnconfigure(0, weight = 1)
 PrimaryContainer.rowconfigure(0, weight = 0)
 PrimaryContainer.rowconfigure(1, weight = 1)
 PrimaryContainer.grid(row = 0, column = 0, sticky = "nsew")
 
+# Frame injected to split up Titlebar into 3
 TitleFrame = tk.Frame(PrimaryContainer, bg = controlsColor)
 TitleFrame.grid(row = 0, column = 0, sticky = "nsew")
 TitleFrame.columnconfigure(0, weight = 1)
 TitleFrame.columnconfigure(2, weight = 1, minsize = 144)
 TitleFrame.columnconfigure(1, weight = 8)
 
+# Frame to split lower section into two, the main space and the space for the control sidebar
+PageFrame = tk.Frame(PrimaryContainer, bg = backgroundColor)
+PageFrame.rowconfigure(0, weight = 1)
+PageFrame.columnconfigure(0, weight = 1)
+PageFrame.columnconfigure(1, weight = 10)
+PageFrame.grid(row = 1, column = 0, sticky = "nsew")
+
+# Frame for the controls sidebar
+LeftControlFrame = tk.Frame(PageFrame, bg = backgroundColor)
+LeftControlFrame.grid(row = 0, column = 0, sticky = "nsw")
+
+# Container Frame for the pages
+PageControlFrame = tk.Frame(PageFrame, bg = backgroundColor)
+PageControlFrame.grid(row = 0, column = 1)
+
+#########################
+# Add content to frames #
+#########################
+
+# Image and text for titlebar
 TitleContentImage0 = Image.open('CDW.PNG')
 TitleContentImage1 = ImageTk.PhotoImage(TitleContentImage0.resize((144,80)))
 TitleImageWidth, TitleImageHeight = TitleContentImage1.width(), TitleContentImage1.height()
@@ -109,23 +131,10 @@ TitleContentLabel0.create_image(0, 0, image = TitleContentImage1, anchor = tk.NW
 TitleContentLabel1 = tk.Label(TitleFrame, text = "NDC Config Label Printer", bg = controlsColor, fg = specialColor, font = 'verdana 32 bold')
 TitleContentLabel1.grid(row = 0, column = 1, sticky = "ew")
 
-
-
-PageFrame = tk.Frame(PrimaryContainer, bg = backgroundColor)
-PageFrame.rowconfigure(0, weight = 1)
-PageFrame.columnconfigure(0, weight = 1)
-PageFrame.columnconfigure(1, weight = 10)
-PageFrame.grid(row = 1, column = 0, sticky = "nsew")
-
-TitleContentLabel2 = tk.Label(PageFrame, text = "Tulips are for kissing", bg = backgroundColor, fg = fontColor)
-TitleContentLabel2.grid(row = 0, columnspan = 2, sticky = "ew")
-
-LeftControlFrame = tk.Frame(PageFrame, bg = backgroundColor)
-LeftControlFrame.grid(row = 0, column = 0, sticky = "nsw")
-
+# Controls for lefthand sidebar
 LeftControlBackBtn = tk.Button(LeftControlFrame, text = "Back", width = 15
                             #    ,command = backBtn()
-                               ,command = root.destroy
+                               ,command = root.destroy # temp command until genuine command is ready
                                ,bg = controlsColor
                                ,fg = specialColor
                                ,relief = "flat")
@@ -152,8 +161,95 @@ LeftControlSettingsBtn = tk.Button(LeftControlFrame, text = "Settings", width = 
                                ,relief = "flat")
 LeftControlSettingsBtn.grid(row = 14, column = 0, padx = 15, pady = 5)
 
-# Pagelabel = tk.Label(PageFrame, text = "Tulips are for kissing", bg = "#27374D", fg = "gray90")
-# Pagelabel.grid(row = 0, column = 0, sticky = "ew")
+# PageContentLabel2 = tk.Label(PageFrame, text = "Tulips are for kissing", bg = backgroundColor, fg = fontColor)
+# PageContentLabel2.grid(row = 0, columnspan = 2, sticky = "ew")
+
+class HomePage(tk.Frame):
+    def __init__(self, PageControlFrame, controller):
+        tk.Frame.__init__(self, PageControlFrame)
+
+        # label of frame Layout 2
+        label = tk.Label(self, text ="Startpage")
+         
+        # putting the grid in its place by using
+        # grid
+        label.grid(row = 0, column = 4, padx = 10, pady = 10) 
+  
+        button1 = tk.Button(self, text ="Page 1",
+        command = lambda : controller.show_frame(BarcodesPage))
+     
+        # putting the button in its place by
+        # using grid
+        button1.grid(row = 1, column = 1, padx = 10, pady = 10)
+  
+        ## button to show frame 2 with text layout2
+        button2 = tk.Button(self, text ="Page 2",
+        command = lambda : controller.show_frame(QRCodesPage))
+     
+        # putting the button in its place by
+        # using grid
+        button2.grid(row = 2, column = 1, padx = 10, pady = 10)
+
+class BarcodesPage(tk.Frame):
+     
+    def __init__(self, PageControlFrame, controller):
+         
+        tk.Frame.__init__(self, PageControlFrame)
+        label = tk.Label(self, text ="Page 1")
+        label.grid(row = 0, column = 4, padx = 10, pady = 10)
+  
+        # button to show frame 2 with text
+        # layout2
+        button1 = tk.Button(self, text ="StartPage",
+                            command = lambda : controller.show_frame(HomePage))
+     
+        # putting the button in its place 
+        # by using grid
+        button1.grid(row = 1, column = 1, padx = 10, pady = 10)
+  
+        # button to show frame 2 with text
+        # layout2
+        button2 = tk.Button(self, text ="Page 2",
+                            command = lambda : controller.show_frame(QRCodesPage))
+     
+        # putting the button in its place by 
+        # using grid
+        button2.grid(row = 2, column = 1, padx = 10, pady = 10)
+
+class QRCodesPage(tk.Frame): 
+    def __init__(self, PageControlFrame, controller):
+        tk.Frame.__init__(self, PageControlFrame)
+        label = tk.Label(self, text ="Page 2")
+        label.grid(row = 0, column = 4, padx = 10, pady = 10)
+  
+        # button to show frame 2 with text
+        # layout2
+        button1 = tk.Button(self, text ="Page 1",
+                            command = lambda : controller.show_frame(BarcodesPage))
+     
+        # putting the button in its place by 
+        # using grid
+        button1.grid(row = 1, column = 1, padx = 10, pady = 10)
+  
+        # button to show frame 3 with text
+        # layout3
+        button2 = tk.Button(self, text ="Startpage",
+                            command = lambda : controller.show_frame(HomePage))
+     
+        # putting the button in its place by
+        # using grid
+        button2.grid(row = 2, column = 1, padx = 10, pady = 10)
+
+
+
+
+
+
+
+
+
+
+
 """
 
 ###############
