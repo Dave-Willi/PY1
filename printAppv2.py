@@ -11,7 +11,7 @@
 ###################
 
 import tkinter as tk
-from tkinter import ttk
+from tkinter import PhotoImage, ttk
 import tkinter.font as tkFont
 import tkinter.scrolledtext as tkscrolled
 from PIL import Image, ImageTk
@@ -55,6 +55,7 @@ class printApp(tk.Tk):
         ### Font styles
         self.option_add("*Font", "aerial")
         fontHeaderH1 = tkFont.Font(size=28)
+        fontLabelH1 = tkFont.Font(size=16, weight='normal')
 
         # Get screen resolution
         ws = self.winfo_screenwidth()
@@ -71,7 +72,7 @@ class printApp(tk.Tk):
         self.rowconfigure(0, weight = 1)
         self.configure(bg = backgroundColor)
 
-        from PrintAppFunctions import rangeToList, backBtn, helpBtn, historyBtn, settingsBtn, addToList, printerSelect, printList, clearVars, clearInputs, idleTimer
+        from PrintAppFunctions import rangeToList, addToList, printerSelect, printList, clearVars, clearInputs, idleTimer
         import settings
 
         ### Primary frame / grid ###
@@ -88,6 +89,21 @@ class printApp(tk.Tk):
         #   Control colours = #083358
         #   Fonts/foreground = #9DB2BF
         #   Special Highlights = #FFD717
+
+        ### List of frames
+        # PrimaryContainer - Division between TitleBar and Main window content. Will hold only additional frames
+        # TitleFrame - 3 column frame to split up the titlebar between the logo and title text with space for future addition in corner
+        # PageFrame - Splits lower section, beneath titlebar, into 2 columns. Left one is intended for static left side controls which will be housed in another frame
+        # LeftControlFrame - Frame for static controls on left of app. Lots of room for additions. Currently holds 4 navigation buttons and program version
+        ### Further frames are switched between like pages | command = "lambda:PAGENAME.tkraise()"
+        # HomePage - Opening page. Should default to this page on opening and when left idle. Offers navigation to label types for printing
+        # BarcodesPage - Navigated to from HomePage | Offers options to print labels which are barcode based.
+        # QRcodePage - Navigated to from HomePage | Offers options to print labels which are QR Code based.
+        # plainPage - Navigated to from HomePage | Offers options to print labels which are plain text only.
+        # customerPage - Navigated to from HomePage | Offers options to print labels which are customer specific. Many of these may require an additional page creating for them.
+        # helpPage - Navigated to from Sidebar | Gives generalised or specific context help. Unsure of exact use as yet. May go with general as context help can be handled via 'tooltips'
+        # historyPage - Navigated to from Sidebar | Shows labels that have previously been printed. Will be basic to begin with, may add additional information to the history with time, such as who printed it and when
+        # settingsPage - Navigated to from Sidebar | Settings page, will include such things as printer selection positioning adjustment. Can be locked behind a password
 
         # Primary container splits between Titlebar and lower
         PrimaryContainer = tk.Frame(self, bg = backgroundColor)
@@ -121,8 +137,9 @@ class printApp(tk.Tk):
         HomePage.grid(row=0, column=1, sticky="nsew")
 
         BarcodesPage = tk.Frame(PageFrame, bg=backgroundColor)
-        BarcodesPage.columnconfigure((0,1,2,3,4), weight=1)
-        BarcodesPage.rowconfigure((0,1,2,3,4,5), weight=1)
+        BarcodesPage.columnconfigure((0,1,2,3,4,5), weight=1)
+        BarcodesPage.columnconfigure((4), weight=0)
+        BarcodesPage.rowconfigure((0,1,2,3,4,5,6,7,8,9,10), weight=1)
         BarcodesPage.grid(row=0, column=1, sticky="nsew")
 
         QRcodePage = tk.Frame(PageFrame, bg=backgroundColor)
@@ -151,7 +168,30 @@ class printApp(tk.Tk):
         settingsPage.rowconfigure((0,1,20,21,22), weight=1)
         settingsPage.grid(row=0, column=1, sticky="nsew")
         
-        HomePage.tkraise()
+        HomePage.tkraise() # Start with the HomePage
+
+        ### Add caplock control commands and images
+
+        def upperswitch():
+            # Determine is on or off
+            if settings.is_on:
+                upperCaseBarcodedBtn.config(image = upperOff)
+                settings.is_on = False
+            else:
+                upperCaseBarcodedBtn.config(image = upperOn)
+                settings.is_on = True
+
+        upperOnIMG = Image.open('Images/on.png')
+        upperOffIMG = Image.open('Images/off.png')
+        upperOn = ImageTk.PhotoImage(upperOnIMG)
+        upperOff = ImageTk.PhotoImage(upperOffIMG)
+
+        def Return(event):
+            if event == "singleBarcode":
+                print("barcode pass through " + addTagsBarcodeEntry.get())
+                addedTagsBarcodedList.insert(tk.END, addTagsBarcodeEntry.get())
+
+
 
         #########################
         # Add content to frames #
@@ -159,7 +199,7 @@ class printApp(tk.Tk):
 
         # Image and text for titlebar
         try:
-            TitleCompanyImage0 = Image.open('CDW.PNG')
+            TitleCompanyImage0 = Image.open('Images\CDW.PNG')
             TitleCompanyImage1 = ImageTk.PhotoImage(TitleCompanyImage0.resize((144,80)))
             TitleImageWidth, TitleImageHeight = TitleCompanyImage1.width(), TitleCompanyImage1.height()
             TitleContentLabel0 = tk.Label(TitleFrame, image=TitleCompanyImage1,bg = controlsColor, width = TitleImageWidth, height = TitleImageHeight, bd = 0, highlightthickness = 0)
@@ -167,7 +207,7 @@ class printApp(tk.Tk):
             TitleContentLabel0.image = TitleCompanyImage1
         except:
             TitleCompanyLabel = tk.Label(TitleFrame, text="CDW", bg = backgroundColor, fg = "red", font=('aerial 48 bold'))
-            TitleCompanyLabel.grid(row = 0, column = 0, sticky = "ew", padx = 15, pady = 10)
+            TitleCompanyLabel.grid(row = 0, column = 0, sticky = "ew", padx = (0,TitleImageWidth), pady = 10)
 
         TitleContentLabel1 = tk.Label(TitleFrame, text = "NDC Config Label Printing", bg = controlsColor, fg = specialColor, font = ('verdana 24 bold'))
         TitleContentLabel1.grid(row = 0, column = 1, sticky = "ew")
@@ -205,19 +245,214 @@ class printApp(tk.Tk):
         VersionLabel = tk.Label(LeftControlFrame, textvariable=varappversion, bg = backgroundColor, fg = fontColor)
         VersionLabel.grid(row=15, column=0)
 
-        # Home page
-        barcodePageBtn = tk.Button(HomePage, command = lambda:BarcodesPage.tkraise(), text = "Barcodes")
-        barcodePageBtn.grid(row = 0, column = 0)
-        QRcodePageBtn = tk.Button(HomePage, command = lambda:QRcodePage.tkraise(), text = "QR Codes")
-        QRcodePageBtn.grid(row = 0, column = 1)
-        plainPageBtn = tk.Button(HomePage, command = lambda:plainPage.tkraise(), text = "Plain")
-        plainPageBtn.grid(row = 1, column = 0)
-        customerPageBtn = tk.Button(HomePage, command = lambda:customerPage.tkraise(), text = "Customer")
-        customerPageBtn.grid(row = 1, column = 1)
+        ### Home page ###
 
-        # Barcode page
-        tk.Label(BarcodesPage, text="Barcoded Tags", bg=backgroundColor, fg=fontColor, font=fontHeaderH1).grid(row=0, columnspan=5, sticky="ew")
+        # Images
+        BarcodedLabelsPageImg = PhotoImage(file = "Images/BarcodedLabelsPageImg.PNG")
+        BarcodedLabelsPageImg.image = BarcodedLabelsPageImg
+        QRCodedLabelsPageImg = PhotoImage(file = "Images/QRCodedLabelsPageImg.PNG")
+        QRCodedLabelsPageImg.image = QRCodedLabelsPageImg
+        PlainTextLabelsPageImg = PhotoImage(file = "Images/PlainTextLabelsPageImg.PNG")
+        PlainTextLabelsPageImg.image = PlainTextLabelsPageImg
+        customerLabelsPageImg = PhotoImage(file = "Images/PlainTextLabelsPageImg.PNG")
+        customerLabelsPageImg.image = customerLabelsPageImg
+        
+        # Buttons
+        barcodePageBtn = tk.Button(HomePage, 
+                                   command = lambda:BarcodesPage.tkraise(), 
+                                   text = "Barcoded Labels ", 
+                                   image = BarcodedLabelsPageImg, 
+                                   compound="top", 
+                                   bg=backgroundColor, 
+                                   fg=fontColor,
+                                   relief="flat", 
+                                   activebackground=controlsColor, 
+                                   activeforeground=specialColor,
+                                   font=fontLabelH1)
+        barcodePageBtn.grid(row = 1, column = 1)
 
+        QRcodePageBtn = tk.Button(HomePage, 
+                                  command = lambda:QRcodePage.tkraise(), 
+                                  text = "QR coded Labels ", 
+                                  image = QRCodedLabelsPageImg, 
+                                  compound="top", 
+                                  bg=backgroundColor, 
+                                  fg=fontColor,
+                                  relief="flat", 
+                                  activebackground=controlsColor, 
+                                  activeforeground=specialColor,
+                                  font=fontLabelH1)
+        QRcodePageBtn.grid(row = 1, column = 2)
+
+        plainPageBtn = tk.Button(HomePage, 
+                                 command = lambda:plainPage.tkraise(), 
+                                 text = "Plain Text Labels ", 
+                                 image = PlainTextLabelsPageImg, 
+                                 compound="top", 
+                                 bg=backgroundColor, 
+                                 fg=fontColor,
+                                 relief="flat", 
+                                 activebackground=controlsColor, 
+                                 activeforeground=specialColor,
+                                 font=fontLabelH1)
+        plainPageBtn.grid(row = 2, column = 1)
+
+        customerPageBtn = tk.Button(HomePage, 
+                                    command = lambda:customerPage.tkraise(), 
+                                    text = "Customer Labels ", 
+                                    image = customerLabelsPageImg, 
+                                    compound="top", 
+                                    bg=backgroundColor, 
+                                    fg=fontColor,
+                                    relief="flat", 
+                                    activebackground=controlsColor, 
+                                    activeforeground=specialColor,
+                                    font=fontLabelH1)
+        customerPageBtn.grid(row = 2, column = 2)
+
+        # Labels
+
+        tk.Label(HomePage,
+                                       text = "Select your label type",
+                                       font = fontHeaderH1,
+                                       bg = backgroundColor, 
+                                       fg = fontColor).grid(row=0, 
+                                                               columnspan=8,
+                                                               sticky="ew")
+
+        ### Barcode page ###
+
+        # Images
+        BarcodedLabelsPageImg_serial = PhotoImage(file = "Images/BarcodedLabelsPageImg_serial.PNG")
+        BarcodedLabelsPageImg_serial.image = BarcodedLabelsPageImg_serial
+        BarcodedLabelsPageImg_mac = PhotoImage(file = "Images/BarcodedLabelsPageImg_mac.PNG")
+        BarcodedLabelsPageImg_mac.image = BarcodedLabelsPageImg_mac
+        
+        # Labels
+        tk.Label(BarcodesPage,
+                 text="Barcoded Labels",
+                 bg=backgroundColor,
+                 fg=fontColor,
+                 font=fontHeaderH1).grid(row=0, 
+                                         columnspan=6, 
+                                         sticky="ew")
+        
+        tk.Label(BarcodesPage,
+                 text="Add range to tags",
+                 bg=backgroundColor,
+                 fg=fontColor).grid(row=1, column=5)
+        
+        tk.Label(BarcodesPage,
+                 text="Temp",
+                 bg=backgroundColor,
+                 fg=specialColor).grid(row=7, column=0)
+
+
+        # Buttons
+        BarcodeSelectionBtn = tk.Button(BarcodesPage,
+                    image=BarcodedLabelsPageImg, 
+                    text="Asset Tag", 
+                    compound="top", 
+                    bg=backgroundColor, 
+                    fg=fontColor,
+                    relief="flat", 
+                    activebackground=controlsColor, 
+                    activeforeground=specialColor,
+                    font=fontLabelH1)
+        BarcodeSelectionBtn.grid(row=2, column=2, rowspan=2, columnspan=2)
+        
+        SerialSelectionBtn = tk.Button(BarcodesPage,
+                    image=BarcodedLabelsPageImg_serial, 
+                    text="Serial Number",
+                    compound="top", 
+                    bg=backgroundColor, 
+                    fg=fontColor,
+                    relief="flat", 
+                    activebackground=controlsColor, 
+                    activeforeground=specialColor,
+                    font=fontLabelH1)
+        SerialSelectionBtn.grid(row=4, column=2, rowspan=2, columnspan=2)
+        
+        QRSelectionBtn = tk.Button(BarcodesPage,
+                    image=BarcodedLabelsPageImg_mac, 
+                    text="MAC Address",
+                    compound="top", 
+                    bg=backgroundColor, 
+                    fg=fontColor,
+                    relief="flat", 
+                    activebackground=controlsColor, 
+                    activeforeground=specialColor,
+                    font=fontLabelH1)
+        QRSelectionBtn.grid(row=6, column=2, rowspan=2, columnspan=2)
+
+        printBarcodedBtn = tk.Button(BarcodesPage,
+                    text="Print",
+                    bg=controlsColor, 
+                    fg=fontColor,
+                    relief="flat", 
+                    activebackground=controlsColor, 
+                    activeforeground=specialColor,
+                    font=fontLabelH1,
+                    width=15)
+        printBarcodedBtn.grid(row=8, column=2)
+
+        clearBarcodedBtn = tk.Button(BarcodesPage,
+                    text="Clear",
+                    bg=controlsColor, 
+                    fg=fontColor,
+                    relief="flat", 
+                    activebackground=controlsColor, 
+                    activeforeground=specialColor,
+                    font=fontLabelH1,
+                    width=15)
+        clearBarcodedBtn.grid(row=8, column=3)
+
+        addFileBarcodedBtn = tk.Button(BarcodesPage,
+                    text="Add from file",
+                    bg=controlsColor, 
+                    fg=fontColor,
+                    relief="flat", 
+                    activebackground=controlsColor, 
+                    activeforeground=specialColor,
+                    font=fontLabelH1,
+                    width=15)
+        addFileBarcodedBtn.grid(row=1, column=3)
+
+        addFileBarcodedBtn = tk.Button(BarcodesPage,
+                    text="Add range",
+                    bg=controlsColor, 
+                    fg=fontColor,
+                    relief="flat", 
+                    activebackground=controlsColor, 
+                    activeforeground=specialColor,
+                    font=fontLabelH1,
+                    width=15)
+        addFileBarcodedBtn.grid(row=4, column=5)
+
+        ttk.Separator(BarcodesPage, orient="vertical").grid(row=1, column=4, rowspan=7, sticky="ns")
+
+        # Entry boxes
+
+        addTagsBarcodeEntry = tk.Entry(BarcodesPage)
+        addTagsBarcodeEntry.grid(row=1, column=2)
+        addTagsBarcodeEntry.bind('<Return>', lambda x: Return("singleBarcode"))
+
+        addRangeBarcodeEntry1 = tk.Entry(BarcodesPage)
+        addRangeBarcodeEntry1.grid(row=2, column=5)
+
+        addRangeBarcodeEntry2 = tk.Entry(BarcodesPage)
+        addRangeBarcodeEntry2.grid(row=3, column=5)
+
+        # List box
+
+        addedTagsBarcodedList = tkscrolled.ScrolledText(BarcodesPage, width=20)
+        addedTagsBarcodedList.grid(row=1, column=0, rowspan=6, padx=(30,0), pady=(30,0), sticky="nsew")
+
+        # Capslock control
+        tk.Label(BarcodesPage, text="All Caps",bg=backgroundColor, fg=fontColor, font=("aerial 14 bold")).grid(row=8, column=0)
+        upperCaseBarcodedBtn = tk.Button(BarcodesPage, image=upperOn, bd=0, command=upperswitch, relief="flat")
+        upperCaseBarcodedBtn.grid(row=9, column=0)
+        tk.Label(BarcodesPage, text="All caps with show when\nlabels are printed.\nAffects BARCODES",bg=backgroundColor, fg=fontColor, font=("aerial 8 bold")).grid(row=10, column=0)
 
 if __name__ == "__main__":
     app = printApp()
