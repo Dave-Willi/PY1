@@ -11,10 +11,12 @@
 ###################
 
 import tkinter as tk
-from tkinter import PhotoImage, ttk
+from tkinter import PhotoImage, messagebox
+import tkinter.ttk as ttk
 import tkinter.font as tkFont
 import tkinter.scrolledtext as tkscrolled
 from PIL import Image, ImageTk
+import re
 
 #################
 # Create styles #
@@ -49,6 +51,7 @@ class printApp(tk.Tk):
         ################
 
         self.title("NDC Config Label Printing")
+        style = ttk.Style(self)
         appWidth = 1290 # App width in pixels
         appHeight = 860 # App height in pixels
 
@@ -72,8 +75,24 @@ class printApp(tk.Tk):
         self.rowconfigure(0, weight = 1)
         self.configure(bg = backgroundColor)
 
-        from PrintAppFunctions import rangeToList, addToList, printerSelect, printList, clearVars, clearInputs, idleTimer
+        style.configure('IndicatorOff.TRadiobutton',
+                        indicatorrelief=tk.FLAT,
+                        indicatormargin=-1,
+                        indicatordiameter=-1,
+                        relief=tk.RAISED,
+                        focusthickness=0, highlightthickness=0, padding=5)
+
+        ####################
+        # Create variables #
+        ####################
+
+        tagQty = tk.StringVar(None,"No tags")
+
         import settings
+
+        #################
+        # Create Frames #
+        #################
 
         ### Primary frame / grid ###
         # 2x rows
@@ -170,6 +189,10 @@ class printApp(tk.Tk):
         
         HomePage.tkraise() # Start with the HomePage
 
+        ###################
+        # Define commands #
+        ###################
+
         ### Add caplock control commands and images
 
         def upperswitch():
@@ -186,12 +209,99 @@ class printApp(tk.Tk):
         upperOn = ImageTk.PhotoImage(upperOnIMG)
         upperOff = ImageTk.PhotoImage(upperOffIMG)
 
-        def Return(event):
+        ### Return key definitions - each element is individually bound and passes an identifier
+
+        def ReturnKeyPress(event):
             if event == "singleBarcode":
-                print("barcode pass through " + addTagsBarcodeEntry.get())
-                addedTagsBarcodedList.insert(tk.END, addTagsBarcodeEntry.get())
+                if len(addTagsBarcodeEntry.get()) == 0:
+                    pass
+                else:
+                    addedTagsBarcodedList.insert(tk.END, addTagsBarcodeEntry.get()) # Add barcode
+                    addedTagsBarcodedList.insert(tk.END, "\n")                      # Add line break
+                    addTagsBarcodeEntry.delete(0, 'end')                            # Clear entrybox
+                    updateLabels()
+            elif event == "rangeBarcode1":
+                addRangeBarcodeEntry2.focus_set()
+            elif event == "rangeBarcode2":
+                addRangeBarcodeEntry1.focus_set()
+        
+        ### Page selection command - to include primary element to have focus
 
+        def pageSelect(selection):
+            if selection == BarcodesPage:
+                BarcodesPage.tkraise()
+                addTagsBarcodeEntry.focus_set()
 
+        ### Barcode Range creation command
+                
+        def rangeToList(range1,range2): # To take 2 points of a range and create a list going from one to the other
+            global currentList
+            if range1 == "" or range2 =="" or len(range1) != len(range2): # error out of function if one or both range values are empty or they don't match length
+                return -1
+            rangePrefix1 = ""
+            rangeStart = ""
+            rangeSuffix1 = "" 
+            rangePrefix2 = ""
+            rangeEnd = ""
+            rangeSuffix2 = ""
+            rangeSplit1 = re.split("(\d+)", range1)
+            rangeSplit2 = re.split("(\d+)", range2)
+            y = 0
+            z = 0
+            for x in rangeSplit1: #cycles through however many splits exist in the first split
+                if rangeSplit1[y] != rangeSplit2[y]:
+                    z = y + 1
+                    rangeStart = min(rangeSplit1[y],rangeSplit2[y]) # sets the lowest number entered into the start
+                    rangeEnd = max(rangeSplit2[y],rangeSplit1[y]) # sets the highest number entered into the end
+                    for x in rangeSplit1[z:]:
+                        try:
+                            if rangeSplit1[z] == rangeSplit2[z]:
+                                rangeSuffix1 += x
+                                rangeSuffix2 += x
+                                z+=1
+                            else:
+                                messagebox.showerror("Error", "Problem determining the suffix")
+                                return
+                        except:
+                            break
+                    break
+                elif rangeSplit1[y] == rangeSplit2[y]:
+                    rangePrefix1 += x
+                    rangePrefix2 += x
+                y+=1
+            if rangePrefix1 != rangePrefix2:
+                messagebox.showerror("Error", "Error detected in the prefix. \nPlease check and try again")
+                return
+            elif rangeSuffix1 != rangeSuffix2:
+                messagebox.showerror("Error", "Error detected in the suffix. \nPlease check and try again")
+                return
+            else:
+                    lead_zeros = len(rangeEnd)
+                    prefixed = str(rangePrefix1)
+                    suffixed = str(rangeSuffix1)
+                    newlist = ""
+                    for x in range(int(rangeStart), int(rangeEnd)+1):
+                        y = str(x).zfill(lead_zeros)
+                        newlist += prefixed + y + suffixed + "\n"
+                    addToList(newlist)
+                    addRangeBarcodeEntry1.delete(0, 'end')
+                    addRangeBarcodeEntry2.delete(0, 'end')
+
+            return
+        
+        def addToList(itemsForList): # To add labels to the currently active list
+            settings.currentList.set(itemsForList)
+
+        ### Tag number counter update command
+            
+        def updateLabels(*event): # Adds range to list and updates tag count
+            addedTagsBarcodedList.insert(tk.END, settings.currentList.get())    # Add current range to list
+            settings.currentList.set('')                            # clears stored list from variables
+            counter = 0
+            for x in (addedTagsBarcodedList.get('1.0', tk.END).split('\n')):    # split the list into lines
+                if x:                                               # only count lines with something in them
+                    counter += 1
+            tagQty.set("Number of tags: " + str(counter))
 
         #########################
         # Add content to frames #
@@ -259,7 +369,7 @@ class printApp(tk.Tk):
         
         # Buttons
         barcodePageBtn = tk.Button(HomePage, 
-                                   command = lambda:BarcodesPage.tkraise(), 
+                                   command = lambda:pageSelect(BarcodesPage), 
                                    text = "Barcoded Labels ", 
                                    image = BarcodedLabelsPageImg, 
                                    compound="top", 
@@ -343,13 +453,13 @@ class printApp(tk.Tk):
                  fg=fontColor).grid(row=1, column=5)
         
         tk.Label(BarcodesPage,
-                 text="Temp",
+                 textvariable=tagQty,
                  bg=backgroundColor,
                  fg=specialColor).grid(row=7, column=0)
 
 
         # Buttons
-        BarcodeSelectionBtn = tk.Button(BarcodesPage,
+        BarcodeSelectionBtn = tk.Radiobutton(BarcodesPage,
                     image=BarcodedLabelsPageImg, 
                     text="Asset Tag", 
                     compound="top", 
@@ -361,7 +471,7 @@ class printApp(tk.Tk):
                     font=fontLabelH1)
         BarcodeSelectionBtn.grid(row=2, column=2, rowspan=2, columnspan=2)
         
-        SerialSelectionBtn = tk.Button(BarcodesPage,
+        SerialSelectionBtn = tk.Radiobutton(BarcodesPage,
                     image=BarcodedLabelsPageImg_serial, 
                     text="Serial Number",
                     compound="top", 
@@ -370,10 +480,10 @@ class printApp(tk.Tk):
                     relief="flat", 
                     activebackground=controlsColor, 
                     activeforeground=specialColor,
-                    font=fontLabelH1)
+                    font=fontLabelH1,)
         SerialSelectionBtn.grid(row=4, column=2, rowspan=2, columnspan=2)
         
-        QRSelectionBtn = tk.Button(BarcodesPage,
+        QRSelectionBtn = tk.Radiobutton(BarcodesPage,
                     image=BarcodedLabelsPageImg_mac, 
                     text="MAC Address",
                     compound="top", 
@@ -404,7 +514,8 @@ class printApp(tk.Tk):
                     activebackground=controlsColor, 
                     activeforeground=specialColor,
                     font=fontLabelH1,
-                    width=15)
+                    width=15,
+                    command= lambda: updateLabels())
         clearBarcodedBtn.grid(row=8, column=3)
 
         addFileBarcodedBtn = tk.Button(BarcodesPage,
@@ -426,7 +537,8 @@ class printApp(tk.Tk):
                     activebackground=controlsColor, 
                     activeforeground=specialColor,
                     font=fontLabelH1,
-                    width=15)
+                    width=15,
+                    command = lambda: [rangeToList(addRangeBarcodeEntry1.get(),addRangeBarcodeEntry2.get()),updateLabels()])
         addFileBarcodedBtn.grid(row=4, column=5)
 
         ttk.Separator(BarcodesPage, orient="vertical").grid(row=1, column=4, rowspan=7, sticky="ns")
@@ -435,18 +547,21 @@ class printApp(tk.Tk):
 
         addTagsBarcodeEntry = tk.Entry(BarcodesPage)
         addTagsBarcodeEntry.grid(row=1, column=2)
-        addTagsBarcodeEntry.bind('<Return>', lambda x: Return("singleBarcode"))
+        addTagsBarcodeEntry.bind('<Return>', lambda x: ReturnKeyPress("singleBarcode"))
 
         addRangeBarcodeEntry1 = tk.Entry(BarcodesPage)
         addRangeBarcodeEntry1.grid(row=2, column=5)
+        addRangeBarcodeEntry1.bind('<Return>', lambda x: ReturnKeyPress("rangeBarcode1"))
 
         addRangeBarcodeEntry2 = tk.Entry(BarcodesPage)
         addRangeBarcodeEntry2.grid(row=3, column=5)
+        addRangeBarcodeEntry2.bind('<Return>', lambda x: ReturnKeyPress("rangeBarcode2"))
 
         # List box
 
         addedTagsBarcodedList = tkscrolled.ScrolledText(BarcodesPage, width=20)
         addedTagsBarcodedList.grid(row=1, column=0, rowspan=6, padx=(30,0), pady=(30,0), sticky="nsew")
+        addedTagsBarcodedList.bind('<Key>', updateLabels)
 
         # Capslock control
         tk.Label(BarcodesPage, text="All Caps",bg=backgroundColor, fg=fontColor, font=("aerial 14 bold")).grid(row=8, column=0)
