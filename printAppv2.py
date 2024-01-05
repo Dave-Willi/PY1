@@ -11,12 +11,14 @@
 ###################
 
 import tkinter as tk
-from tkinter import PhotoImage, messagebox
+from tkinter import PhotoImage, messagebox, filedialog
 import tkinter.ttk as ttk
 import tkinter.font as tkFont
 import tkinter.scrolledtext as tkscrolled
 from PIL import Image, ImageTk
 import re
+import docx2txt
+import xlrd
 
 #################
 # Create styles #
@@ -90,6 +92,7 @@ class printApp(tk.Tk):
         tagQty = tk.StringVar(None,"No tags")
         varBarcodeSelection = tk.StringVar(None,"Asset Tag")
         import settings
+        self.keep = []
 
         #################
         # Create Frames #
@@ -208,7 +211,9 @@ class printApp(tk.Tk):
         upperOnIMG = Image.open('Images/on.png')
         upperOffIMG = Image.open('Images/off.png')
         upperOn = ImageTk.PhotoImage(upperOnIMG)
+        self.keep.append(upperOn)
         upperOff = ImageTk.PhotoImage(upperOffIMG)
+        self.keep.append(upperOff)
 
         ### Return key definitions - each element is individually bound and passes an identifier
 
@@ -306,11 +311,15 @@ class printApp(tk.Tk):
                     counter += 1
             tagQty.set("Number of tags: " + str(counter))
 
+        ### Changes selection of barcode type
+
         def barcodeLabelSelection(choice):
             choice.config(fg=specialColor)
             for x in barcodeRadioButtons:
                 if x != choice:
                     x.config(fg=fontColor)
+
+        ### Various commands to clear various sections
 
         def clearBarcodesPage():
             barcodeLabelSelection(BarcodeAssetSelectionBtn)
@@ -328,6 +337,50 @@ class printApp(tk.Tk):
             clearQRcodePage()
             clearPlainTextPage()
 
+        ### File open dialog
+            
+        def fileOpener(location):
+            pre_file_content = ""
+            file_content = ""
+            file_path = filedialog.askopenfilename()
+            if file_path.endswith('.docx'):
+                file_content = docx2txt.process(file_path)
+            elif file_path.endswith('.doc'): ### still to do
+                print("Document")
+            elif file_path.endswith('.xlsx'):
+                pre_file_content = xlrd.open_workbook(file_path)
+                new_pre_file_content = pre_file_content.sheet_by_index(0)
+                for rownum in range(new_pre_file_content.nrows):
+                    for colnum in range(new_pre_file_content.ncols):
+                        file_content += new_pre_file_content.cell_value(rownum, colnum)
+                        file_content = file_content + '\n'
+            elif file_path.endswith('.csv'):
+                pre_file_content = open(file_path, "r")
+                file_content = pre_file_content.read().replace(',','\n')
+            elif file_path.endswith('.txt'):
+                pre_file_content = open(file_path, "r")
+                file_content = pre_file_content.read()
+            elif file_path.endswith('.pdf'): ### still to do
+                print("Acrobat file")
+            else:
+                print("text file?")
+            if file_content == "":
+                print("empty")
+            elif location == "barcode":
+                file_content = file_content + '\n'
+                addedTagsBarcodedList.insert(tk.END, file_content)
+                updateLabels()
+            elif location == "plainText":
+                pass
+            pre_file_content = ""
+            file_content = ""
+
+        ### File open handler
+
+        # def WordFileOpenHandler(filing):
+        #     returnFile = docx2txt.process(filing)
+        #     return(returnFile)
+
         #########################
         # Add content to frames #
         #########################
@@ -340,6 +393,7 @@ class printApp(tk.Tk):
             TitleContentLabel0 = tk.Label(TitleFrame, image=TitleCompanyImage1,bg = controlsColor, width = TitleImageWidth, height = TitleImageHeight, bd = 0, highlightthickness = 0)
             TitleContentLabel0.grid(row = 0, column = 0, sticky = "ew", padx = 0, pady = 10)
             TitleContentLabel0.image = TitleCompanyImage1
+            self.keep.append(TitleCompanyImage1)
         except:
             TitleCompanyLabel = tk.Label(TitleFrame, text="CDW", bg = backgroundColor, fg = "red", font=('aerial 48 bold'))
             TitleCompanyLabel.grid(row = 0, column = 0, sticky = "ew", padx = (0,TitleImageWidth), pady = 10)
@@ -384,12 +438,17 @@ class printApp(tk.Tk):
         # Images
         BarcodedLabelsPageImg = PhotoImage(file = "Images/BarcodedLabelsPageImg.PNG")
         BarcodedLabelsPageImg.image = BarcodedLabelsPageImg
+        self.keep.append(BarcodedLabelsPageImg)
         QRCodedLabelsPageImg = PhotoImage(file = "Images/QRCodedLabelsPageImg.PNG")
         QRCodedLabelsPageImg.image = QRCodedLabelsPageImg
+        self.keep.append(QRCodedLabelsPageImg)
         PlainTextLabelsPageImg = PhotoImage(file = "Images/PlainTextLabelsPageImg.PNG")
         PlainTextLabelsPageImg.image = PlainTextLabelsPageImg
+        self.keep.append(PlainTextLabelsPageImg)
         customerLabelsPageImg = PhotoImage(file = "Images/PlainTextLabelsPageImg.PNG")
         customerLabelsPageImg.image = customerLabelsPageImg
+        self.keep.append(customerLabelsPageImg)
+        
         
         # Buttons
         barcodePageBtn = tk.Button(HomePage, 
@@ -459,8 +518,10 @@ class printApp(tk.Tk):
         # Images
         BarcodedLabelsPageImg_serial = PhotoImage(file = "Images/BarcodedLabelsPageImg_serial.PNG")
         BarcodedLabelsPageImg_serial.image = BarcodedLabelsPageImg_serial
+        self.keep.append(BarcodedLabelsPageImg_serial)
         BarcodedLabelsPageImg_mac = PhotoImage(file = "Images/BarcodedLabelsPageImg_mac.PNG")
         BarcodedLabelsPageImg_mac.image = BarcodedLabelsPageImg_mac
+        self.keep.append(BarcodedLabelsPageImg_mac)
         
         # Labels
         tk.Label(BarcodesPage,
@@ -578,6 +639,7 @@ class printApp(tk.Tk):
                     activebackground=controlsColor, 
                     activeforeground=specialColor,
                     font=fontLabelH1,
+                    command=lambda: fileOpener("barcode"),
                     width=15)
         addFileBarcodedBtn.grid(row=1, column=3)
 
