@@ -19,6 +19,7 @@ from PIL import Image, ImageTk
 import re
 import docx2txt
 import xlrd
+import os
 
 #################
 # Create styles #
@@ -606,9 +607,20 @@ class printApp(tk.Tk):
         barcodeLabelSelection(BarcodeAssetSelectionBtn) # Set default button
 
         # Buttons
+        printBarcodedBtn = tk.Button(BarcodesPage,
+                    text="Add to Queue",
+                    bg=controlsColor, 
+                    fg=fontColor,
+                    relief="flat", 
+                    activebackground=controlsColor, 
+                    activeforeground=specialColor,
+                    font=fontLabelH1,
+                    # command=lambda: print(varBarcodeSelection.get()),
+                    width=15)
+        printBarcodedBtn.grid(row=9, column=2)
 
         printBarcodedBtn = tk.Button(BarcodesPage,
-                    text="Print",
+                    text="Print Now",
                     bg=controlsColor, 
                     fg=fontColor,
                     relief="flat", 
@@ -658,7 +670,6 @@ class printApp(tk.Tk):
         ttk.Separator(BarcodesPage, orient="vertical").grid(row=1, column=4, rowspan=7, sticky="ns")
 
         # Entry boxes
-
         addTagsBarcodeEntry = tk.Entry(BarcodesPage)
         addTagsBarcodeEntry.grid(row=1, column=2)
         addTagsBarcodeEntry.bind('<Return>', lambda x: ReturnKeyPress("singleBarcode"))
@@ -672,7 +683,6 @@ class printApp(tk.Tk):
         addRangeBarcodeEntry2.bind('<Return>', lambda x: ReturnKeyPress("rangeBarcode2"))
 
         # List box
-
         addedTagsBarcodedList = tkscrolled.ScrolledText(BarcodesPage, width=20)
         addedTagsBarcodedList.grid(row=1, column=0, rowspan=6, padx=(30,0), pady=(30,0), sticky="nsew")
         addedTagsBarcodedList.bind('<Key>', updateLabels)
@@ -682,6 +692,9 @@ class printApp(tk.Tk):
         upperCaseBarcodedBtn = tk.Button(BarcodesPage, image=upperOn, bd=0, command=upperswitch, relief="flat")
         upperCaseBarcodedBtn.grid(row=9, column=0)
         tk.Label(BarcodesPage, text="All caps with show when\nlabels are printed.\nAffects BARCODES",bg=backgroundColor, fg=fontColor, font=("aerial 8 bold")).grid(row=10, column=0)
+
+        ### Customer Page ###
+        
 
 if __name__ == "__main__":
     app = printApp()
