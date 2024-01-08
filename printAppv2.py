@@ -11,10 +11,15 @@
 ###################
 
 import tkinter as tk
-from tkinter import PhotoImage, ttk
+from tkinter import PhotoImage, messagebox, filedialog
+import tkinter.ttk as ttk
 import tkinter.font as tkFont
 import tkinter.scrolledtext as tkscrolled
 from PIL import Image, ImageTk
+import re
+import docx2txt
+import xlrd
+import os
 
 #################
 # Create styles #
@@ -25,6 +30,7 @@ backgroundColor = "#001F3F" # A dark blue                           #001F3F
 controlsColor = "#083358"   # A less dark blue                      #083358
 fontColor = "#9DB2BF"       # A light gray with a tint of blue      #9DB2BF
 specialColor = "#FFD717"    # Bright yellow                         #FFD717
+
 
 ### Standard button style
 # [buttonName] = tk.Button(LeftControlFrame, text = "buttonText", width = 15
@@ -49,6 +55,7 @@ class printApp(tk.Tk):
         ################
 
         self.title("NDC Config Label Printing")
+        style = ttk.Style(self)
         appWidth = 1290 # App width in pixels
         appHeight = 860 # App height in pixels
 
@@ -72,8 +79,25 @@ class printApp(tk.Tk):
         self.rowconfigure(0, weight = 1)
         self.configure(bg = backgroundColor)
 
-        from PrintAppFunctions import rangeToList, addToList, printerSelect, printList, clearVars, clearInputs, idleTimer
+        style.configure('IndicatorOff.TRadiobutton',
+                        indicatorrelief=tk.FLAT,
+                        indicatormargin=-1,
+                        indicatordiameter=-1,
+                        relief=tk.RAISED,
+                        focusthickness=0, highlightthickness=0, padding=5)
+
+        ####################
+        # Create variables #
+        ####################
+
+        tagQty = tk.StringVar(None,"No tags")
+        varBarcodeSelection = tk.StringVar(None,"Asset Tag")
         import settings
+        self.keep = []
+
+        #################
+        # Create Frames #
+        #################
 
         ### Primary frame / grid ###
         # 2x rows
@@ -170,6 +194,10 @@ class printApp(tk.Tk):
         
         HomePage.tkraise() # Start with the HomePage
 
+        ###################
+        # Define commands #
+        ###################
+
         ### Add caplock control commands and images
 
         def upperswitch():
@@ -184,14 +212,175 @@ class printApp(tk.Tk):
         upperOnIMG = Image.open('Images/on.png')
         upperOffIMG = Image.open('Images/off.png')
         upperOn = ImageTk.PhotoImage(upperOnIMG)
+        self.keep.append(upperOn)
         upperOff = ImageTk.PhotoImage(upperOffIMG)
+        self.keep.append(upperOff)
 
-        def Return(event):
+        ### Return key definitions - each element is individually bound and passes an identifier
+
+        def ReturnKeyPress(event):
             if event == "singleBarcode":
-                print("barcode pass through " + addTagsBarcodeEntry.get())
-                addedTagsBarcodedList.insert(tk.END, addTagsBarcodeEntry.get())
+                if len(addTagsBarcodeEntry.get()) == 0:
+                    pass
+                else:
+                    addedTagsBarcodedList.insert(tk.END, addTagsBarcodeEntry.get()) # Add barcode
+                    addedTagsBarcodedList.insert(tk.END, "\n")                      # Add line break
+                    addTagsBarcodeEntry.delete(0, 'end')                            # Clear entrybox
+                    updateLabels()
+            elif event == "rangeBarcode1":
+                addRangeBarcodeEntry2.focus_set()
+            elif event == "rangeBarcode2":
+                addRangeBarcodeEntry1.focus_set()
+        
+        ### Page selection command - to include primary element to have focus
 
+        def pageSelect(selection):
+            if selection == BarcodesPage:
+                BarcodesPage.tkraise()
+                addTagsBarcodeEntry.focus_set()
+            elif selection == HomePage:
+                HomePage.tkraise()
+                clearAll()
 
+        ### Barcode Range creation command
+                
+        def rangeToList(range1,range2): # To take 2 points of a range and create a list going from one to the other
+            if range1 == "" or range2 =="" or len(range1) != len(range2): # error out of function if one or both range values are empty or they don't match length
+                return -1
+            rangePrefix1 = ""
+            rangeStart = ""
+            rangeSuffix1 = "" 
+            rangePrefix2 = ""
+            rangeEnd = ""
+            rangeSuffix2 = ""
+            rangeSplit1 = re.split("(\d+)", range1)
+            rangeSplit2 = re.split("(\d+)", range2)
+            y = 0
+            z = 0
+            for x in rangeSplit1: #cycles through however many splits exist in the first split
+                if rangeSplit1[y] != rangeSplit2[y]:
+                    z = y + 1
+                    rangeStart = min(rangeSplit1[y],rangeSplit2[y]) # sets the lowest number entered into the start
+                    rangeEnd = max(rangeSplit2[y],rangeSplit1[y]) # sets the highest number entered into the end
+                    for x in rangeSplit1[z:]:
+                        try:
+                            if rangeSplit1[z] == rangeSplit2[z]:
+                                rangeSuffix1 += x
+                                rangeSuffix2 += x
+                                z+=1
+                            else:
+                                messagebox.showerror("Error", "Problem determining the suffix")
+                                return
+                        except:
+                            break
+                    break
+                elif rangeSplit1[y] == rangeSplit2[y]:
+                    rangePrefix1 += x
+                    rangePrefix2 += x
+                y+=1
+            if rangePrefix1 != rangePrefix2:
+                messagebox.showerror("Error", "Error detected in the prefix. \nPlease check and try again")
+                return
+            elif rangeSuffix1 != rangeSuffix2:
+                messagebox.showerror("Error", "Error detected in the suffix. \nPlease check and try again")
+                return
+            else:
+                    lead_zeros = len(rangeEnd)
+                    prefixed = str(rangePrefix1)
+                    suffixed = str(rangeSuffix1)
+                    newlist = ""
+                    for x in range(int(rangeStart), int(rangeEnd)+1):
+                        y = str(x).zfill(lead_zeros)
+                        newlist += prefixed + y + suffixed + "\n"
+                    addToList(newlist)
+                    addRangeBarcodeEntry1.delete(0, 'end')
+                    addRangeBarcodeEntry2.delete(0, 'end')
+
+            return
+        
+        def addToList(itemsForList): # To add labels to the currently active list
+            settings.currentList.set(itemsForList)
+
+        ### Tag number counter update command
+            
+        def updateLabels(*event): # Adds range to list and updates tag count
+            addedTagsBarcodedList.insert(tk.END, settings.currentList.get())    # Add current range to list
+            settings.currentList.set('')                            # clears stored list from variables
+            counter = 0
+            for x in (addedTagsBarcodedList.get('1.0', tk.END).split('\n')):    # split the list into lines
+                if x:                                               # only count lines with something in them
+                    counter += 1
+            tagQty.set("Number of tags: " + str(counter))
+
+        ### Changes selection of barcode type
+
+        def barcodeLabelSelection(choice):
+            choice.config(fg=specialColor)
+            for x in barcodeRadioButtons:
+                if x != choice:
+                    x.config(fg=fontColor)
+
+        ### Various commands to clear various sections
+
+        def clearBarcodesPage():
+            barcodeLabelSelection(BarcodeAssetSelectionBtn)
+            addedTagsBarcodedList.delete('1.0', tk.END)
+            updateLabels()
+
+        def clearQRcodePage():
+            pass
+
+        def clearPlainTextPage():
+            pass
+
+        def clearAll():
+            clearBarcodesPage()
+            clearQRcodePage()
+            clearPlainTextPage()
+
+        ### File open dialog
+            
+        def fileOpener(location):
+            pre_file_content = ""
+            file_content = ""
+            file_path = filedialog.askopenfilename()
+            if file_path.endswith('.docx'):
+                file_content = docx2txt.process(file_path)
+            elif file_path.endswith('.doc'): ### still to do
+                print("Document")
+            elif file_path.endswith('.xlsx'):
+                pre_file_content = xlrd.open_workbook(file_path)
+                new_pre_file_content = pre_file_content.sheet_by_index(0)
+                for rownum in range(new_pre_file_content.nrows):
+                    for colnum in range(new_pre_file_content.ncols):
+                        file_content += new_pre_file_content.cell_value(rownum, colnum)
+                        file_content = file_content + '\n'
+            elif file_path.endswith('.csv'):
+                pre_file_content = open(file_path, "r")
+                file_content = pre_file_content.read().replace(',','\n')
+            elif file_path.endswith('.txt'):
+                pre_file_content = open(file_path, "r")
+                file_content = pre_file_content.read()
+            elif file_path.endswith('.pdf'): ### still to do
+                print("Acrobat file")
+            else:
+                print("text file?")
+            if file_content == "":
+                print("empty")
+            elif location == "barcode":
+                file_content = file_content + '\n'
+                addedTagsBarcodedList.insert(tk.END, file_content)
+                updateLabels()
+            elif location == "plainText":
+                pass
+            pre_file_content = ""
+            file_content = ""
+
+        ### File open handler
+
+        # def WordFileOpenHandler(filing):
+        #     returnFile = docx2txt.process(filing)
+        #     return(returnFile)
 
         #########################
         # Add content to frames #
@@ -205,6 +394,7 @@ class printApp(tk.Tk):
             TitleContentLabel0 = tk.Label(TitleFrame, image=TitleCompanyImage1,bg = controlsColor, width = TitleImageWidth, height = TitleImageHeight, bd = 0, highlightthickness = 0)
             TitleContentLabel0.grid(row = 0, column = 0, sticky = "ew", padx = 0, pady = 10)
             TitleContentLabel0.image = TitleCompanyImage1
+            self.keep.append(TitleCompanyImage1)
         except:
             TitleCompanyLabel = tk.Label(TitleFrame, text="CDW", bg = backgroundColor, fg = "red", font=('aerial 48 bold'))
             TitleCompanyLabel.grid(row = 0, column = 0, sticky = "ew", padx = (0,TitleImageWidth), pady = 10)
@@ -213,33 +403,32 @@ class printApp(tk.Tk):
         TitleContentLabel1.grid(row = 0, column = 1, sticky = "ew")
 
         # Controls for lefthand sidebar
-        LeftControlBackBtn = tk.Button(LeftControlFrame, text = "Home", width = 15
-                                    # ,command = lambda : self.screenSwap(HomePage)
-                                    ,command = lambda:HomePage.tkraise() # temp command until genuine command is ready
-                                    ,bg = controlsColor
-                                    ,fg = specialColor
-                                    ,relief = "flat")
+        LeftControlBackBtn = tk.Button(LeftControlFrame, text = "Home", width = 15,
+                                    command = lambda:pageSelect(HomePage), # temp command until genuine command is ready
+                                    bg = controlsColor,
+                                    fg = specialColor,
+                                    relief = "flat")
         LeftControlBackBtn.grid(row = 0, column = 0, padx = 15, pady = 10)
 
-        LeftControlHelpBtn = tk.Button(LeftControlFrame, text = "Help", width = 15
-                                    ,command = lambda:helpPage.tkraise()
-                                    ,bg = controlsColor
-                                    ,fg = specialColor
-                                    ,relief = "flat")
+        LeftControlHelpBtn = tk.Button(LeftControlFrame, text = "Help", width = 15,
+                                    command = lambda:helpPage.tkraise(),
+                                    bg = controlsColor,
+                                    fg = specialColor,
+                                    relief = "flat")
         LeftControlHelpBtn.grid(row = 10, column = 0, padx = 15, pady = (550,5))
 
-        LeftControlHistoryBtn = tk.Button(LeftControlFrame, text = "Print History", width = 15
-                                    ,command = lambda:historyPage.tkraise()
-                                    ,bg = controlsColor
-                                    ,fg = specialColor
-                                    ,relief = "flat")
+        LeftControlHistoryBtn = tk.Button(LeftControlFrame, text = "Print History", width = 15,
+                                    command = lambda:historyPage.tkraise(),
+                                    bg = controlsColor,
+                                    fg = specialColor,
+                                    relief = "flat")
         LeftControlHistoryBtn.grid(row = 12, column = 0, padx = 15, pady = 5)
 
-        LeftControlSettingsBtn = tk.Button(LeftControlFrame, text = "Settings", width = 15
-                                    ,command = lambda:settingsPage.tkraise()
-                                    ,bg = controlsColor
-                                    ,fg = specialColor
-                                    ,relief = "flat")
+        LeftControlSettingsBtn = tk.Button(LeftControlFrame, text = "Settings", width = 15,
+                                    command = lambda:settingsPage.tkraise(),
+                                    bg = controlsColor,
+                                    fg = specialColor,
+                                    relief = "flat")
         LeftControlSettingsBtn.grid(row = 14, column = 0, padx = 15, pady = 5)
 
         VersionLabel = tk.Label(LeftControlFrame, textvariable=varappversion, bg = backgroundColor, fg = fontColor)
@@ -250,16 +439,21 @@ class printApp(tk.Tk):
         # Images
         BarcodedLabelsPageImg = PhotoImage(file = "Images/BarcodedLabelsPageImg.PNG")
         BarcodedLabelsPageImg.image = BarcodedLabelsPageImg
+        self.keep.append(BarcodedLabelsPageImg)
         QRCodedLabelsPageImg = PhotoImage(file = "Images/QRCodedLabelsPageImg.PNG")
         QRCodedLabelsPageImg.image = QRCodedLabelsPageImg
+        self.keep.append(QRCodedLabelsPageImg)
         PlainTextLabelsPageImg = PhotoImage(file = "Images/PlainTextLabelsPageImg.PNG")
         PlainTextLabelsPageImg.image = PlainTextLabelsPageImg
+        self.keep.append(PlainTextLabelsPageImg)
         customerLabelsPageImg = PhotoImage(file = "Images/PlainTextLabelsPageImg.PNG")
         customerLabelsPageImg.image = customerLabelsPageImg
+        self.keep.append(customerLabelsPageImg)
+        
         
         # Buttons
         barcodePageBtn = tk.Button(HomePage, 
-                                   command = lambda:BarcodesPage.tkraise(), 
+                                   command = lambda:pageSelect(BarcodesPage), 
                                    text = "Barcoded Labels ", 
                                    image = BarcodedLabelsPageImg, 
                                    compound="top", 
@@ -325,8 +519,10 @@ class printApp(tk.Tk):
         # Images
         BarcodedLabelsPageImg_serial = PhotoImage(file = "Images/BarcodedLabelsPageImg_serial.PNG")
         BarcodedLabelsPageImg_serial.image = BarcodedLabelsPageImg_serial
+        self.keep.append(BarcodedLabelsPageImg_serial)
         BarcodedLabelsPageImg_mac = PhotoImage(file = "Images/BarcodedLabelsPageImg_mac.PNG")
         BarcodedLabelsPageImg_mac.image = BarcodedLabelsPageImg_mac
+        self.keep.append(BarcodedLabelsPageImg_mac)
         
         # Labels
         tk.Label(BarcodesPage,
@@ -343,25 +539,32 @@ class printApp(tk.Tk):
                  fg=fontColor).grid(row=1, column=5)
         
         tk.Label(BarcodesPage,
-                 text="Temp",
+                 textvariable=tagQty,
                  bg=backgroundColor,
                  fg=specialColor).grid(row=7, column=0)
 
 
-        # Buttons
-        BarcodeSelectionBtn = tk.Button(BarcodesPage,
+        # RadioButtons
+        BarcodeAssetSelectionBtn = tk.Radiobutton(BarcodesPage,
                     image=BarcodedLabelsPageImg, 
                     text="Asset Tag", 
                     compound="top", 
-                    bg=backgroundColor, 
+                    bg=backgroundColor,
                     fg=fontColor,
                     relief="flat", 
                     activebackground=controlsColor, 
                     activeforeground=specialColor,
-                    font=fontLabelH1)
-        BarcodeSelectionBtn.grid(row=2, column=2, rowspan=2, columnspan=2)
+                    font=fontLabelH1,
+                    variable=varBarcodeSelection,
+                    indicatoron=False,
+                    selectcolor=controlsColor,
+                    bd=0,
+                    offrelief="flat",
+                    value="Asset Tag")
+        BarcodeAssetSelectionBtn.config(command = lambda arg=BarcodeAssetSelectionBtn: barcodeLabelSelection(arg))
+        BarcodeAssetSelectionBtn.grid(row=2, column=2, rowspan=2, columnspan=2)
         
-        SerialSelectionBtn = tk.Button(BarcodesPage,
+        BarcodeSerialSelectionBtn = tk.Radiobutton(BarcodesPage,
                     image=BarcodedLabelsPageImg_serial, 
                     text="Serial Number",
                     compound="top", 
@@ -370,10 +573,17 @@ class printApp(tk.Tk):
                     relief="flat", 
                     activebackground=controlsColor, 
                     activeforeground=specialColor,
-                    font=fontLabelH1)
-        SerialSelectionBtn.grid(row=4, column=2, rowspan=2, columnspan=2)
+                    font=fontLabelH1,
+                    variable=varBarcodeSelection,
+                    indicatoron=False,
+                    selectcolor=controlsColor,
+                    bd=0,
+                    offrelief="flat",
+                    value="Serial Number")
+        BarcodeSerialSelectionBtn.config(command = lambda arg=BarcodeSerialSelectionBtn: barcodeLabelSelection(arg))
+        BarcodeSerialSelectionBtn.grid(row=4, column=2, rowspan=2, columnspan=2)
         
-        QRSelectionBtn = tk.Button(BarcodesPage,
+        BarcodMACSelectionBtn = tk.Radiobutton(BarcodesPage,
                     image=BarcodedLabelsPageImg_mac, 
                     text="MAC Address",
                     compound="top", 
@@ -382,17 +592,42 @@ class printApp(tk.Tk):
                     relief="flat", 
                     activebackground=controlsColor, 
                     activeforeground=specialColor,
-                    font=fontLabelH1)
-        QRSelectionBtn.grid(row=6, column=2, rowspan=2, columnspan=2)
+                    font=fontLabelH1,
+                    variable=varBarcodeSelection,
+                    indicatoron=False,
+                    selectcolor=controlsColor,
+                    bd=0,
+                    offrelief="flat",
+                    value="MAC Address")
+        BarcodMACSelectionBtn.config(command = lambda arg=BarcodMACSelectionBtn: barcodeLabelSelection(arg))
+        BarcodMACSelectionBtn.grid(row=6, column=2, rowspan=2, columnspan=2)
 
+        # List of radioButtons
+        barcodeRadioButtons = [BarcodeAssetSelectionBtn,BarcodeSerialSelectionBtn,BarcodMACSelectionBtn]
+        barcodeLabelSelection(BarcodeAssetSelectionBtn) # Set default button
+
+        # Buttons
         printBarcodedBtn = tk.Button(BarcodesPage,
-                    text="Print",
+                    text="Add to Queue",
                     bg=controlsColor, 
                     fg=fontColor,
                     relief="flat", 
                     activebackground=controlsColor, 
                     activeforeground=specialColor,
                     font=fontLabelH1,
+                    # command=lambda: print(varBarcodeSelection.get()),
+                    width=15)
+        printBarcodedBtn.grid(row=9, column=2)
+
+        printBarcodedBtn = tk.Button(BarcodesPage,
+                    text="Print Now",
+                    bg=controlsColor, 
+                    fg=fontColor,
+                    relief="flat", 
+                    activebackground=controlsColor, 
+                    activeforeground=specialColor,
+                    font=fontLabelH1,
+                    # command=lambda: print(varBarcodeSelection.get()),
                     width=15)
         printBarcodedBtn.grid(row=8, column=2)
 
@@ -404,6 +639,7 @@ class printApp(tk.Tk):
                     activebackground=controlsColor, 
                     activeforeground=specialColor,
                     font=fontLabelH1,
+                    command= lambda: clearBarcodesPage(),
                     width=15)
         clearBarcodedBtn.grid(row=8, column=3)
 
@@ -415,10 +651,11 @@ class printApp(tk.Tk):
                     activebackground=controlsColor, 
                     activeforeground=specialColor,
                     font=fontLabelH1,
+                    command=lambda: fileOpener("barcode"),
                     width=15)
         addFileBarcodedBtn.grid(row=1, column=3)
 
-        addFileBarcodedBtn = tk.Button(BarcodesPage,
+        addRangeBarcodedBtn = tk.Button(BarcodesPage,
                     text="Add range",
                     bg=controlsColor, 
                     fg=fontColor,
@@ -426,33 +663,38 @@ class printApp(tk.Tk):
                     activebackground=controlsColor, 
                     activeforeground=specialColor,
                     font=fontLabelH1,
-                    width=15)
-        addFileBarcodedBtn.grid(row=4, column=5)
+                    width=15,
+                    command = lambda: [rangeToList(addRangeBarcodeEntry1.get(),addRangeBarcodeEntry2.get()),updateLabels()])
+        addRangeBarcodedBtn.grid(row=4, column=5)
 
         ttk.Separator(BarcodesPage, orient="vertical").grid(row=1, column=4, rowspan=7, sticky="ns")
 
         # Entry boxes
-
         addTagsBarcodeEntry = tk.Entry(BarcodesPage)
         addTagsBarcodeEntry.grid(row=1, column=2)
-        addTagsBarcodeEntry.bind('<Return>', lambda x: Return("singleBarcode"))
+        addTagsBarcodeEntry.bind('<Return>', lambda x: ReturnKeyPress("singleBarcode"))
 
         addRangeBarcodeEntry1 = tk.Entry(BarcodesPage)
         addRangeBarcodeEntry1.grid(row=2, column=5)
+        addRangeBarcodeEntry1.bind('<Return>', lambda x: ReturnKeyPress("rangeBarcode1"))
 
         addRangeBarcodeEntry2 = tk.Entry(BarcodesPage)
         addRangeBarcodeEntry2.grid(row=3, column=5)
+        addRangeBarcodeEntry2.bind('<Return>', lambda x: ReturnKeyPress("rangeBarcode2"))
 
         # List box
-
         addedTagsBarcodedList = tkscrolled.ScrolledText(BarcodesPage, width=20)
         addedTagsBarcodedList.grid(row=1, column=0, rowspan=6, padx=(30,0), pady=(30,0), sticky="nsew")
+        addedTagsBarcodedList.bind('<Key>', updateLabels)
 
         # Capslock control
         tk.Label(BarcodesPage, text="All Caps",bg=backgroundColor, fg=fontColor, font=("aerial 14 bold")).grid(row=8, column=0)
         upperCaseBarcodedBtn = tk.Button(BarcodesPage, image=upperOn, bd=0, command=upperswitch, relief="flat")
         upperCaseBarcodedBtn.grid(row=9, column=0)
         tk.Label(BarcodesPage, text="All caps with show when\nlabels are printed.\nAffects BARCODES",bg=backgroundColor, fg=fontColor, font=("aerial 8 bold")).grid(row=10, column=0)
+
+        ### Customer Page ###
+        
 
 if __name__ == "__main__":
     app = printApp()
