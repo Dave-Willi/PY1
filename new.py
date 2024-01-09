@@ -1,8 +1,6 @@
 import requests
-import shutil
 import tkinter as tk
 from PIL import Image, ImageTk
-from urllib.request import urlopen
 
 window = tk.Tk()
 greeting = tk.Label(text="Hello, Tkinter")
