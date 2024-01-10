@@ -328,7 +328,8 @@ class printApp(tk.Tk):
             updateLabels()
 
         def clearQRcodePage():
-            pass
+            qrEntry1.delete(0, 'end')
+            qrEntry2.delete(0, 'end')
 
         def clearPlainTextPage():
             pass
@@ -607,17 +608,17 @@ class printApp(tk.Tk):
         barcodeLabelSelection(BarcodeAssetSelectionBtn) # Set default button
 
         # Buttons
-        printBarcodedBtn = tk.Button(BarcodesPage,
-                    text="Add to Queue",
-                    bg=controlsColor, 
-                    fg=fontColor,
-                    relief="flat", 
-                    activebackground=controlsColor, 
-                    activeforeground=specialColor,
-                    font=fontLabelH1,
-                    # command=lambda: print(varBarcodeSelection.get()),
-                    width=15)
-        printBarcodedBtn.grid(row=9, column=2)
+        # printBarcodedBtn = tk.Button(BarcodesPage,
+        #             text="Add to Queue",
+        #             bg=controlsColor, 
+        #             fg=fontColor,
+        #             relief="flat", 
+        #             activebackground=controlsColor, 
+        #             activeforeground=specialColor,
+        #             font=fontLabelH1,
+        #             # command=lambda: print(varBarcodeSelection.get()),
+        #             width=15)
+        # printBarcodedBtn.grid(row=9, column=2, columnspan=2)
 
         printBarcodedBtn = tk.Button(BarcodesPage,
                     text="Print Now",
@@ -693,8 +694,63 @@ class printApp(tk.Tk):
         upperCaseBarcodedBtn.grid(row=9, column=0)
         tk.Label(BarcodesPage, text="All caps with show when\nlabels are printed.\nAffects BARCODES",bg=backgroundColor, fg=fontColor, font=("aerial 8 bold")).grid(row=10, column=0)
 
-        ### Customer Page ###
+        ### QR Code Page ###
         
+        # Labels
+        tk.Label(QRcodePage, text = "QR encoded data", bg=backgroundColor, fg=fontColor).grid(row=1, column=1)
+        tk.Label(QRcodePage, text = "Plain Text", bg=backgroundColor, fg=fontColor).grid(row=4, column=1)
+
+        # Text Entry
+        qrEntry1 = tk.Entry(QRcodePage, fg=fontColor, width=90)
+        qrEntry1.grid(row=2, column=0, columnspan=4)
+
+        qrEntry2 = tk.Entry(QRcodePage, fg=fontColor, width=90)
+        qrEntry2.grid(row=5, column=0, columnspan=4)
+
+        # Capslock control
+        tk.Label(QRcodePage, text="All Caps",bg=backgroundColor, fg=fontColor, font=("aerial 14 bold")).grid(row=12, column=0)
+        upperCaseBarcodedBtn = tk.Button(QRcodePage, image=upperOn, bd=0, command=upperswitch, relief="flat")
+        upperCaseBarcodedBtn.grid(row=13, column=0)
+        tk.Label(QRcodePage, text="All caps with show when\nlabels are printed.\nDoes NOT affects QR code",bg=backgroundColor, fg=fontColor, font=("aerial 8 bold")).grid(row=14, column=0)
+
+        # Buttons
+        # refresh preview image, print, clear
+        qrPreviewRefreshBtn = tk.Button(QRcodePage,
+                                     text="Refresh Preview",
+                                     bg=controlsColor,
+                                     fg=fontColor,
+                                     relief="flat", 
+                                     activebackground=controlsColor, 
+                                     activeforeground=specialColor,
+                                     font=fontLabelH1,
+                                     width=15)
+        qrPreviewRefreshBtn.grid(row=7, column=1)
+
+        qrPrintLabelBtn = tk.Button(QRcodePage,
+                                     text="Print",
+                                     bg=controlsColor,
+                                     fg=fontColor,
+                                     relief="flat", 
+                                     activebackground=controlsColor, 
+                                     activeforeground=specialColor,
+                                     font=fontLabelH1,
+                                     width=15)
+        qrPrintLabelBtn.grid(row=8, column=2)
+
+        qrClearBtn = tk.Button(QRcodePage,
+                                     text="Clear",
+                                     bg=controlsColor,
+                                     fg=fontColor,
+                                     relief="flat", 
+                                     activebackground=controlsColor, 
+                                     activeforeground=specialColor,
+                                     font=fontLabelH1,
+                                     command = lambda: clearQRcodePage(),
+                                     width=15)
+        qrClearBtn.grid(row=8, column=3)
+
+        # Image - Preview image generated using Labelary API
+
 
 if __name__ == "__main__":
     app = printApp()
