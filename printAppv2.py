@@ -19,7 +19,8 @@ from PIL import Image, ImageTk
 import re
 import docx2txt
 import xlrd
-import os
+# import os
+import requests
 
 #################
 # Create styles #
@@ -94,6 +95,8 @@ class printApp(tk.Tk):
         varBarcodeSelection = tk.StringVar(None,"Asset Tag")
         import settings
         self.keep = []
+        varQRSideSelection = tk.StringVar(None, "right")
+        qrPreviewImg = ImageTk.PhotoImage(file="Images/QRCodedLabelsPageImg.PNG")
 
         #################
         # Create Frames #
@@ -376,6 +379,51 @@ class printApp(tk.Tk):
                 pass
             pre_file_content = ""
             file_content = ""
+
+        ### QR Preview Image generator/refresh command
+        def qrPreviewRefresh():
+            print("refreshing preview")
+            zpl = genQRcodeZPL()
+            print(zpl)
+            url = 'http://api.labelary.com/v1/printers/8dpmm/labels/2.5x1/0/'
+            files = {'file' : zpl}
+            response = requests.post(url, files = files, stream = True)
+            eatme = response.content
+            qrPreviewImg = ImageTk.PhotoImage(data=eatme)
+            qrPreviewImage.configure(image=qrPreviewImg)
+            self.keep.append(qrPreviewImg)
+
+        ### Generate QR coded ZPL
+        def genQRcodeZPL():
+            print("generating code")
+            if varQRSideSelection.get() == "right":
+                print("right")
+                zpl = "^XA"             # Start of label
+                zpl += "^LH" + "0,5"    # Label home, set by settings
+                zpl += "^CF" + "0,35"   # Default text, set by amount of text entered approximating it to fit the label
+                zpl += "^FO" + "5,5"    # First text placement
+                zpl += "^FD" + "Superman is" + "^FS" # First text
+                zpl += "^FO" + "5,45"
+                zpl += "^FD" + "a boyo" + "^FS"
+                zpl += "^FO" + "350,5"
+                zpl += "^BQ,," + "5"    # Set QR magnification
+                zpl += "^FD" + qrEntry1.get() + "^FS"
+                zpl += "^XZ"            # End of label
+                return(zpl)
+            else:
+                print("left")
+                zpl = "^XA"             # Start of label
+                zpl += "^LH" + "0,5"    # Label home, set by settings
+                zpl += "^CF" + "0,35"   # Default text, set by amount of text entered approximating it to fit the label
+                zpl += "^FO" + "250,5"    # First text placement
+                zpl += "^FD" + "Superman is" + "^FS" # First text
+                zpl += "^FO" + "250,45"
+                zpl += "^FD" + "a boyo" + "^FS"
+                zpl += "^FO" + "5,5"
+                zpl += "^BQ,," + "5"    # Set QR magnification
+                zpl += "^FD" + qrEntry1.get() + "^FS"
+                zpl += "^XZ"            # End of label
+                return(zpl)
 
         ### File open handler
 
@@ -696,16 +744,43 @@ class printApp(tk.Tk):
 
         ### QR Code Page ###
         
+        # Radio Button
+        qrLeftSelect = tk.Radiobutton(QRcodePage,
+                                      text="Left",
+                                      bg=backgroundColor,
+                                      fg="white",
+                                      variable=varQRSideSelection,
+                                      activebackground=backgroundColor,
+                                      activeforeground=specialColor,
+                                      selectcolor="#000000",
+                                      value="left",
+                                      command=lambda:qrPreviewRefresh()
+                                      )
+        qrLeftSelect.grid(row=0, column=2)
+        qrRightSelect = tk.Radiobutton(QRcodePage,
+                                       text="Right",
+                                       bg=backgroundColor,
+                                       fg="white",
+                                       variable=varQRSideSelection,
+                                       activebackground=backgroundColor,
+                                       activeforeground=specialColor,
+                                       selectcolor="#000000",
+                                       value="right",
+                                       command=lambda:qrPreviewRefresh()
+                                       )
+        qrRightSelect.grid(row=0, column=3)
+
         # Labels
+        tk.Label(QRcodePage, text = "Select QR position", bg=backgroundColor, fg=fontColor).grid(row=0, column=1, sticky='e')
         tk.Label(QRcodePage, text = "QR encoded data", bg=backgroundColor, fg=fontColor).grid(row=1, column=1)
         tk.Label(QRcodePage, text = "Plain Text", bg=backgroundColor, fg=fontColor).grid(row=4, column=1)
 
         # Text Entry
-        qrEntry1 = tk.Entry(QRcodePage, fg=fontColor, width=90)
-        qrEntry1.grid(row=2, column=0, columnspan=4)
+        qrEntry1 = tk.Entry(QRcodePage, width=90)
+        qrEntry1.grid(row=2, column=0, columnspan=6)
 
-        qrEntry2 = tk.Entry(QRcodePage, fg=fontColor, width=90)
-        qrEntry2.grid(row=5, column=0, columnspan=4)
+        qrEntry2 = tk.Entry(QRcodePage, width=90)
+        qrEntry2.grid(row=5, column=0, columnspan=6)
 
         # Capslock control
         tk.Label(QRcodePage, text="All Caps",bg=backgroundColor, fg=fontColor, font=("aerial 14 bold")).grid(row=12, column=0)
@@ -714,7 +789,6 @@ class printApp(tk.Tk):
         tk.Label(QRcodePage, text="All caps with show when\nlabels are printed.\nDoes NOT affects QR code",bg=backgroundColor, fg=fontColor, font=("aerial 8 bold")).grid(row=14, column=0)
 
         # Buttons
-        # refresh preview image, print, clear
         qrPreviewRefreshBtn = tk.Button(QRcodePage,
                                      text="Refresh Preview",
                                      bg=controlsColor,
@@ -723,6 +797,7 @@ class printApp(tk.Tk):
                                      activebackground=controlsColor, 
                                      activeforeground=specialColor,
                                      font=fontLabelH1,
+                                     command= lambda:qrPreviewRefresh(),
                                      width=15)
         qrPreviewRefreshBtn.grid(row=7, column=1)
 
@@ -751,8 +826,11 @@ class printApp(tk.Tk):
 
         # Image - Preview image generated using Labelary API
 
+        qrPreviewImage = tk.Label(QRcodePage, text="Imagery", image=qrPreviewImg)
+        qrPreviewImage.grid(row=7, column=2)
+        self.keep.append(qrPreviewImg)
 
 if __name__ == "__main__":
-    app = printApp()
-    app.mainloop()    
+    root = printApp()
+    root.mainloop()    
     
