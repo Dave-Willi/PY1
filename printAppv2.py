@@ -96,7 +96,16 @@ class printApp(tk.Tk):
         import settings
         self.keep = []
         varQRSideSelection = tk.StringVar(None, "right")
-        qrPreviewImg = ImageTk.PhotoImage(file="Images/QRCodedLabelsPageImg.PNG")
+        qrPreviewDefault = Image.open("Images/QRCodedLabelsPageImg.PNG")
+        qrPreviewDefaultImg = qrPreviewDefault.resize((504,200))
+        qrPreviewImg = ImageTk.PhotoImage(qrPreviewDefaultImg)
+        self.keep.insert(0, qrPreviewImg) # Index 0 for this file to be easily replaced as image is updated
+        textPreviewDefault = Image.open("Images/PlainTextLabelsPageImg.PNG")
+        textPreviewDefaultImg = textPreviewDefault.resize((504,200))
+        textPreviewImg = ImageTk.PhotoImage(textPreviewDefaultImg)
+        self.keep.insert(1, textPreviewImg) # Index 1 for this file to be easily replaced as image is updated
+        qrTextSize = tk.StringVar(None, "30")
+        qrCodeSize = tk.StringVar(None, "4")
 
         #################
         # Create Frames #
@@ -170,8 +179,9 @@ class printApp(tk.Tk):
         BarcodesPage.grid(row=0, column=1, sticky="nsew")
 
         QRcodePage = tk.Frame(PageFrame, bg=backgroundColor)
-        QRcodePage.columnconfigure((0,1,2,3,4), weight=1)
-        QRcodePage.rowconfigure((0,1,2,3,4,5,6,7), weight=1)
+        QRcodePage.columnconfigure((0,1,2,3), weight=1)
+        QRcodePage.columnconfigure(4, weight=2)
+        QRcodePage.rowconfigure((0,1,2,3,4,5,6,7,8,9,10,11,12,13,14), weight=1)
         QRcodePage.grid(row=0, column=1, sticky="nsew")
 
         plainPage = tk.Frame(PageFrame, bg=backgroundColor)
@@ -244,6 +254,9 @@ class printApp(tk.Tk):
             elif selection == HomePage:
                 HomePage.tkraise()
                 clearAll()
+            elif selection == QRcodePage:
+                QRcodePage.tkraise()
+                qrEntry1.focus_set()
 
         ### Barcode Range creation command
                 
@@ -328,11 +341,15 @@ class printApp(tk.Tk):
         def clearBarcodesPage():
             barcodeLabelSelection(BarcodeAssetSelectionBtn)
             addedTagsBarcodedList.delete('1.0', tk.END)
+            addTagsBarcodeEntry.delete(0, tk.END)
+            addRangeBarcodeEntry1.delete(0, tk.END)
+            addRangeBarcodeEntry2.delete(0, tk.END)
             updateLabels()
 
         def clearQRcodePage():
             qrEntry1.delete(0, 'end')
             qrEntry2.delete(0, 'end')
+            qrDefaultPreview()
 
         def clearPlainTextPage():
             pass
@@ -347,10 +364,10 @@ class printApp(tk.Tk):
         def fileOpener(location):
             pre_file_content = ""
             file_content = ""
-            file_path = filedialog.askopenfilename()
+            file_path = filedialog.askopenfilename(filetypes=[("Supported Files", ".xlsx .docx .csv .txt .pdf")])
             if file_path.endswith('.docx'):
                 file_content = docx2txt.process(file_path)
-            elif file_path.endswith('.doc'): ### still to do
+            elif file_path.endswith('.doc'): ### still to do ###
                 print("Document")
             elif file_path.endswith('.xlsx'):
                 pre_file_content = xlrd.open_workbook(file_path)
@@ -365,13 +382,13 @@ class printApp(tk.Tk):
             elif file_path.endswith('.txt'):
                 pre_file_content = open(file_path, "r")
                 file_content = pre_file_content.read()
-            elif file_path.endswith('.pdf'): ### still to do
+            elif file_path.endswith('.pdf'): ### still to do ###
                 print("Acrobat file")
             else:
                 print("text file?")
             if file_content == "":
-                print("empty")
-            elif location == "barcode":
+                print("empty or cancelled")
+            elif location == "barcode": # Add to relevant page
                 file_content = file_content + '\n'
                 addedTagsBarcodedList.insert(tk.END, file_content)
                 updateLabels()
@@ -382,46 +399,49 @@ class printApp(tk.Tk):
 
         ### QR Preview Image generator/refresh command
         def qrPreviewRefresh():
-            print("refreshing preview")
-            zpl = genQRcodeZPL()
-            print(zpl)
-            url = 'http://api.labelary.com/v1/printers/8dpmm/labels/2.5x1/0/'
-            files = {'file' : zpl}
-            response = requests.post(url, files = files, stream = True)
-            eatme = response.content
-            qrPreviewImg = ImageTk.PhotoImage(data=eatme)
+            if qrEntry1.get() == "" and qrEntry2.get() == "":
+                qrDefaultPreview()
+            else:
+                zpl = genQRcodeZPL()
+                url = 'http://api.labelary.com/v1/printers/8dpmm/labels/2.48x0.98/0/' # 8dpmm = dots per mm (Printer Specific) | 2.48x0.98 = Inch measurement of label (63mmx25mm)(Label Specific)
+                files = {'file' : zpl}
+                response = requests.post(url, files = files, stream = True)
+                eatme = response.content
+                qrPreviewImg = ImageTk.PhotoImage(data=eatme)
+                # qrPreviewImg = qrPreviewImg.resize((252,100))
+                qrPreviewImage.configure(image=qrPreviewImg)
+                # self.keep.remove(qrPreviewImg)
+                self.keep[0] = qrPreviewImg
+
+        def qrDefaultPreview():
+            qrPreviewDefault = Image.open("Images/QRCodedLabelsPageImg.PNG")
+            qrPreviewDefaultImg = qrPreviewDefault.resize((504,200))
+            qrPreviewImg = ImageTk.PhotoImage(qrPreviewDefaultImg)
             qrPreviewImage.configure(image=qrPreviewImg)
-            self.keep.append(qrPreviewImg)
+            self.keep[0] = qrPreviewImg
 
         ### Generate QR coded ZPL
         def genQRcodeZPL():
-            print("generating code")
             if varQRSideSelection.get() == "right":
-                print("right")
                 zpl = "^XA"             # Start of label
-                zpl += "^LH" + "0,5"    # Label home, set by settings
-                zpl += "^CF" + "0,35"   # Default text, set by amount of text entered approximating it to fit the label
+                zpl += "^LH" + "0,0"    # Label home, set by settings
+                zpl += "^CF" + "0," + qrTextSize.get()   # Default text, set by amount of text entered approximating it to fit the label
                 zpl += "^FO" + "5,5"    # First text placement
-                zpl += "^FD" + "Superman is" + "^FS" # First text
-                zpl += "^FO" + "5,45"
-                zpl += "^FD" + "a boyo" + "^FS"
-                zpl += "^FO" + "350,5"
-                zpl += "^BQ,," + "5"    # Set QR magnification
-                zpl += "^FD" + qrEntry1.get() + "^FS"
+                zpl += "^TB,304,190^FD" + qrEntry2.get() + "^FS" # Wrapped text from single line
+                zpl += "^FO" + "309,0"
+                zpl += "^BQ,," + qrCodeSize.get()    # Set QR magnification
+                zpl += "^FD" + qrEntry1.get() + "^FS" # QR code input
                 zpl += "^XZ"            # End of label
                 return(zpl)
             else:
-                print("left")
                 zpl = "^XA"             # Start of label
-                zpl += "^LH" + "0,5"    # Label home, set by settings
-                zpl += "^CF" + "0,35"   # Default text, set by amount of text entered approximating it to fit the label
-                zpl += "^FO" + "250,5"    # First text placement
-                zpl += "^FD" + "Superman is" + "^FS" # First text
-                zpl += "^FO" + "250,45"
-                zpl += "^FD" + "a boyo" + "^FS"
-                zpl += "^FO" + "5,5"
-                zpl += "^BQ,," + "5"    # Set QR magnification
-                zpl += "^FD" + qrEntry1.get() + "^FS"
+                zpl += "^LH" + "0,0"    # Label home, set by settings
+                zpl += "^CF" + "0," + qrTextSize.get()   # Default text, set by amount of text entered approximating it to fit the label
+                zpl += "^FO" + "200,5"    # First text placement
+                zpl += "^TB,304,190^FD" + qrEntry2.get() + "^FS" # Wrapped text from single line
+                zpl += "^FO" + "5,0"
+                zpl += "^BQ,," + qrCodeSize.get()    # Set QR magnification
+                zpl += "^FD" + qrEntry1.get() + "^FS" # QR code input
                 zpl += "^XZ"            # End of label
                 return(zpl)
 
@@ -431,9 +451,13 @@ class printApp(tk.Tk):
         #     returnFile = docx2txt.process(filing)
         #     return(returnFile)
 
+        self.bind('<Escape>', lambda x: pageSelect(HomePage)) # Press escape to return to homepage
+
         #########################
         # Add content to frames #
         #########################
+
+        
 
         # Image and text for titlebar
         try:
@@ -515,7 +539,7 @@ class printApp(tk.Tk):
         barcodePageBtn.grid(row = 1, column = 1)
 
         QRcodePageBtn = tk.Button(HomePage, 
-                                  command = lambda:QRcodePage.tkraise(), 
+                                  command = lambda:pageSelect(QRcodePage), 
                                   text = "QR coded Labels ", 
                                   image = QRCodedLabelsPageImg, 
                                   compound="top", 
@@ -716,6 +740,8 @@ class printApp(tk.Tk):
                     command = lambda: [rangeToList(addRangeBarcodeEntry1.get(),addRangeBarcodeEntry2.get()),updateLabels()])
         addRangeBarcodedBtn.grid(row=4, column=5)
 
+
+        #Seperator
         ttk.Separator(BarcodesPage, orient="vertical").grid(row=1, column=4, rowspan=7, sticky="ns")
 
         # Entry boxes
@@ -772,8 +798,10 @@ class printApp(tk.Tk):
 
         # Labels
         tk.Label(QRcodePage, text = "Select QR position", bg=backgroundColor, fg=fontColor).grid(row=0, column=1, sticky='e')
-        tk.Label(QRcodePage, text = "QR encoded data", bg=backgroundColor, fg=fontColor).grid(row=1, column=1)
-        tk.Label(QRcodePage, text = "Plain Text", bg=backgroundColor, fg=fontColor).grid(row=4, column=1)
+        tk.Label(QRcodePage, text = "QR encoded data", bg=backgroundColor, fg=specialColor).grid(row=1, column=1, sticky='w')
+        tk.Label(QRcodePage, text = "Plain Text", bg=backgroundColor, fg=specialColor).grid(row=4, column=1, sticky='w')
+        tk.Label(QRcodePage, text = "Text Size", bg=backgroundColor, fg=fontColor).grid(row=4, column=2, sticky='e')
+        tk.Label(QRcodePage, text = "QR Code Size", bg=backgroundColor, fg=fontColor).grid(row=1, column=2, sticky='e')
 
         # Text Entry
         qrEntry1 = tk.Entry(QRcodePage, width=90)
@@ -799,7 +827,7 @@ class printApp(tk.Tk):
                                      font=fontLabelH1,
                                      command= lambda:qrPreviewRefresh(),
                                      width=15)
-        qrPreviewRefreshBtn.grid(row=7, column=1)
+        qrPreviewRefreshBtn.grid(row=11, column=1)
 
         qrPrintLabelBtn = tk.Button(QRcodePage,
                                      text="Print",
@@ -810,7 +838,7 @@ class printApp(tk.Tk):
                                      activeforeground=specialColor,
                                      font=fontLabelH1,
                                      width=15)
-        qrPrintLabelBtn.grid(row=8, column=2)
+        qrPrintLabelBtn.grid(row=12, column=2)
 
         qrClearBtn = tk.Button(QRcodePage,
                                      text="Clear",
@@ -822,15 +850,21 @@ class printApp(tk.Tk):
                                      font=fontLabelH1,
                                      command = lambda: clearQRcodePage(),
                                      width=15)
-        qrClearBtn.grid(row=8, column=3)
+        qrClearBtn.grid(row=12, column=3)
 
         # Image - Preview image generated using Labelary API
-
         qrPreviewImage = tk.Label(QRcodePage, text="Imagery", image=qrPreviewImg)
-        qrPreviewImage.grid(row=7, column=2)
+        qrPreviewImage.grid(row=10, column=2, columnspan=3, rowspan=2)
         self.keep.append(qrPreviewImg)
+
+        # Tickers
+        qrTextSizeTicker = ttk.Spinbox(QRcodePage, textvariable=qrTextSize, from_=10, to=80, width=5)
+        qrTextSizeTicker.grid(row=4, column=3, sticky='w', padx=(10,0))
+
+        qrCodeSizeTicker = ttk.Spinbox(QRcodePage, textvariable=qrCodeSize, from_=1, to=10, width=5)
+        qrCodeSizeTicker.grid(row=1, column=3, sticky='w', padx=(10,0))
 
 if __name__ == "__main__":
     root = printApp()
-    root.mainloop()    
+    root.mainloop()
     
