@@ -447,29 +447,25 @@ class printApp(tk.Tk):
 
         ### Generate QR coded ZPL
         def genQRcodeZPL():
+            zpl = "^XA"             # Start of label
+            zpl += "^LH" + "0,0"    # Label home, set by settings
+            zpl += "^CF" + "0," + settings.qrTextSize.get()   # Default text, set by amount of text entered approximating it to fit the label
             if settings.varQRSideSelection.get() == "right":
-                zpl = "^XA"             # Start of label
-                zpl += "^LH" + "0,0"    # Label home, set by settings
-                zpl += "^CF" + "0," + settings.qrTextSize.get()   # Default text, set by amount of text entered approximating it to fit the label
                 zpl += "^FO" + "5,5"    # First text placement
                 zpl += "^TB,304,190^FD" + qrEntry2.get() + "^FS" # Wrapped text from single line
                 zpl += "^FO" + "309,0"
-                zpl += "^BQ,," + settings.qrCodeSize.get()    # Set QR magnification
-                zpl += "^FD" + qrEntry1.get() + "^FS" # QR code input
-                zpl += "^XZ"            # End of label
-                return(zpl)
             else:
-                zpl = "^XA"             # Start of label
-                zpl += "^LH" + "0,0"    # Label home, set by settings
-                zpl += "^CF" + "0," + settings.qrTextSize.get()   # Default text, set by amount of text entered approximating it to fit the label
                 zpl += "^FO" + "200,5"    # First text placement
                 zpl += "^TB,304,190^FD" + qrEntry2.get() + "^FS" # Wrapped text from single line
                 zpl += "^FO" + "5,0"
-                zpl += "^BQ,," + settings.qrCodeSize.get()    # Set QR magnification
-                zpl += "^FD" + qrEntry1.get() + "^FS" # QR code input
-                zpl += "^XZ"            # End of label
-                return(zpl)
-
+            zpl += "^BQ,," + settings.qrCodeSize.get()    # Set QR magnification
+            zpl += "^FD" + qrEntry1.get() + "^FS" # QR code input
+            zpl += "^XZ"            # End of label
+            return(zpl)
+            
+        def moveLabelHomeX():
+            labelSettingCanvas.moveto(objectxline1, x=labelSettingHorizontalSlider.get()*3, y=labelSettingVerticalSlider.get()*2)
+            labelSettingCanvas.moveto(objectxline2, x=labelSettingHorizontalSlider.get()*3, y=labelSettingVerticalSlider.get()*2)
         ### File open handler
 
         # def WordFileOpenHandler(filing):
@@ -917,8 +913,9 @@ class printApp(tk.Tk):
                                               activebackground=fontColor,
                                               highlightbackground=backgroundColor,
                                               highlightcolor=specialColor,
+                                              command=lambda x:moveLabelHomeX(),
                                               variable=settings.labelHomeVertical)
-        labelSettingVerticalSlider.grid(row=5, column=5, sticky='ns')
+        labelSettingVerticalSlider.grid(row=5, column=3, sticky='nsw', rowspan=3)
         labelSettingHorizontalSlider = tk.Scale(settingsPage, 
                                                 from_=0, 
                                                 to=25, 
@@ -930,8 +927,40 @@ class printApp(tk.Tk):
                                                 activebackground=fontColor,
                                                 highlightbackground=backgroundColor,
                                                 highlightcolor=specialColor,
+                                                command=lambda x:moveLabelHomeX(),
                                                 variable=settings.labelHomeHorizontal)
-        labelSettingHorizontalSlider.grid(row=9, column=1, columnspan=4, sticky='ew')
+        labelSettingHorizontalSlider.grid(row=9, column=1, columnspan=2, sticky='new')
+
+        # Canvas
+        labelSettingCanvasHeight = 150
+        labelSettingCanvasWidth = 400
+        labelSettingCanvas = tk.Canvas(settingsPage,
+                                       height=labelSettingCanvasHeight,
+                                       width=labelSettingCanvasWidth,
+                                       bd=0, 
+                                       highlightthickness=0, 
+                                       relief='ridge')
+        labelSettingCanvas.grid(row=5, column=1, rowspan=3, columnspan=2)
+
+        labelSettingCanvas.create_rectangle(5,5,395,145, outline="#ff0000")
+        labelSettingCanvas.create_polygon(6,0,0,6,6,6, outline="#0000ff", fill="#0000ff")
+        labelSettingCanvas.create_polygon(394,0,400,6,394,6, outline="#0000ff", fill="#0000ff")
+        labelSettingCanvas.create_polygon(0,144,6,144,6,150, outline="#0000ff", fill="#0000ff")
+        labelSettingCanvas.create_polygon(394,144,400,144,394,150, outline="#0000ff", fill="#0000ff")
+        
+        positionx = 0
+        positiony = 0
+        objectxline1 = labelSettingCanvas.create_line(positionx,positiony,positionx+9,positiony+9)
+        objectxline2 = labelSettingCanvas.create_line(positionx,positiony+9,positionx+9,positiony)
+
+        # def labelSettingCanvasX(x,y):
+        #     objectxline1 = labelSettingCanvas.create_line(x,y,x+10,y+10)
+        #     objectxline2 = labelSettingCanvas.create_line(x,x+10,y+10,y)
+
+        # labelSettingCanvasX(0,0)
+        
+        
+
 
 
 if __name__ == "__main__":
