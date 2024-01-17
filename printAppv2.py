@@ -1,5 +1,5 @@
 ############################
-# List of self.keep indexs #
+# List of printApp.keep indexs #
 ############################
 #
 # [0] = QR preview image
@@ -39,7 +39,6 @@ controlsColor = "#083358"   # A less dark blue                      #083358
 fontColor = "#9DB2BF"       # A light gray with a tint of blue      #9DB2BF
 specialColor = "#FFD717"    # Bright yellow                         #FFD717
 
-
 ### Standard button style
 # [buttonName] = tk.Button(LeftControlFrame, text = "buttonText", width = 15
 #                                ,command = [buttonCommand]
@@ -47,6 +46,7 @@ specialColor = "#FFD717"    # Bright yellow                         #FFD717
 #                                ,fg = specialColor
 #                                ,relief = "flat")
 # [buttonName].grid(row = y, column = x, padx = 15, pady = 10)
+
 
 ########################
 # Initialising Program #
@@ -101,23 +101,60 @@ class printApp(tk.Tk):
 
         import settings     # Most settings kept here
 
-        self.keep = []      # For long term storage of images so they aren't thrown out with garbage
+        printApp.keep = []      # For long term storage of images so they aren't thrown out with garbage
         qrPreviewDefault = Image.open("Images/QRCodedLabelsPageImg.PNG")
         qrPreviewDefaultImg = qrPreviewDefault.resize((504,200))
         qrPreviewImg = ImageTk.PhotoImage(qrPreviewDefaultImg)
-        self.keep.insert(0, qrPreviewImg) # Index 0 for this file to be easily replaced as image is updated
+        printApp.keep.insert(0, qrPreviewImg) # Index 0 for this file to be easily replaced as image is updated
         textPreviewDefault = Image.open("Images/PlainTextLabelsPageImg.PNG")
         textPreviewDefaultImg = textPreviewDefault.resize((504,200))
         textPreviewImg = ImageTk.PhotoImage(textPreviewDefaultImg)
-        self.keep.insert(1, textPreviewImg) # Index 1 for this file to be easily replaced as image is updated
+        printApp.keep.insert(1, textPreviewImg) # Index 1 for this file to be easily replaced as image is updated
         upperOnIMG = Image.open('Images/on.png')
-        self.keep.append(upperOnIMG)
+        printApp.keep.append(upperOnIMG)
         upperOffIMG = Image.open('Images/off.png')
-        self.keep.append(upperOffIMG)
+        printApp.keep.append(upperOffIMG)
+        global upperSet
         upperSet = ImageTk.PhotoImage(upperOnIMG)
-        self.keep.insert(2, upperSet) # Index 2 for this file to be easily replaced as image is updated
-        self.keep.append(upperOnIMG)
-        self.keep.append(upperOffIMG)
+        upperSetOff = ImageTk.PhotoImage(upperOffIMG)
+        printApp.keep.insert(2, upperSet) # Index 2 for this file to be easily replaced as image is updated
+        printApp.keep.insert(3, upperSetOff)
+        printApp.keep.append(upperOnIMG)
+        printApp.keep.append(upperOffIMG)
+
+        ##################
+        # Custom Widgets #
+        ##################
+
+        class newButton(tk.Frame):
+            def __init__(self, parent, newText, newCommand, width=15):
+                tk.Frame.__init__(self, parent)
+                self.label = tk.Button(self,
+                                    text=newText,
+                                    command=newCommand,
+                                    bg=controlsColor,
+                                    fg=specialColor,
+                                    width=width,
+                                    relief="flat")
+                self.label.pack()
+
+        class allCaps(tk.Frame):
+            # create set and get!!!!!!!!!!!
+            is_on = tk.BooleanVar(None, True)
+            def __init__(self, parent, text):
+                tk.Frame.__init__(self, parent)
+                tk.Frame.configure(self, bg=backgroundColor)
+                tk.Label(self, text="All Caps",bg=backgroundColor, fg=fontColor, font=("aerial 14 bold")).grid(row=0, column=0)
+                self.upperCaseBtn = tk.Button(self, image=upperSet, bd=0, command=self.upperswitch, relief="flat")
+                self.upperCaseBtn.grid(row=1, column=0)
+                tk.Label(self, text=text,bg=backgroundColor, fg=fontColor, font=("aerial 8 bold")).grid(row=2, column=0)
+            def upperswitch(self):
+                if self.is_on:
+                    self.upperCaseBtn.configure(image = upperSetOff)
+                    self.is_on = False
+                else:
+                    self.upperCaseBtn.configure(image = upperSet)
+                    self.is_on = True
 
         #################
         # Create Frames #
@@ -226,33 +263,35 @@ class printApp(tk.Tk):
 
         ### Add caplock control commands and images
 
-        def upperswitch():
-            def refreshUpperSwitch(): # Updates all caplock buttons in app
-                upperCaseBarcodedBtn.config(image = upperSet)
-                upperCaseQRBtn.config(image = upperSet)
-            # Determine is on or off
-            if settings.is_on:
-                upperSet = ImageTk.PhotoImage(upperOffIMG)
-                self.keep[2] = upperSet
-                refreshUpperSwitch()
-                # upperCaseBarcodedBtn.config(image = upperSet)
-                settings.is_on = False
-            else:
-                upperSet = ImageTk.PhotoImage(upperOnIMG)
-                self.keep[2] = upperSet
-                refreshUpperSwitch()
-                # upperCaseBarcodedBtn.config(image = upperSet)
-                settings.is_on = True
+        # def upperswitch():
+        #     def refreshUpperSwitch(): # Updates all caplock buttons in app
+        #         upperCaseBarcodedBtn.updateImage()
+        #         # upperCaseBarcodedBtn.upperCaseQRBtn.config(image = upperSet)
+        #         # upperCaseQRBtn.upperCaseQRBtn.config(image = upperSet)
+        #     # Determine is on or off
+        #     if settings.is_on:
+        #         global upperSet
+        #         upperSet = ImageTk.PhotoImage(upperOffIMG)
+        #         printApp.keep[2] = upperSet
+        #         refreshUpperSwitch()
+        #         # upperCaseBarcodedBtn.config(image = upperSet)
+        #         settings.is_on = False
+        #     else:
+        #         upperSet = ImageTk.PhotoImage(upperOnIMG)
+        #         printApp.keep[2] = upperSet
+        #         refreshUpperSwitch()
+        #         # upperCaseBarcodedBtn.config(image = upperSet)
+        #         settings.is_on = True
 
         # upperOnIMG = Image.open('Images/on.png')
         # upperOffIMG = Image.open('Images/off.png')
         # upperSet = ImageTk.PhotoImage(upperOnIMG)
-        # self.keep.insert(2, upperSet)
-        # self.keep.append(upperOnIMG, upperOffIMG)
+        # printApp.keep.insert(2, upperSet)
+        # printApp.keep.append(upperOnIMG, upperOffIMG)
         # upperOn = ImageTk.PhotoImage(upperOnIMG)
-        # self.keep.append(upperOn)
+        # printApp.keep.append(upperOn)
         # upperOff = ImageTk.PhotoImage(upperOffIMG)
-        # self.keep.append(upperOff)
+        # printApp.keep.append(upperOff)
 
         ### Return key definitions - each element is individually bound and passes an identifier
 
@@ -282,6 +321,17 @@ class printApp(tk.Tk):
             elif selection == QRcodePage:
                 QRcodePage.tkraise()
                 qrEntry1.focus_set()
+            elif selection == settingsPage:
+                settingsPage.tkraise()
+            elif selection == helpPage:
+                helpPage.tkraise()
+            elif selection == historyPage:
+                historyPage.tkraise()
+            elif selection == plainPage:
+                plainPage.tkraise()
+            elif selection == customerPage:
+                customerPage.tkraise()
+
 
         ### Barcode Range creation command
                 
@@ -380,8 +430,6 @@ class printApp(tk.Tk):
             pass
 
         def clearAll():
-            if settings.is_on == False:
-                upperswitch()
             clearBarcodesPage()
             clearQRcodePage()
             clearPlainTextPage()
@@ -436,14 +484,14 @@ class printApp(tk.Tk):
                 eatme = response.content
                 qrPreviewImg = ImageTk.PhotoImage(data=eatme)
                 qrPreviewImage.configure(image=qrPreviewImg)
-                self.keep[0] = qrPreviewImg
+                printApp.keep[0] = qrPreviewImg
 
         def qrDefaultPreview():
             qrPreviewDefault = Image.open("Images/QRCodedLabelsPageImg.PNG")
             qrPreviewDefaultImg = qrPreviewDefault.resize((504,200))
             qrPreviewImg = ImageTk.PhotoImage(qrPreviewDefaultImg)
             qrPreviewImage.configure(image=qrPreviewImg)
-            self.keep[0] = qrPreviewImg
+            printApp.keep[0] = qrPreviewImg
 
         ### Generate QR coded ZPL
         def genQRcodeZPL():
@@ -486,7 +534,7 @@ class printApp(tk.Tk):
             TitleContentLabel0 = tk.Label(TitleFrame, image=TitleCompanyImage1,bg = controlsColor, width = TitleImageWidth, height = TitleImageHeight, bd = 0, highlightthickness = 0)
             TitleContentLabel0.grid(row = 0, column = 0, sticky = "ew", padx = 0, pady = 10)
             TitleContentLabel0.image = TitleCompanyImage1
-            self.keep.append(TitleCompanyImage1)
+            printApp.keep.append(TitleCompanyImage1)
         except:
             TitleCompanyLabel = tk.Label(TitleFrame, text="CDW", bg = backgroundColor, fg = "red", font=('aerial 48 bold'))
             TitleCompanyLabel.grid(row = 0, column = 0, sticky = "ew", padx = (0,TitleImageWidth), pady = 10)
@@ -495,32 +543,24 @@ class printApp(tk.Tk):
         TitleContentLabel1.grid(row = 0, column = 1, sticky = "ew")
 
         # Controls for lefthand sidebar
-        LeftControlBackBtn = tk.Button(LeftControlFrame, text = "Home", width = 15,
-                                    command = lambda:pageSelect(HomePage), # temp command until genuine command is ready
-                                    bg = controlsColor,
-                                    fg = specialColor,
-                                    relief = "flat")
+        LeftControlBackBtn = newButton(LeftControlFrame,
+                                       "Home",
+                                       lambda:pageSelect(HomePage))
         LeftControlBackBtn.grid(row = 0, column = 0, padx = 15, pady = 10)
 
-        LeftControlHelpBtn = tk.Button(LeftControlFrame, text = "Help", width = 15,
-                                    command = lambda:helpPage.tkraise(),
-                                    bg = controlsColor,
-                                    fg = specialColor,
-                                    relief = "flat")
+        LeftControlHelpBtn = newButton(LeftControlFrame, 
+                                       "Help",
+                                       lambda:pageSelect(helpPage))
         LeftControlHelpBtn.grid(row = 10, column = 0, padx = 15, pady = (550,5))
 
-        LeftControlHistoryBtn = tk.Button(LeftControlFrame, text = "Print History", width = 15,
-                                    command = lambda:historyPage.tkraise(),
-                                    bg = controlsColor,
-                                    fg = specialColor,
-                                    relief = "flat")
+        LeftControlHistoryBtn = newButton(LeftControlFrame, 
+                                          "Print History", 
+                                          lambda:pageSelect(historyPage))
         LeftControlHistoryBtn.grid(row = 12, column = 0, padx = 15, pady = 5)
 
-        LeftControlSettingsBtn = tk.Button(LeftControlFrame, text = "Settings", width = 15,
-                                    command = lambda:settingsPage.tkraise(),
-                                    bg = controlsColor,
-                                    fg = specialColor,
-                                    relief = "flat")
+        LeftControlSettingsBtn = newButton(LeftControlFrame,
+                                           "Settings",
+                                           lambda:pageSelect(settingsPage))
         LeftControlSettingsBtn.grid(row = 14, column = 0, padx = 15, pady = 5)
 
         VersionLabel = tk.Label(LeftControlFrame, textvariable=varappversion, bg = backgroundColor, fg = fontColor)
@@ -531,16 +571,16 @@ class printApp(tk.Tk):
         # Images
         BarcodedLabelsPageImg = PhotoImage(file = "Images/BarcodedLabelsPageImg.PNG")
         BarcodedLabelsPageImg.image = BarcodedLabelsPageImg
-        self.keep.append(BarcodedLabelsPageImg)
+        printApp.keep.append(BarcodedLabelsPageImg)
         QRCodedLabelsPageImg = PhotoImage(file = "Images/QRCodedLabelsPageImg.PNG")
         QRCodedLabelsPageImg.image = QRCodedLabelsPageImg
-        self.keep.append(QRCodedLabelsPageImg)
+        printApp.keep.append(QRCodedLabelsPageImg)
         PlainTextLabelsPageImg = PhotoImage(file = "Images/PlainTextLabelsPageImg.PNG")
         PlainTextLabelsPageImg.image = PlainTextLabelsPageImg
-        self.keep.append(PlainTextLabelsPageImg)
+        printApp.keep.append(PlainTextLabelsPageImg)
         customerLabelsPageImg = PhotoImage(file = "Images/PlainTextLabelsPageImg.PNG")
         customerLabelsPageImg.image = customerLabelsPageImg
-        self.keep.append(customerLabelsPageImg)
+        printApp.keep.append(customerLabelsPageImg)
         
         
         # Buttons
@@ -611,10 +651,10 @@ class printApp(tk.Tk):
         # Images
         BarcodedLabelsPageImg_serial = PhotoImage(file = "Images/BarcodedLabelsPageImg_serial.PNG")
         BarcodedLabelsPageImg_serial.image = BarcodedLabelsPageImg_serial
-        self.keep.append(BarcodedLabelsPageImg_serial)
+        printApp.keep.append(BarcodedLabelsPageImg_serial)
         BarcodedLabelsPageImg_mac = PhotoImage(file = "Images/BarcodedLabelsPageImg_mac.PNG")
         BarcodedLabelsPageImg_mac.image = BarcodedLabelsPageImg_mac
-        self.keep.append(BarcodedLabelsPageImg_mac)
+        printApp.keep.append(BarcodedLabelsPageImg_mac)
         
         # Labels
         tk.Label(BarcodesPage,
@@ -782,10 +822,8 @@ class printApp(tk.Tk):
         addedTagsBarcodedList.bind('<Key>', updateLabels)
 
         # Capslock control
-        tk.Label(BarcodesPage, text="All Caps",bg=backgroundColor, fg=fontColor, font=("aerial 14 bold")).grid(row=8, column=0)
-        upperCaseBarcodedBtn = tk.Button(BarcodesPage, image=upperSet, bd=0, command=upperswitch, relief="flat")
+        upperCaseBarcodedBtn = allCaps(BarcodesPage, "All caps with show when\nlabels are printed.\nOnly affects BARCODES")
         upperCaseBarcodedBtn.grid(row=9, column=0)
-        tk.Label(BarcodesPage, text="All caps with show when\nlabels are printed.\nOnly affects BARCODES",bg=backgroundColor, fg=fontColor, font=("aerial 8 bold")).grid(row=10, column=0)
 
         ### QR Code Page ###
         
@@ -830,10 +868,14 @@ class printApp(tk.Tk):
         qrEntry2.grid(row=5, column=0, columnspan=6)
 
         # Capslock control
-        tk.Label(QRcodePage, text="All Caps",bg=backgroundColor, fg=fontColor, font=("aerial 14 bold")).grid(row=12, column=0)
-        upperCaseQRBtn = tk.Button(QRcodePage, image=upperSet, bd=0, command=upperswitch, relief="flat")
+
+        upperCaseQRBtn = allCaps(QRcodePage, "All caps with show when\nlabels are printed.\nDoes NOT affect QR code")
         upperCaseQRBtn.grid(row=13, column=0)
-        tk.Label(QRcodePage, text="All caps with show when\nlabels are printed.\nDoes NOT affect QR code",bg=backgroundColor, fg=fontColor, font=("aerial 8 bold")).grid(row=14, column=0)
+
+        # tk.Label(QRcodePage, text="All Caps",bg=backgroundColor, fg=fontColor, font=("aerial 14 bold")).grid(row=12, column=0)
+        # upperCaseQRBtn = tk.Button(QRcodePage, image=upperSet, bd=0, command=upperswitch, relief="flat")
+        # upperCaseQRBtn.grid(row=13, column=0)
+        # tk.Label(QRcodePage, text="All caps with show when\nlabels are printed.\nDoes NOT affect QR code",bg=backgroundColor, fg=fontColor, font=("aerial 8 bold")).grid(row=14, column=0)
 
         # Buttons
         qrPreviewRefreshBtn = tk.Button(QRcodePage,
@@ -874,7 +916,7 @@ class printApp(tk.Tk):
         # Image - Preview image generated using Labelary API
         qrPreviewImage = tk.Label(QRcodePage, text="Imagery", image=qrPreviewImg)
         qrPreviewImage.grid(row=10, column=2, columnspan=3, rowspan=2)
-        self.keep.append(qrPreviewImg)
+        printApp.keep.append(qrPreviewImg)
 
         # Tickers
         qrTextSizeTicker = ttk.Spinbox(QRcodePage, textvariable=settings.qrTextSize, from_=10, to=80, width=5)
@@ -929,7 +971,7 @@ class printApp(tk.Tk):
                                                 highlightcolor=specialColor,
                                                 command=lambda x:moveLabelHomeX(),
                                                 variable=settings.labelHomeHorizontal)
-        labelSettingHorizontalSlider.grid(row=9, column=1, columnspan=2, sticky='new')
+        labelSettingHorizontalSlider.grid(row=8, column=1, columnspan=2, sticky='new')
 
         # Canvas
         labelSettingCanvasHeight = 150
@@ -952,16 +994,6 @@ class printApp(tk.Tk):
         positiony = 0
         objectxline1 = labelSettingCanvas.create_line(positionx,positiony,positionx+9,positiony+9)
         objectxline2 = labelSettingCanvas.create_line(positionx,positiony+9,positionx+9,positiony)
-
-        # def labelSettingCanvasX(x,y):
-        #     objectxline1 = labelSettingCanvas.create_line(x,y,x+10,y+10)
-        #     objectxline2 = labelSettingCanvas.create_line(x,x+10,y+10,y)
-
-        # labelSettingCanvasX(0,0)
-        
-        
-
-
 
 if __name__ == "__main__":
     root = printApp()
