@@ -28,6 +28,7 @@ import re
 import docx2txt
 import xlrd
 import requests
+import win32print
 
 #################
 # Create styles #
@@ -139,9 +140,8 @@ class printApp(tk.Tk):
                 self.label.pack()
 
         class allCaps(tk.Frame):
-            # create set and get!!!!!!!!!!!
-            is_on = tk.BooleanVar(None, True)
             def __init__(self, parent, text):
+                self.is_on = True
                 tk.Frame.__init__(self, parent)
                 tk.Frame.configure(self, bg=backgroundColor)
                 tk.Label(self, text="All Caps",bg=backgroundColor, fg=fontColor, font=("aerial 14 bold")).grid(row=0, column=0)
@@ -155,6 +155,38 @@ class printApp(tk.Tk):
                 else:
                     self.upperCaseBtn.configure(image = upperSet)
                     self.is_on = True
+            def get(self):
+                return(self.is_on)
+            def set(self, state):
+                if state == True:
+                    self.is_on = False
+                    self.upperswitch()
+                else:
+                    self.is_on = True
+                    self.upperswitch()
+
+        class printerSelector(tk.Frame):
+            def __init__(self, parent, text, printer):
+                printerList = win32print.EnumPrinters(win32print.PRINTER_ENUM_LOCAL, None, 1)
+                newprinterlist = []
+                for x in printerList:
+                    newprinterlist.append(x[2])
+                tk.Frame.__init__(self, parent, bg=backgroundColor)
+                self.label = tk.Label(self,
+                                    text=text,
+                                    bg=backgroundColor,
+                                    fg=fontColor,
+                                    font=fontLabelSub)
+                self.label.pack(side="left", padx=(0,10))
+                self.combo = ttk.Combobox(self,
+                                          values=newprinterlist)
+                self.combo.pack(side="right")
+            def printerLookup(self):
+                printerList = win32print.EnumPrinters(win32print.PRINTER_ENUM_LOCAL, None, 1)
+                newprinterlist = []
+                for x in printerList:
+                    newprinterlist.append(x[2])
+                # print(newprinterlist)
 
         #################
         # Create Frames #
@@ -260,38 +292,6 @@ class printApp(tk.Tk):
         ###################
         # Define commands #
         ###################
-
-        ### Add caplock control commands and images
-
-        # def upperswitch():
-        #     def refreshUpperSwitch(): # Updates all caplock buttons in app
-        #         upperCaseBarcodedBtn.updateImage()
-        #         # upperCaseBarcodedBtn.upperCaseQRBtn.config(image = upperSet)
-        #         # upperCaseQRBtn.upperCaseQRBtn.config(image = upperSet)
-        #     # Determine is on or off
-        #     if settings.is_on:
-        #         global upperSet
-        #         upperSet = ImageTk.PhotoImage(upperOffIMG)
-        #         printApp.keep[2] = upperSet
-        #         refreshUpperSwitch()
-        #         # upperCaseBarcodedBtn.config(image = upperSet)
-        #         settings.is_on = False
-        #     else:
-        #         upperSet = ImageTk.PhotoImage(upperOnIMG)
-        #         printApp.keep[2] = upperSet
-        #         refreshUpperSwitch()
-        #         # upperCaseBarcodedBtn.config(image = upperSet)
-        #         settings.is_on = True
-
-        # upperOnIMG = Image.open('Images/on.png')
-        # upperOffIMG = Image.open('Images/off.png')
-        # upperSet = ImageTk.PhotoImage(upperOnIMG)
-        # printApp.keep.insert(2, upperSet)
-        # printApp.keep.append(upperOnIMG, upperOffIMG)
-        # upperOn = ImageTk.PhotoImage(upperOnIMG)
-        # printApp.keep.append(upperOn)
-        # upperOff = ImageTk.PhotoImage(upperOffIMG)
-        # printApp.keep.append(upperOff)
 
         ### Return key definitions - each element is individually bound and passes an identifier
 
@@ -433,6 +433,8 @@ class printApp(tk.Tk):
             clearBarcodesPage()
             clearQRcodePage()
             clearPlainTextPage()
+            upperCaseBarcodedBtn.set(True) # Reset Allcaps to on
+            upperCaseQRBtn.set(True)
 
         ### File open dialog
             
@@ -496,7 +498,7 @@ class printApp(tk.Tk):
         ### Generate QR coded ZPL
         def genQRcodeZPL():
             zpl = "^XA"             # Start of label
-            zpl += "^LH" + "0,0"    # Label home, set by settings
+            zpl += "^LH" + str(settings.labelHomeHorizontal.get()*2) + "," + str(settings.labelHomeVertical.get())    # Label home, set by settings
             zpl += "^CF" + "0," + settings.qrTextSize.get()   # Default text, set by amount of text entered approximating it to fit the label
             if settings.varQRSideSelection.get() == "right":
                 zpl += "^FO" + "5,5"    # First text placement
@@ -937,12 +939,11 @@ class printApp(tk.Tk):
         tk.Label(settingsPage, bg=backgroundColor, fg=fontColor, font=fontLabelSub, text="N.B. Position Adjustment will not affect some customer labels").grid(row=11, column=1, columnspan=2)
 
         tk.Label(settingsPage, bg=backgroundColor, fg=fontColor, text="Select Printers").grid(row=3, column=7, columnspan=2)
-        tk.Label(settingsPage, bg=backgroundColor, fg=fontColor, font=fontLabelSub, text="Default Printer:").grid(row=4, column=7, columnspan=2)
-        tk.Label(settingsPage, bg=backgroundColor, fg=fontColor, font=fontLabelSub, text="Barcodes Printer:").grid(row=5, column=7, columnspan=2)
-        tk.Label(settingsPage, bg=backgroundColor, fg=fontColor, font=fontLabelSub, text="QR Printer:").grid(row=6, column=7, columnspan=2)
-        tk.Label(settingsPage, bg=backgroundColor, fg=fontColor, font=fontLabelSub, text="Barcodes Alt Printer:").grid(row=7, column=7, columnspan=2)
-        tk.Label(settingsPage, bg=backgroundColor, fg=fontColor, font=fontLabelSub, text="Text Printer (Small):").grid(row=8, column=7, columnspan=2)
-        tk.Label(settingsPage, bg=backgroundColor, fg=fontColor, font=fontLabelSub, text="Text Printer (Large):").grid(row=9, column=7, columnspan=2)
+        # tk.Label(settingsPage, bg=backgroundColor, fg=fontColor, font=fontLabelSub, text="Barcodes Printer:").grid(row=5, column=7, columnspan=2)
+        # tk.Label(settingsPage, bg=backgroundColor, fg=fontColor, font=fontLabelSub, text="QR Printer:").grid(row=6, column=7, columnspan=2)
+        # tk.Label(settingsPage, bg=backgroundColor, fg=fontColor, font=fontLabelSub, text="Barcodes Alt Printer:").grid(row=7, column=7, columnspan=2)
+        # tk.Label(settingsPage, bg=backgroundColor, fg=fontColor, font=fontLabelSub, text="Text Printer (Small):").grid(row=8, column=7, columnspan=2)
+        # tk.Label(settingsPage, bg=backgroundColor, fg=fontColor, font=fontLabelSub, text="Text Printer (Large):").grid(row=9, column=7, columnspan=2)
 
         # Sliders
         labelSettingVerticalSlider = tk.Scale(settingsPage, 
@@ -995,7 +996,20 @@ class printApp(tk.Tk):
         objectxline1 = labelSettingCanvas.create_line(positionx,positiony,positionx+9,positiony+9)
         objectxline2 = labelSettingCanvas.create_line(positionx,positiony+9,positionx+9,positiony)
 
+        defaultPrinterSelector = printerSelector(settingsPage, "Default Printer:", None)
+        defaultPrinterSelector.grid(row=4, column=7, sticky='e')
+        barcodePrinterSelector = printerSelector(settingsPage, "Barcode Printer:", None)
+        barcodePrinterSelector.grid(row=5, column=7, sticky='e')
+        QRPrinterSelector = printerSelector(settingsPage, "QR Printer:", None)
+        QRPrinterSelector.grid(row=6, column=7, sticky='e')
+        barcodeALTPrinterSelector = printerSelector(settingsPage, "Barcode Printer Alt:", None)
+        barcodeALTPrinterSelector.grid(row=7, column=7, sticky='e')
+        textSMLPrinterSelector = printerSelector(settingsPage, "Text Printer (Small):", None)
+        textSMLPrinterSelector.grid(row=8, column=7, sticky='e')
+        textLRGPrinterSelector = printerSelector(settingsPage, "Text Printer (Large):", None)
+        textLRGPrinterSelector.grid(row=9, column=7, sticky='e')
+        defaultPrinterSelector.printerLookup()
+
 if __name__ == "__main__":
     root = printApp()
     root.mainloop()
-    
