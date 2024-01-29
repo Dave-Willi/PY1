@@ -474,22 +474,14 @@ class printApp(tk.Tk):
             settings.tagQty.set("Number of tags: " + str(counter))
 
         def updateTextLabels(*event): # Adds range to list and updates tag count
-            tmp = addedTagsTextList.get('1.0', tk.END).rstrip("\n")
-            # while addedTagsTextList.get('1.0', tk.END).endswith("\n\n"):
-            #     tmp = addedTagsTextList.get('1.0', tk.END).rstrip("\n")
-            #     print("create tmp")
-            #     addedTagsTextList.delete('1.0', tk.END)
-            #     print("erase original")
-            #     addedTagsTextList.insert(tk.END, tmp)
-            #     print("insert new")
+            # tmp = addedTagsTextList.get('1.0', tk.END).rstrip("\n")
             addedTagsTextList.insert(tk.END, settings.currentList.get())    # Add current range to list
-            tmp.insert(tk.END, settings.currentList.get())
+            # tmp.insert(tk.END, settings.currentList.get())
             settings.currentList.set('')                            # clears stored list from variables
             counter = 0
             for x in (addedTagsTextList.get('1.0', tk.END).split('\n\n')):    # split the list into lines
-                if x:                                               # only count lines with something in them
+                if x and x != '\n':                                # only count lines with something in them
                     counter += 1
-            counter -= 1
             settings.tagQtytxt.set("Number of tags: " + str(counter))
 
         ### Changes selection of barcode type
@@ -1044,14 +1036,19 @@ class printApp(tk.Tk):
         defaultPrinterSelector.grid(row=4, column=7, sticky='e')
         barcodePrinterSelector = printerSelector(settingsPage, "Barcode Printer:", barcodePrinter)
         barcodePrinterSelector.grid(row=5, column=7, sticky='e')
-        QRPrinterSelector = printerSelector(settingsPage, "QR Printer:", QRPrinter)
-        QRPrinterSelector.grid(row=6, column=7, sticky='e')
         barcodeALTPrinterSelector = printerSelector(settingsPage, "Barcode Printer Alt:", barcodeAltPrinter)
-        barcodeALTPrinterSelector.grid(row=7, column=7, sticky='e')
+        barcodeALTPrinterSelector.grid(row=6, column=7, sticky='e')
+        QRPrinterSelector = printerSelector(settingsPage, "QR Printer:", QRPrinter)
+        QRPrinterSelector.grid(row=7, column=7, sticky='e')
         textSMLPrinterSelector = printerSelector(settingsPage, "Text Printer (Small):", textSMLPrinter)
         textSMLPrinterSelector.grid(row=8, column=7, sticky='e')
         textLRGPrinterSelector = printerSelector(settingsPage, "Text Printer (Large):", textLRGPrinter)
         textLRGPrinterSelector.grid(row=9, column=7, sticky='e')
+
+        # buttons
+
+        savePrinters = newButton(settingsPage, "Save Printers", lambda:blank())
+        savePrinters.grid(row=10, column=7)
 
         ### Plain Text Page ###
 
