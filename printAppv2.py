@@ -4,7 +4,8 @@
 #
 # [0] = QR preview image
 # [1] = Text preview image
-# [2] = Capslock Image
+# [2] = Capslock Image On
+# [3] = Capslock Image Off
 
 #############################
 # List of required installs #
