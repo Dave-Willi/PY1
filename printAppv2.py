@@ -42,7 +42,8 @@ backgroundColor = "#001F3F" # A dark blue                           #001F3F
 controlsColor = "#083358"   # A less dark blue                      #083358
 fontColor = "#9DB2BF"       # A light gray with a tint of blue      #9DB2BF
 specialColor = "#FFD717"    # Bright yellow                         #FFD717
-activeBGcolor = "#053055"
+activeBGcolor = "#255075"
+brightRedColor = "#FF0000"
 
 ### Standard button style
 # [buttonName] = tk.Button(LeftControlFrame, text = "buttonText", width = 15
@@ -491,9 +492,12 @@ class printApp(tk.Tk):
         def barcodeLabelSelection(choice):
             choice.config(fg=specialColor)
             if choice == BarcodeCustomSelectionBtn:
+                barcodeCustomLabel.config(fg=brightRedColor)
                 barcodeCustomInput.config(state="normal")
-            # else:
-            #     barcodeCustomInput.config(state="disabled")
+            else:
+                barcodeCustomInput.delete(0, tk.END)
+                barcodeCustomLabel.config(fg=fontColor)
+                barcodeCustomInput.config(state="disabled")
             for x in barcodeRadioButtons:
                 if x != choice:
                     x.config(fg=fontColor)
@@ -876,13 +880,21 @@ class printApp(tk.Tk):
         # BarcodeMACSelectionBtn.grid(row=6, column=2, rowspan=2, columnspan=2)
         BarcodeCustomSelectionBtn.grid(row=2, column=2)
 
-        # List of radioButtons
-        barcodeRadioButtons = [BarcodeAssetSelectionBtn,BarcodeSerialSelectionBtn,BarcodeMACSelectionBtn,BarcodeCustomSelectionBtn]
-        barcodeLabelSelection(BarcodeAssetSelectionBtn) # Set default button
+        barcodeCustomLabel = tk.Label(barcodeRadioButtonsFrame,
+                                      text="Enter your custom header here :",
+                                      font=fontLabelSub,
+                                      bg=backgroundColor,
+                                      fg="#FF0000",
+                                      anchor="e")
+        barcodeCustomLabel.grid(row=3, column=1, sticky="e")
 
         barcodeCustomInput = tk.Entry(barcodeRadioButtonsFrame,
                                       state="disabled")
         barcodeCustomInput.grid(row=3, column=2)
+
+        # List of radioButtons
+        barcodeRadioButtons = [BarcodeAssetSelectionBtn,BarcodeSerialSelectionBtn,BarcodeMACSelectionBtn,BarcodeCustomSelectionBtn]
+        barcodeLabelSelection(BarcodeAssetSelectionBtn) # Set default button
 
         # Buttons
         # printBarcodedBtn = tk.Button(BarcodesPage,
