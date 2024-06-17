@@ -42,6 +42,7 @@ backgroundColor = "#001F3F" # A dark blue                           #001F3F
 controlsColor = "#083358"   # A less dark blue                      #083358
 fontColor = "#9DB2BF"       # A light gray with a tint of blue      #9DB2BF
 specialColor = "#FFD717"    # Bright yellow                         #FFD717
+activeBGcolor = "#053055"
 
 ### Standard button style
 # [buttonName] = tk.Button(LeftControlFrame, text = "buttonText", width = 15
@@ -489,6 +490,10 @@ class printApp(tk.Tk):
 
         def barcodeLabelSelection(choice):
             choice.config(fg=specialColor)
+            if choice == BarcodeCustomSelectionBtn:
+                barcodeCustomInput.config(state="normal")
+            # else:
+            #     barcodeCustomInput.config(state="disabled")
             for x in barcodeRadioButtons:
                 if x != choice:
                     x.config(fg=fontColor)
@@ -749,12 +754,18 @@ class printApp(tk.Tk):
         ### Barcode page ###
 
         # Images
+        BarcodedLabelsPageImg_asset  = PhotoImage(file = "Images/BarcodedLabelsPageImg_asset.PNG")
+        BarcodedLabelsPageImg_asset.image = BarcodedLabelsPageImg_asset
+        printApp.keep.append(BarcodedLabelsPageImg_asset)
         BarcodedLabelsPageImg_serial = PhotoImage(file = "Images/BarcodedLabelsPageImg_serial.PNG")
         BarcodedLabelsPageImg_serial.image = BarcodedLabelsPageImg_serial
         printApp.keep.append(BarcodedLabelsPageImg_serial)
         BarcodedLabelsPageImg_mac = PhotoImage(file = "Images/BarcodedLabelsPageImg_mac.PNG")
         BarcodedLabelsPageImg_mac.image = BarcodedLabelsPageImg_mac
         printApp.keep.append(BarcodedLabelsPageImg_mac)
+        BarcodedLabelsPageImg_custom = PhotoImage(file = "Images/BarcodedLabelsPageImg_custom.PNG")
+        BarcodedLabelsPageImg_custom.image = BarcodedLabelsPageImg_custom
+        printApp.keep.append(BarcodedLabelsPageImg_custom)
         
         # Labels
         tk.Label(BarcodesPage,
@@ -777,8 +788,14 @@ class printApp(tk.Tk):
 
 
         # RadioButtons
-        BarcodeAssetSelectionBtn = tk.Radiobutton(BarcodesPage,
-                    image=BarcodedLabelsPageImg, 
+
+        barcodeRadioButtonsFrame = tk.Frame(BarcodesPage, bg=backgroundColor)
+        barcodeRadioButtonsFrame.grid(row=2, column=2, rowspan=6, columnspan=2)
+
+
+        # BarcodeAssetSelectionBtn = tk.Radiobutton(BarcodesPage,
+        BarcodeAssetSelectionBtn = tk.Radiobutton(barcodeRadioButtonsFrame,
+                    image=BarcodedLabelsPageImg_asset, 
                     text="Asset Tag", 
                     compound="top", 
                     bg=backgroundColor,
@@ -789,14 +806,16 @@ class printApp(tk.Tk):
                     font=fontLabelH1,
                     variable=settings.varBarcodeSelection,
                     indicatoron=False,
-                    selectcolor=controlsColor,
+                    selectcolor=activeBGcolor,
                     bd=0,
                     offrelief="flat",
                     value="Asset")
         BarcodeAssetSelectionBtn.config(command = lambda arg=BarcodeAssetSelectionBtn: barcodeLabelSelection(arg))
-        BarcodeAssetSelectionBtn.grid(row=2, column=2, rowspan=2, columnspan=2)
-        
-        BarcodeSerialSelectionBtn = tk.Radiobutton(BarcodesPage,
+        #BarcodeAssetSelectionBtn.grid(row=2, column=2, rowspan=2, columnspan=2)
+        BarcodeAssetSelectionBtn.grid(row=1, column=1)
+
+        # BarcodeSerialSelectionBtn = tk.Radiobutton(BarcodesPage,
+        BarcodeSerialSelectionBtn = tk.Radiobutton(barcodeRadioButtonsFrame,           
                     image=BarcodedLabelsPageImg_serial, 
                     text="Serial Number",
                     compound="top", 
@@ -808,14 +827,16 @@ class printApp(tk.Tk):
                     font=fontLabelH1,
                     variable=settings.varBarcodeSelection,
                     indicatoron=False,
-                    selectcolor=controlsColor,
+                    selectcolor=activeBGcolor,
                     bd=0,
                     offrelief="flat",
                     value="Serial")
         BarcodeSerialSelectionBtn.config(command = lambda arg=BarcodeSerialSelectionBtn: barcodeLabelSelection(arg))
-        BarcodeSerialSelectionBtn.grid(row=4, column=2, rowspan=2, columnspan=2)
-        
-        BarcodeMACSelectionBtn = tk.Radiobutton(BarcodesPage,
+        #BarcodeSerialSelectionBtn.grid(row=4, column=2, rowspan=2, columnspan=2)
+        BarcodeSerialSelectionBtn.grid(row=1, column=2)
+
+        # BarcodeMACSelectionBtn = tk.Radiobutton(BarcodesPage,
+        BarcodeMACSelectionBtn = tk.Radiobutton(barcodeRadioButtonsFrame,
                     image=BarcodedLabelsPageImg_mac, 
                     text="MAC Address",
                     compound="top", 
@@ -827,16 +848,41 @@ class printApp(tk.Tk):
                     font=fontLabelH1,
                     variable=settings.varBarcodeSelection,
                     indicatoron=False,
-                    selectcolor=controlsColor,
+                    selectcolor=activeBGcolor,
                     bd=0,
                     offrelief="flat",
                     value="MAC")
         BarcodeMACSelectionBtn.config(command = lambda arg=BarcodeMACSelectionBtn: barcodeLabelSelection(arg))
-        BarcodeMACSelectionBtn.grid(row=6, column=2, rowspan=2, columnspan=2)
+        # BarcodeMACSelectionBtn.grid(row=6, column=2, rowspan=2, columnspan=2)
+        BarcodeMACSelectionBtn.grid(row=2, column=1)
+
+        BarcodeCustomSelectionBtn = tk.Radiobutton(barcodeRadioButtonsFrame,
+                    image=BarcodedLabelsPageImg_custom, 
+                    text="Custom Label",
+                    compound="top", 
+                    bg=backgroundColor, 
+                    fg=fontColor,
+                    relief="flat", 
+                    activebackground=controlsColor, 
+                    activeforeground=specialColor,
+                    font=fontLabelH1,
+                    variable=settings.varBarcodeSelection,
+                    indicatoron=False,
+                    selectcolor=activeBGcolor,
+                    bd=0,
+                    offrelief="flat",
+                    value="Custom")
+        BarcodeCustomSelectionBtn.config(command = lambda arg=BarcodeCustomSelectionBtn: barcodeLabelSelection(arg))
+        # BarcodeMACSelectionBtn.grid(row=6, column=2, rowspan=2, columnspan=2)
+        BarcodeCustomSelectionBtn.grid(row=2, column=2)
 
         # List of radioButtons
-        barcodeRadioButtons = [BarcodeAssetSelectionBtn,BarcodeSerialSelectionBtn,BarcodeMACSelectionBtn]
+        barcodeRadioButtons = [BarcodeAssetSelectionBtn,BarcodeSerialSelectionBtn,BarcodeMACSelectionBtn,BarcodeCustomSelectionBtn]
         barcodeLabelSelection(BarcodeAssetSelectionBtn) # Set default button
+
+        barcodeCustomInput = tk.Entry(barcodeRadioButtonsFrame,
+                                      state="disabled")
+        barcodeCustomInput.grid(row=3, column=2)
 
         # Buttons
         # printBarcodedBtn = tk.Button(BarcodesPage,
