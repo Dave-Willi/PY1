@@ -44,6 +44,7 @@ fontColor = "#9DB2BF"       # A light gray with a tint of blue      #9DB2BF
 specialColor = "#FFD717"    # Bright yellow                         #FFD717
 activeBGcolor = "#255075"
 brightRedColor = "#FF0000"
+fontType2 = ("Arial", 16, "bold")
 
 ### Standard button style
 # [buttonName] = tk.Button(LeftControlFrame, text = "buttonText", width = 15
@@ -492,12 +493,12 @@ class printApp(tk.Tk):
         def barcodeLabelSelection(choice):
             choice.config(fg=specialColor)
             if choice == BarcodeCustomSelectionBtn:
-                barcodeCustomLabel.config(fg=brightRedColor)
-                barcodeCustomInput.config(state="normal")
+                barcodeCustomLabel.config(fg=specialColor)
+                barcodeCustomInput.config(state="normal", background=specialColor)
             else:
                 barcodeCustomInput.delete(0, tk.END)
                 barcodeCustomLabel.config(fg=fontColor)
-                barcodeCustomInput.config(state="disabled")
+                barcodeCustomInput.config(background=fontColor, state="disabled")
             for x in barcodeRadioButtons:
                 if x != choice:
                     x.config(fg=fontColor)
@@ -604,6 +605,12 @@ class printApp(tk.Tk):
 
         ### Generate QR coded ZPL
         def genQRcodeZPL():
+            if qrEntry1.get().startswith("http://") or qrEntry1.get().startswith("https://"):
+                prefix = "MM,A"  # URL
+            elif "@" in qrEntry1.get() and "." in qrEntry1.get():
+                prefix = "ME,"  # Email
+            else:
+                prefix = "MA,"  # Alphanumeric (plain text)
             zpl = "^XA"             # Start of label
             zpl += "^LH" + str(settings.labelHomeHorizontal.get()*2) + "," + str(settings.labelHomeVertical.get())    # Label home, set by settings
             zpl += "^CF" + "0," + settings.qrTextSize.get()   # Default text, set by amount of text entered approximating it to fit the label
@@ -616,7 +623,7 @@ class printApp(tk.Tk):
                 zpl += "^TB,304,190^FD" + qrEntry2.get() + "^FS" # Wrapped text from single line
                 zpl += "^FO" + "5,0"
             zpl += "^BQ,," + settings.qrCodeSize.get()    # Set QR magnification
-            zpl += "^FD" + qrEntry1.get() + "^FS" # QR code input
+            zpl += "^FD" + prefix + qrEntry1.get() + "^FS" # QR code input
             zpl += "^XZ"            # End of label
             return(zpl)
             
@@ -783,6 +790,7 @@ class printApp(tk.Tk):
         tk.Label(BarcodesPage,
                  text="Add range to tags",
                  bg=backgroundColor,
+                 font=fontType2,
                  fg=fontColor).grid(row=1, column=5)
         
         tk.Label(BarcodesPage,
@@ -889,6 +897,7 @@ class printApp(tk.Tk):
         barcodeCustomLabel.grid(row=3, column=1, sticky="e")
 
         barcodeCustomInput = tk.Entry(barcodeRadioButtonsFrame,
+                                      background=fontColor,
                                       state="disabled")
         barcodeCustomInput.grid(row=3, column=2)
 
@@ -1127,7 +1136,8 @@ class printApp(tk.Tk):
         tk.Label(plainPage,
                  text="Add range to tags",
                  bg=backgroundColor,
-                 fg=fontColor).grid(row=1, column=5)
+                 fg=fontColor,
+                 font=fontType2).grid(row=1, column=5)
         
         tk.Label(plainPage,
                  textvariable=settings.tagQtytxt,
