@@ -38,6 +38,7 @@ from ctypes import *
 #################
 
 ### Set standardised colours to use throughout
+"""
 backgroundColor = "#001F3F" # A dark blue                           #001F3F
 controlsColor = "#083358"   # A less dark blue                      #083358
 fontColor = "#9DB2BF"       # A light gray with a tint of blue      #9DB2BF
@@ -45,6 +46,7 @@ specialColor = "#FFD717"    # Bright yellow                         #FFD717
 activeBGcolor = "#255075"
 brightRedColor = "#FF0000"
 fontType2 = ("Arial", 16, "bold")
+"""
 
 ### Standard button style
 # [buttonName] = tk.Button(LeftControlFrame, text = "buttonText", width = 15
@@ -93,7 +95,7 @@ class printApp(tk.Tk):
         self.resizable(False,False) # Disable resizing of window
         self.columnconfigure(0, weight = 1)
         self.rowconfigure(0, weight = 1)
-        self.configure(bg = backgroundColor)
+        self.configure(bg = "#001F3F")
 
         style.configure('IndicatorOff.TRadiobutton',
                         indicatorrelief=tk.FLAT,
@@ -106,7 +108,9 @@ class printApp(tk.Tk):
         # Create variables #
         ####################
 
-        import settings     # Most settings kept here
+        import settings as _set
+
+        # import _set     # Most _set kept here
 
         printApp.keep = []      # For long term storage of images so they aren't thrown out with garbage
         qrPreviewDefault = Image.open("Images/QRCodedLabelsPageImg.PNG")
@@ -145,8 +149,8 @@ class printApp(tk.Tk):
                 self.label = tk.Button(self,
                                     text=newText,
                                     command=newCommand,
-                                    bg=controlsColor,
-                                    fg=specialColor,
+                                    bg=_set.controlsColor,
+                                    fg=_set.specialColor,
                                     width=width,
                                     relief="flat")
                 self.label.pack()
@@ -157,10 +161,10 @@ class printApp(tk.Tk):
                 self.label = tk.Button(self,
                                     text=newText,
                                     command=newCommand,
-                                    bg=controlsColor,
-                                    fg=fontColor,
-                                    activebackground=controlsColor,
-                                    activeforeground=specialColor,
+                                    bg=_set.controlsColor,
+                                    fg=_set.fontColor,
+                                    activebackground=_set.controlsColor,
+                                    activeforeground=_set.specialColor,
                                     width=width,
                                     font=fontLabelH1,
                                     relief="flat")
@@ -170,11 +174,11 @@ class printApp(tk.Tk):
             def __init__(self, parent, text):
                 self.is_on = True
                 tk.Frame.__init__(self, parent)
-                tk.Frame.configure(self, bg=backgroundColor)
-                tk.Label(self, text="All Caps",bg=backgroundColor, fg=fontColor, font=("aerial 14 bold")).grid(row=0, column=0)
+                tk.Frame.configure(self, bg=_set.backgroundColor)
+                tk.Label(self, text="All Caps",bg=_set.backgroundColor, fg=_set.fontColor, font=("aerial 14 bold")).grid(row=0, column=0)
                 self.upperCaseBtn = tk.Button(self, image=upperSet, bd=0, command=self.upperswitch, relief="flat")
                 self.upperCaseBtn.grid(row=1, column=0)
-                tk.Label(self, text=text,bg=backgroundColor, fg=fontColor, font=("aerial 8 bold")).grid(row=2, column=0)
+                tk.Label(self, text=text,bg=_set.backgroundColor, fg=_set.fontColor, font=("aerial 8 bold")).grid(row=2, column=0)
             def upperswitch(self):
                 if self.is_on:
                     self.upperCaseBtn.configure(image = upperSetOff)
@@ -198,11 +202,11 @@ class printApp(tk.Tk):
                 newprinterlist = []
                 for x in printerList:
                     newprinterlist.append(x[2])
-                tk.Frame.__init__(self, parent, bg=backgroundColor)
+                tk.Frame.__init__(self, parent, bg=_set.backgroundColor)
                 self.label = tk.Label(self,
                                     text=text,
-                                    bg=backgroundColor,
-                                    fg=fontColor,
+                                    bg=_set.backgroundColor,
+                                    fg=_set.fontColor,
                                     font=fontLabelSub)
                 self.label.pack(side="left", padx=(0,10))
                 self.combo = ttk.Combobox(self,
@@ -220,7 +224,7 @@ class printApp(tk.Tk):
 
         class printerRefresh(tk.Frame):
             def __init__(self, parent):
-                tk.Frame.__init__(self, parent, bg=backgroundColor)
+                tk.Frame.__init__(self, parent, bg=_set.backgroundColor)
                 self.button = tk.Button(self,
                                         text="")
 
@@ -257,52 +261,52 @@ class printApp(tk.Tk):
         # customerPage - Navigated to from HomePage | Offers options to print labels which are customer specific. Many of these may require an additional page creating for them.
         # helpPage - Navigated to from Sidebar | Gives generalised or specific context help. Unsure of exact use as yet. May go with general as context help can be handled via 'tooltips'
         # historyPage - Navigated to from Sidebar | Shows labels that have previously been printed. Will be basic to begin with, may add additional information to the history with time, such as who printed it and when
-        # settingsPage - Navigated to from Sidebar | Settings page, will include such things as printer selection positioning adjustment. Can be locked behind a password
+        # _setPage - Navigated to from Sidebar | _set page, will include such things as printer selection positioning adjustment. Can be locked behind a password
 
         # Primary container splits between Titlebar and lower
-        PrimaryContainer = tk.Frame(self, bg = backgroundColor)
+        PrimaryContainer = tk.Frame(self, bg = _set.backgroundColor)
         PrimaryContainer.columnconfigure(0, weight = 1)
         PrimaryContainer.rowconfigure(0, weight = 0)
         PrimaryContainer.rowconfigure(1, weight = 1)
         PrimaryContainer.grid(row = 0, column = 0, sticky = "nsew")
 
         # Frame injected to split up Titlebar into 3
-        TitleFrame = tk.Frame(PrimaryContainer, bg = controlsColor)
+        TitleFrame = tk.Frame(PrimaryContainer, bg = _set.controlsColor)
         TitleFrame.grid(row = 0, column = 0, sticky = "nsew")
         TitleFrame.columnconfigure(0, weight = 1)
         TitleFrame.columnconfigure(2, weight = 1, minsize = 144)
         TitleFrame.columnconfigure(1, weight = 8)
 
         # Frame to split lower section into two, the main space and the space for the control sidebar
-        PageFrame = tk.Frame(PrimaryContainer, bg = backgroundColor)
+        PageFrame = tk.Frame(PrimaryContainer, bg = _set.backgroundColor)
         PageFrame.rowconfigure(0, weight = 1)
         PageFrame.columnconfigure(0, weight = 0)
         PageFrame.columnconfigure(1, weight = 10)
         PageFrame.grid(row = 1, column = 0, sticky = "nsew")
 
         # Frame for the controls sidebar
-        LeftControlFrame = tk.Frame(PageFrame, bg = backgroundColor)
+        LeftControlFrame = tk.Frame(PageFrame, bg = _set.backgroundColor)
         LeftControlFrame.grid(row = 0, column = 0, sticky = "nsw")
 
         # Container Frame for the pages
-        HomePage = tk.Frame(PageFrame, bg=backgroundColor)
+        HomePage = tk.Frame(PageFrame, bg=_set.backgroundColor)
         HomePage.rowconfigure((0,1,2,3,4,5), weight=1)
         HomePage.columnconfigure((0,1,2,3), weight=1)
         HomePage.grid(row=0, column=1, sticky="nsew")
 
-        BarcodesPage = tk.Frame(PageFrame, bg=backgroundColor)
+        BarcodesPage = tk.Frame(PageFrame, bg=_set.backgroundColor)
         BarcodesPage.columnconfigure((0,1,2,3,4,5), weight=1)
         BarcodesPage.columnconfigure((4), weight=0)
         BarcodesPage.rowconfigure((0,1,2,3,4,5,6,7,8,9,10), weight=1)
         BarcodesPage.grid(row=0, column=1, sticky="nsew")
 
-        QRcodePage = tk.Frame(PageFrame, bg=backgroundColor)
+        QRcodePage = tk.Frame(PageFrame, bg=_set.backgroundColor)
         QRcodePage.columnconfigure((0,1,2,3), weight=1)
         QRcodePage.columnconfigure(4, weight=2)
         QRcodePage.rowconfigure((0,1,2,3,4,5,6,7,8,9,10,11,12,13,14), weight=1)
         QRcodePage.grid(row=0, column=1, sticky="nsew")
 
-        plainPage = tk.Frame(PageFrame, bg=backgroundColor)
+        plainPage = tk.Frame(PageFrame, bg=_set.backgroundColor)
         # plainPage.columnconfigure((0,1,2,3,4,5), weight=1)
         # plainPage.rowconfigure((0,1,2,3,4,5,6,7,8), weight=1)
         # plainPage.grid(row=0, column=1, sticky="nsew")
@@ -311,22 +315,22 @@ class printApp(tk.Tk):
         plainPage.rowconfigure((0,1,2,3,4,5,6,7,8,9,10), weight=1)
         plainPage.grid(row=0, column=1, sticky="nsew")
 
-        customerPage = tk.Frame(PageFrame, bg=backgroundColor)
+        customerPage = tk.Frame(PageFrame, bg=_set.backgroundColor)
         customerPage.columnconfigure((0,1,2,3,4,5), weight=1)
         customerPage.rowconfigure((0,1,2,3,4,5,6), weight=1)
         customerPage.grid(row=0, column=1, sticky="nsew")
 
-        helpPage = tk.Frame(PageFrame, bg=backgroundColor)
+        helpPage = tk.Frame(PageFrame, bg=_set.backgroundColor)
         helpPage.rowconfigure((0,1,20,21,22), weight=1)
         helpPage.grid(row=0, column=1, sticky="nsew")
 
-        historyPage = tk.Frame(PageFrame, bg=backgroundColor)
+        historyPage = tk.Frame(PageFrame, bg=_set.backgroundColor)
         historyPage.grid(row=0, column=1, sticky="nsew")
 
-        settingsPage = tk.Frame(PageFrame, bg=backgroundColor)
-        settingsPage.rowconfigure((0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22), weight=1)
-        settingsPage.columnconfigure((0,1,2,3,4,5,6,7,8,9), weight=1)
-        settingsPage.grid(row=0, column=1, sticky="nsew")
+        _setPage = tk.Frame(PageFrame, bg=_set.backgroundColor)
+        _setPage.rowconfigure((0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22), weight=1)
+        _setPage.columnconfigure((0,1,2,3,4,5,6,7,8,9), weight=1)
+        _setPage.grid(row=0, column=1, sticky="nsew")
         
         HomePage.tkraise() # Start with the HomePage
 
@@ -395,8 +399,8 @@ class printApp(tk.Tk):
             elif selection == QRcodePage:
                 QRcodePage.tkraise()
                 qrEntry1.focus_set()
-            elif selection == settingsPage:
-                settingsPage.tkraise()
+            elif selection == _setPage:
+                _setPage.tkraise()
             elif selection == helpPage:
                 helpPage.tkraise()
             elif selection == historyPage:
@@ -464,50 +468,51 @@ class printApp(tk.Tk):
             return
         
         def addToList(itemsForList): # To add labels to the currently active list
-            settings.currentList.set(itemsForList)
+            _set.currentList.set(itemsForList)
 
         ### Tag number counter update command
             
         def updateBarcodeLabels(*event): # Adds range to list and updates tag count
-            addedTagsBarcodedList.insert(tk.END, settings.currentList.get())    # Add current range to list
-            settings.currentList.set('')                            # clears stored list from variables
+            addedTagsBarcodedList.insert(tk.END, _set.currentList.get())    # Add current range to list
+            _set.currentList.set('')                            # clears stored list from variables
             counter = 0
             for x in (addedTagsBarcodedList.get('1.0', tk.END).split('\n')):    # split the list into lines
                 if x:                                               # only count lines with something in them
                     counter += 1
-            settings.tagQty.set("Number of tags: " + str(counter))
+            _set.tagQty.set("Number of tags: " + str(counter))
 
         def updateTextLabels(*event): # Adds range to list and updates tag count
             # tmp = addedTagsTextList.get('1.0', tk.END).rstrip("\n")
-            addedTagsTextList.insert(tk.END, settings.currentList.get())    # Add current range to list
-            # tmp.insert(tk.END, settings.currentList.get())
-            settings.currentList.set('')                            # clears stored list from variables
+            addedTagsTextList.insert(tk.END, _set.currentList.get())    # Add current range to list
+            # tmp.insert(tk.END, _set.currentList.get())
+            _set.currentList.set('')                            # clears stored list from variables
             counter = 0
             for x in (addedTagsTextList.get('1.0', tk.END).split('\n\n')):    # split the list into lines
                 if x and x != '\n':                                # only count lines with something in them
                     counter += 1
-            settings.tagQtytxt.set("Number of tags: " + str(counter))
+            _set.tagQtytxt.set("Number of tags: " + str(counter))
 
         ### Changes selection of barcode type
 
         def barcodeLabelSelection(choice):
-            choice.config(fg=specialColor)
+            choice.config(fg=_set.specialColor)
             if choice == BarcodeCustomSelectionBtn:
-                barcodeCustomLabel.config(fg=specialColor)
-                barcodeCustomInput.config(state="normal", background=specialColor)
+                barcodeCustomLabel.config(fg=_set.specialColor)
+                barcodeCustomInput.config(state="normal", background=_set.specialColor)
+                barcodeCustomInput.focus_set()
             else:
                 barcodeCustomInput.delete(0, tk.END)
-                barcodeCustomLabel.config(fg=fontColor)
-                barcodeCustomInput.config(background=fontColor, state="disabled")
+                barcodeCustomLabel.config(fg=_set.fontColor)
+                barcodeCustomInput.config(background=_set.fontColor, state="disabled")
             for x in barcodeRadioButtons:
                 if x != choice:
-                    x.config(fg=fontColor)
+                    x.config(fg=_set.fontColor)
 
         def textLabelSelection(choice):
-            choice.config(fg=specialColor)
+            choice.config(fg=_set.specialColor)
             for x in textRadioButtons:
                 if x != choice:
-                    x.config(fg=fontColor)
+                    x.config(fg=_set.fontColor)
 
         ### Various commands to clear various sections
 
@@ -517,18 +522,18 @@ class printApp(tk.Tk):
             addTagsBarcodeEntry.delete(0, tk.END)
             addRangeBarcodeEntry1.delete(0, tk.END)
             addRangeBarcodeEntry2.delete(0, tk.END)
-            settings.varBarcodeSelection.set("Asset")
+            _set.varBarcodeSelection.set("Device Asset Tag")
             updateBarcodeLabels()
 
         def clearQRcodePage():
             qrEntry1.delete(0, 'end')
             qrEntry2.delete(0, 'end')
             qrDefaultPreview()
-            settings.varQRSideSelection.set("right")
+            _set.varQRSideSelection.set("right")
 
         def clearPlainTextPage():
             textLabelSelection(smallTextButton)
-            settings.varTextSelection.set("Small")
+            _set.varTextSelection.set("Small")
             addedTagsTextList.delete('1.0', tk.END)
             addTagsTextEntry.delete(0, tk.END)
             addRangeTextEntry1.delete(0, tk.END)
@@ -583,9 +588,9 @@ class printApp(tk.Tk):
             file_content = ""
 
         ### QR Preview Image generator/refresh command
-        def qrPreviewRefresh():
-            if qrEntry1.get() == "" and qrEntry2.get() == "":
-                qrDefaultPreview()
+        def qrPreviewRefresh(qrCode, textCode, allCaps):
+            if qrCode == "" and textCode == "":
+                qrDefaultPreview(qrCode, textCode, allCaps)
             else:
                 zpl = genQRcodeZPL()
                 url = 'http://api.labelary.com/v1/printers/8dpmm/labels/2.48x0.98/0/' # 8dpmm = dots per mm (Printer Specific) | 2.48x0.98 = Inch measurement of label (63mmx25mm)(Label Specific)
@@ -604,32 +609,58 @@ class printApp(tk.Tk):
             printApp.keep[0] = qrPreviewImg
 
         ### Generate QR coded ZPL
-        def genQRcodeZPL():
-            if qrEntry1.get().startswith("http://") or qrEntry1.get().startswith("https://"):
+        def genQRcodeZPL(qrCode, textCode, allCaps):
+            if allCaps:
+                textCode = textCode.upper()
+            if qrCode.startswith("http://") or qrCode.startswith("https://"):
                 prefix = "MM,A"  # URL
-            elif "@" in qrEntry1.get() and "." in qrEntry1.get():
+            elif "@" in qrCode and "." in qrCode:
                 prefix = "ME,"  # Email
             else:
                 prefix = "MA,"  # Alphanumeric (plain text)
             zpl = "^XA"             # Start of label
-            zpl += "^LH" + str(settings.labelHomeHorizontal.get()*2) + "," + str(settings.labelHomeVertical.get())    # Label home, set by settings
-            zpl += "^CF" + "0," + settings.qrTextSize.get()   # Default text, set by amount of text entered approximating it to fit the label
-            if settings.varQRSideSelection.get() == "right":
-                zpl += "^FO" + "5,5"    # First text placement
-                zpl += "^TB,304,190^FD" + qrEntry2.get() + "^FS" # Wrapped text from single line
+            zpl += "^LH" + str(_set.labelHomeHorizontal.get()) + "," + str(_set.labelHomeVertical.get())    # Label home, set by _set
+            zpl += "^CF" + "0," + _set.qrTextSize.get()   # Default text, set by amount of text entered approximating it to fit the label
+            if _set.varQRSideSelection.get() == "right":
+                zpl += "^FO" + "0,0"    # First text placement
+                zpl += "^TB,304,190^FD" + textCode + "^FS" # Wrapped text from single line
                 zpl += "^FO" + "309,0"
             else:
-                zpl += "^FO" + "200,5"    # First text placement
-                zpl += "^TB,304,190^FD" + qrEntry2.get() + "^FS" # Wrapped text from single line
-                zpl += "^FO" + "5,0"
-            zpl += "^BQ,," + settings.qrCodeSize.get()    # Set QR magnification
-            zpl += "^FD" + prefix + qrEntry1.get() + "^FS" # QR code input
+                zpl += "^FO" + "200,0"    # First text placement
+                zpl += "^TB,304,190^FD" + textCode + "^FS" # Wrapped text from single line
+                zpl += "^FO" + "0,0"
+            zpl += "^BQ,," + _set.qrCodeSize.get()    # Set QR magnification
+            zpl += "^FD" + prefix + qrCode + "^FS" # QR code input
             zpl += "^XZ"            # End of label
             return(zpl)
             
+        def genBarcodeZPL(label, list, caps):
+            zpl_code = ""
+            for x in list.split('\n'):
+                if caps:
+                    x = x.upper()
+                if x != "":
+                    zpl_code += f"""
+^XA
+^LH0{_set.labelHomeHorizontal.get()},{_set.labelHomeVertical.get()}
+^FO0,0
+^AsN,25,25
+^FD
+{label}
+^FS
+^FO03,60^BY2.1
+^BCN,100,Y,N
+^FD
+{x}
+^FS
+^XZ
+"""
+            print(zpl_code)
+            pass
+
         def moveLabelHomeX():
-            labelSettingCanvas.moveto(objectxline1, x=labelSettingHorizontalSlider.get()*3, y=labelSettingVerticalSlider.get()*2)
-            labelSettingCanvas.moveto(objectxline2, x=labelSettingHorizontalSlider.get()*3, y=labelSettingVerticalSlider.get()*2)
+            labelSettingCanvas.moveto(objectxline1, x=labelSettingHorizontalSlider.get(), y=labelSettingVerticalSlider.get())
+            labelSettingCanvas.moveto(objectxline2, x=labelSettingHorizontalSlider.get(), y=labelSettingVerticalSlider.get())
         ### File open handler
 
         # def WordFileOpenHandler(filing):
@@ -647,15 +678,15 @@ class printApp(tk.Tk):
             TitleCompanyImage0 = Image.open('Images\CDW.PNG')
             TitleCompanyImage1 = ImageTk.PhotoImage(TitleCompanyImage0.resize((144,80)))
             TitleImageWidth, TitleImageHeight = TitleCompanyImage1.width(), TitleCompanyImage1.height()
-            TitleContentLabel0 = tk.Label(TitleFrame, image=TitleCompanyImage1,bg = controlsColor, width = TitleImageWidth, height = TitleImageHeight, bd = 0, highlightthickness = 0)
+            TitleContentLabel0 = tk.Label(TitleFrame, image=TitleCompanyImage1,bg = _set.controlsColor, width = TitleImageWidth, height = TitleImageHeight, bd = 0, highlightthickness = 0)
             TitleContentLabel0.grid(row = 0, column = 0, sticky = "ew", padx = 0, pady = 10)
             TitleContentLabel0.image = TitleCompanyImage1
             printApp.keep.append(TitleCompanyImage1)
         except:
-            TitleCompanyLabel = tk.Label(TitleFrame, text="CDW", bg = backgroundColor, fg = "red", font=('aerial 48 bold'))
+            TitleCompanyLabel = tk.Label(TitleFrame, text="CDW", bg = _set.backgroundColor, fg = "red", font=('aerial 48 bold'))
             TitleCompanyLabel.grid(row = 0, column = 0, sticky = "ew", padx = (0,TitleImageWidth), pady = 10)
 
-        TitleContentLabel1 = tk.Label(TitleFrame, text = "NDC Config Label Printing", bg = controlsColor, fg = specialColor, font = ('verdana 24 bold'))
+        TitleContentLabel1 = tk.Label(TitleFrame, text = "NDC Config Label Printing", bg = _set.controlsColor, fg = _set.specialColor, font = ('verdana 24 bold'))
         TitleContentLabel1.grid(row = 0, column = 1, sticky = "ew")
 
         # Controls for lefthand sidebar
@@ -674,12 +705,12 @@ class printApp(tk.Tk):
                                           lambda:pageSelect(historyPage))
         LeftControlHistoryBtn.grid(row = 12, column = 0, padx = 15, pady = 5)
 
-        LeftControlSettingsBtn = newButton(LeftControlFrame,
+        LeftControl_setBtn = newButton(LeftControlFrame,
                                            "Settings",
-                                           lambda:pageSelect(settingsPage))
-        LeftControlSettingsBtn.grid(row = 14, column = 0, padx = 15, pady = 5)
+                                           lambda:pageSelect(_setPage))
+        LeftControl_setBtn.grid(row = 14, column = 0, padx = 15, pady = 5)
 
-        VersionLabel = tk.Label(LeftControlFrame, textvariable=varappversion, bg = backgroundColor, fg = fontColor)
+        VersionLabel = tk.Label(LeftControlFrame, textvariable=varappversion, bg = _set.backgroundColor, fg = _set.fontColor)
         VersionLabel.grid(row=15, column=0)
 
         ### Home page ###
@@ -705,11 +736,11 @@ class printApp(tk.Tk):
                                    text = "Barcoded Labels ", 
                                    image = BarcodedLabelsPageImg, 
                                    compound="top", 
-                                   bg=backgroundColor, 
-                                   fg=fontColor,
+                                   bg=_set.backgroundColor, 
+                                   fg=_set.fontColor,
                                    relief="flat", 
-                                   activebackground=controlsColor, 
-                                   activeforeground=specialColor,
+                                   activebackground=_set.controlsColor, 
+                                   activeforeground=_set.specialColor,
                                    font=fontLabelH1)
         barcodePageBtn.grid(row = 1, column = 1)
 
@@ -718,11 +749,11 @@ class printApp(tk.Tk):
                                   text = "QR coded Labels ", 
                                   image = QRCodedLabelsPageImg, 
                                   compound="top", 
-                                  bg=backgroundColor, 
-                                  fg=fontColor,
+                                  bg=_set.backgroundColor, 
+                                  fg=_set.fontColor,
                                   relief="flat", 
-                                  activebackground=controlsColor, 
-                                  activeforeground=specialColor,
+                                  activebackground=_set.controlsColor, 
+                                  activeforeground=_set.specialColor,
                                   font=fontLabelH1)
         QRcodePageBtn.grid(row = 1, column = 2)
 
@@ -731,11 +762,11 @@ class printApp(tk.Tk):
                                  text = "Plain Text Labels ", 
                                  image = PlainTextLabelsPageImg, 
                                  compound="top", 
-                                 bg=backgroundColor, 
-                                 fg=fontColor,
+                                 bg=_set.backgroundColor, 
+                                 fg=_set.fontColor,
                                  relief="flat", 
-                                 activebackground=controlsColor, 
-                                 activeforeground=specialColor,
+                                 activebackground=_set.controlsColor, 
+                                 activeforeground=_set.specialColor,
                                  font=fontLabelH1)
         plainPageBtn.grid(row = 2, column = 1)
 
@@ -744,11 +775,11 @@ class printApp(tk.Tk):
                                     text = "Customer Labels ", 
                                     image = customerLabelsPageImg, 
                                     compound="top", 
-                                    bg=backgroundColor, 
-                                    fg=fontColor,
+                                    bg=_set.backgroundColor, 
+                                    fg=_set.fontColor,
                                     relief="flat", 
-                                    activebackground=controlsColor, 
-                                    activeforeground=specialColor,
+                                    activebackground=_set.controlsColor, 
+                                    activeforeground=_set.specialColor,
                                     font=fontLabelH1)
         customerPageBtn.grid(row = 2, column = 2)
 
@@ -757,8 +788,8 @@ class printApp(tk.Tk):
         tk.Label(HomePage,
                                        text = "Select your label type",
                                        font = fontHeaderH1,
-                                       bg = backgroundColor, 
-                                       fg = fontColor).grid(row=0, 
+                                       bg = _set.backgroundColor, 
+                                       fg = _set.fontColor).grid(row=0, 
                                                                columnspan=8,
                                                                sticky="ew")
 
@@ -781,27 +812,27 @@ class printApp(tk.Tk):
         # Labels
         tk.Label(BarcodesPage,
                  text="Barcoded Labels",
-                 bg=backgroundColor,
-                 fg=fontColor,
+                 bg=_set.backgroundColor,
+                 fg=_set.fontColor,
                  font=fontHeaderH1).grid(row=0, 
                                          columnspan=6, 
                                          sticky="ew")
         
         tk.Label(BarcodesPage,
                  text="Add range to tags",
-                 bg=backgroundColor,
-                 font=fontType2,
-                 fg=fontColor).grid(row=1, column=5)
+                 bg=_set.backgroundColor,
+                 font=_set.fontType2,
+                 fg=_set.fontColor).grid(row=1, column=5)
         
         tk.Label(BarcodesPage,
-                 textvariable=settings.tagQty,
-                 bg=backgroundColor,
-                 fg=specialColor).grid(row=7, column=0)
+                 textvariable=_set.tagQty,
+                 bg=_set.backgroundColor,
+                 fg=_set.specialColor).grid(row=7, column=0)
 
 
         # RadioButtons
 
-        barcodeRadioButtonsFrame = tk.Frame(BarcodesPage, bg=backgroundColor)
+        barcodeRadioButtonsFrame = tk.Frame(BarcodesPage, bg=_set.backgroundColor)
         barcodeRadioButtonsFrame.grid(row=2, column=2, rowspan=6, columnspan=2)
 
 
@@ -810,18 +841,18 @@ class printApp(tk.Tk):
                     image=BarcodedLabelsPageImg_asset, 
                     text="Asset Tag", 
                     compound="top", 
-                    bg=backgroundColor,
-                    fg=fontColor,
+                    bg=_set.backgroundColor,
+                    fg=_set.fontColor,
                     relief="flat", 
-                    activebackground=controlsColor, 
-                    activeforeground=specialColor,
+                    activebackground=_set.controlsColor, 
+                    activeforeground=_set.specialColor,
                     font=fontLabelH1,
-                    variable=settings.varBarcodeSelection,
+                    variable=_set.varBarcodeSelection,
                     indicatoron=False,
-                    selectcolor=activeBGcolor,
+                    selectcolor=_set.activeBGcolor,
                     bd=0,
                     offrelief="flat",
-                    value="Asset")
+                    value="Device Asset Tag")
         BarcodeAssetSelectionBtn.config(command = lambda arg=BarcodeAssetSelectionBtn: barcodeLabelSelection(arg))
         #BarcodeAssetSelectionBtn.grid(row=2, column=2, rowspan=2, columnspan=2)
         BarcodeAssetSelectionBtn.grid(row=1, column=1)
@@ -831,18 +862,18 @@ class printApp(tk.Tk):
                     image=BarcodedLabelsPageImg_serial, 
                     text="Serial Number",
                     compound="top", 
-                    bg=backgroundColor, 
-                    fg=fontColor,
+                    bg=_set.backgroundColor, 
+                    fg=_set.fontColor,
                     relief="flat", 
-                    activebackground=controlsColor, 
-                    activeforeground=specialColor,
+                    activebackground=_set.controlsColor, 
+                    activeforeground=_set.specialColor,
                     font=fontLabelH1,
-                    variable=settings.varBarcodeSelection,
+                    variable=_set.varBarcodeSelection,
                     indicatoron=False,
-                    selectcolor=activeBGcolor,
+                    selectcolor=_set.activeBGcolor,
                     bd=0,
                     offrelief="flat",
-                    value="Serial")
+                    value="Device Serial Number")
         BarcodeSerialSelectionBtn.config(command = lambda arg=BarcodeSerialSelectionBtn: barcodeLabelSelection(arg))
         #BarcodeSerialSelectionBtn.grid(row=4, column=2, rowspan=2, columnspan=2)
         BarcodeSerialSelectionBtn.grid(row=1, column=2)
@@ -852,18 +883,18 @@ class printApp(tk.Tk):
                     image=BarcodedLabelsPageImg_mac, 
                     text="MAC Address",
                     compound="top", 
-                    bg=backgroundColor, 
-                    fg=fontColor,
+                    bg=_set.backgroundColor, 
+                    fg=_set.fontColor,
                     relief="flat", 
-                    activebackground=controlsColor, 
-                    activeforeground=specialColor,
+                    activebackground=_set.controlsColor, 
+                    activeforeground=_set.specialColor,
                     font=fontLabelH1,
-                    variable=settings.varBarcodeSelection,
+                    variable=_set.varBarcodeSelection,
                     indicatoron=False,
-                    selectcolor=activeBGcolor,
+                    selectcolor=_set.activeBGcolor,
                     bd=0,
                     offrelief="flat",
-                    value="MAC")
+                    value="Device MAC Address")
         BarcodeMACSelectionBtn.config(command = lambda arg=BarcodeMACSelectionBtn: barcodeLabelSelection(arg))
         # BarcodeMACSelectionBtn.grid(row=6, column=2, rowspan=2, columnspan=2)
         BarcodeMACSelectionBtn.grid(row=2, column=1)
@@ -872,18 +903,18 @@ class printApp(tk.Tk):
                     image=BarcodedLabelsPageImg_custom, 
                     text="Custom Label",
                     compound="top", 
-                    bg=backgroundColor, 
-                    fg=fontColor,
+                    bg=_set.backgroundColor, 
+                    fg=_set.fontColor,
                     relief="flat", 
-                    activebackground=controlsColor, 
-                    activeforeground=specialColor,
+                    activebackground=_set.controlsColor, 
+                    activeforeground=_set.specialColor,
                     font=fontLabelH1,
-                    variable=settings.varBarcodeSelection,
+                    variable=_set.varBarcodeSelection,
                     indicatoron=False,
-                    selectcolor=activeBGcolor,
+                    selectcolor=_set.activeBGcolor,
                     bd=0,
                     offrelief="flat",
-                    value="Custom")
+                    value="")
         BarcodeCustomSelectionBtn.config(command = lambda arg=BarcodeCustomSelectionBtn: barcodeLabelSelection(arg))
         # BarcodeMACSelectionBtn.grid(row=6, column=2, rowspan=2, columnspan=2)
         BarcodeCustomSelectionBtn.grid(row=2, column=2)
@@ -891,13 +922,14 @@ class printApp(tk.Tk):
         barcodeCustomLabel = tk.Label(barcodeRadioButtonsFrame,
                                       text="Enter your custom header here :",
                                       font=fontLabelSub,
-                                      bg=backgroundColor,
+                                      bg=_set.backgroundColor,
                                       fg="#FF0000",
                                       anchor="e")
         barcodeCustomLabel.grid(row=3, column=1, sticky="e")
 
         barcodeCustomInput = tk.Entry(barcodeRadioButtonsFrame,
-                                      background=fontColor,
+                                      background=_set.fontColor,
+                                      textvariable=_set.varBarcodeSelection,
                                       state="disabled")
         barcodeCustomInput.grid(row=3, column=2)
 
@@ -918,7 +950,7 @@ class printApp(tk.Tk):
         #             width=15)
         # printBarcodedBtn.grid(row=9, column=2, columnspan=2)
 
-        printBarcodedBtn = newButton2(BarcodesPage, "Print Now", lambda: blank())
+        printBarcodedBtn = newButton2(BarcodesPage, "Print Now", lambda: genBarcodeZPL(_set.varBarcodeSelection.get(),addedTagsBarcodedList.get('1.0', tk.END),upperCaseBarcodedBtn.get()))
         printBarcodedBtn.grid(row=8, column=2)
 
         clearBarcodedBtn = newButton2(BarcodesPage, "Clear", lambda: clearBarcodesPage())
@@ -960,11 +992,11 @@ class printApp(tk.Tk):
         # Radio Button
         qrLeftSelect = tk.Radiobutton(QRcodePage,
                                       text="Left",
-                                      bg=backgroundColor,
+                                      bg=_set.backgroundColor,
                                       fg="white",
-                                      variable=settings.varQRSideSelection,
-                                      activebackground=backgroundColor,
-                                      activeforeground=specialColor,
+                                      variable=_set.varQRSideSelection,
+                                      activebackground=_set.backgroundColor,
+                                      activeforeground=_set.specialColor,
                                       selectcolor="#000000",
                                       value="left",
                                       command=lambda:qrPreviewRefresh()
@@ -972,11 +1004,11 @@ class printApp(tk.Tk):
         qrLeftSelect.grid(row=0, column=2)
         qrRightSelect = tk.Radiobutton(QRcodePage,
                                        text="Right",
-                                       bg=backgroundColor,
+                                       bg=_set.backgroundColor,
                                        fg="white",
-                                       variable=settings.varQRSideSelection,
-                                       activebackground=backgroundColor,
-                                       activeforeground=specialColor,
+                                       variable=_set.varQRSideSelection,
+                                       activebackground=_set.backgroundColor,
+                                       activeforeground=_set.specialColor,
                                        selectcolor="#000000",
                                        value="right",
                                        command=lambda:qrPreviewRefresh()
@@ -984,11 +1016,11 @@ class printApp(tk.Tk):
         qrRightSelect.grid(row=0, column=3)
 
         # Labels
-        tk.Label(QRcodePage, text = "Select QR position", bg=backgroundColor, fg=fontColor).grid(row=0, column=1, sticky='e')
-        tk.Label(QRcodePage, text = "QR encoded data", bg=backgroundColor, fg=specialColor).grid(row=1, column=1, sticky='w')
-        tk.Label(QRcodePage, text = "Plain Text", bg=backgroundColor, fg=specialColor).grid(row=4, column=1, sticky='w')
-        tk.Label(QRcodePage, text = "Text Size", bg=backgroundColor, fg=fontColor).grid(row=4, column=2, sticky='e')
-        tk.Label(QRcodePage, text = "QR Code Size", bg=backgroundColor, fg=fontColor).grid(row=1, column=2, sticky='e')
+        tk.Label(QRcodePage, text = "Select QR position", bg=_set.backgroundColor, fg=_set.fontColor).grid(row=0, column=1, sticky='e')
+        tk.Label(QRcodePage, text = "QR encoded data", bg=_set.backgroundColor, fg=_set.specialColor).grid(row=1, column=1, sticky='w')
+        tk.Label(QRcodePage, text = "Plain Text", bg=_set.backgroundColor, fg=_set.specialColor).grid(row=4, column=1, sticky='w')
+        tk.Label(QRcodePage, text = "Text Size", bg=_set.backgroundColor, fg=_set.fontColor).grid(row=4, column=2, sticky='e')
+        tk.Label(QRcodePage, text = "QR Code Size", bg=_set.backgroundColor, fg=_set.fontColor).grid(row=1, column=2, sticky='e')
 
         # Text Entry
         qrEntry1 = tk.Entry(QRcodePage, width=90)
@@ -1008,7 +1040,7 @@ class printApp(tk.Tk):
         # tk.Label(QRcodePage, text="All caps with show when\nlabels are printed.\nDoes NOT affect QR code",bg=backgroundColor, fg=fontColor, font=("aerial 8 bold")).grid(row=14, column=0)
 
         # Buttons
-        qrPreviewRefreshBtn = newButton2(QRcodePage, "Refresh Preview", lambda:qrPreviewRefresh())
+        qrPreviewRefreshBtn = newButton2(QRcodePage, "Refresh Preview", lambda:qrPreviewRefresh(qrEntry1.get(),qrEntry2.get(),upperCaseQRBtn.get()))
         qrPreviewRefreshBtn.grid(row=11, column=1)
 
         qrPrintLabelBtn = newButton2(QRcodePage, "Print", lambda:blank())
@@ -1023,63 +1055,63 @@ class printApp(tk.Tk):
         printApp.keep.append(qrPreviewImg)
 
         # Tickers
-        qrTextSizeTicker = ttk.Spinbox(QRcodePage, textvariable=settings.qrTextSize, from_=10, to=80, width=5)
+        qrTextSizeTicker = ttk.Spinbox(QRcodePage, textvariable=_set.qrTextSize, from_=10, to=80, width=5)
         qrTextSizeTicker.grid(row=4, column=3, sticky='w', padx=(10,0))
 
-        qrCodeSizeTicker = ttk.Spinbox(QRcodePage, textvariable=settings.qrCodeSize, from_=1, to=10, width=5)
+        qrCodeSizeTicker = ttk.Spinbox(QRcodePage, textvariable=_set.qrCodeSize, from_=1, to=10, width=5)
         qrCodeSizeTicker.grid(row=1, column=3, sticky='w', padx=(10,0))
 
-        ### Settings Page ###
+        ### _set Page ###
         
         # Labels
-        tk.Label(settingsPage, bg=backgroundColor, fg=fontColor, text="Created for use within the configuration department within the NDC of CDW UK Ltd.").grid(row=20, column=1, columnspan=3)
-        tk.Label(settingsPage, bg=backgroundColor, fg=fontColor, text="Program: ©Dave Williams 2024").grid(row=21, column=1, columnspan=3)
-        tk.Label(settingsPage, bg=backgroundColor, fg=fontColor, text="CDW logo: ©CDW UK Ltd.").grid(row=22, column=1, columnspan=3)
+        tk.Label(_setPage, bg=_set.backgroundColor, fg=_set.fontColor, text="Created for use within the configuration department within the NDC of CDW UK Ltd.").grid(row=20, column=1, columnspan=3)
+        tk.Label(_setPage, bg=_set.backgroundColor, fg=_set.fontColor, text="Program: ©Dave Williams 2024").grid(row=21, column=1, columnspan=3)
+        tk.Label(_setPage, bg=_set.backgroundColor, fg=_set.fontColor, text="CDW logo: ©CDW UK Ltd.").grid(row=22, column=1, columnspan=3)
 
-        tk.Label(settingsPage, bg=backgroundColor, fg=fontColor, text="Label Position Adjustment").grid(row=3, column=1, columnspan=2)
-        tk.Label(settingsPage, bg=backgroundColor, fg=fontColor, font=fontLabelSub, text="Not to scale").grid(row=4, column=1, columnspan=2)
-        tk.Label(settingsPage, bg=backgroundColor, fg=fontColor, font=fontLabelSub, text="N.B. Position Adjustment will not affect some customer labels").grid(row=11, column=1, columnspan=2)
+        tk.Label(_setPage, bg=_set.backgroundColor, fg=_set.fontColor, text="Label Position Adjustment").grid(row=3, column=1, columnspan=2)
+        tk.Label(_setPage, bg=_set.backgroundColor, fg=_set.fontColor, font=fontLabelSub, text="Not to scale").grid(row=4, column=1, columnspan=2)
+        tk.Label(_setPage, bg=_set.backgroundColor, fg=_set.fontColor, font=fontLabelSub, text="N.B. Position Adjustment will not affect some customer labels").grid(row=11, column=1, columnspan=2)
 
-        tk.Label(settingsPage, bg=backgroundColor, fg=fontColor, text="Select Printers").grid(row=3, column=7, columnspan=2)
-        # tk.Label(settingsPage, bg=backgroundColor, fg=fontColor, font=fontLabelSub, text="Barcodes Printer:").grid(row=5, column=7, columnspan=2)
-        # tk.Label(settingsPage, bg=backgroundColor, fg=fontColor, font=fontLabelSub, text="QR Printer:").grid(row=6, column=7, columnspan=2)
-        # tk.Label(settingsPage, bg=backgroundColor, fg=fontColor, font=fontLabelSub, text="Barcodes Alt Printer:").grid(row=7, column=7, columnspan=2)
-        # tk.Label(settingsPage, bg=backgroundColor, fg=fontColor, font=fontLabelSub, text="Text Printer (Small):").grid(row=8, column=7, columnspan=2)
-        # tk.Label(settingsPage, bg=backgroundColor, fg=fontColor, font=fontLabelSub, text="Text Printer (Large):").grid(row=9, column=7, columnspan=2)
+        tk.Label(_setPage, bg=_set.backgroundColor, fg=_set.fontColor, text="Select Printers").grid(row=3, column=7, columnspan=2)
+        # tk.Label(_setPage, bg=backgroundColor, fg=fontColor, font=fontLabelSub, text="Barcodes Printer:").grid(row=5, column=7, columnspan=2)
+        # tk.Label(_setPage, bg=backgroundColor, fg=fontColor, font=fontLabelSub, text="QR Printer:").grid(row=6, column=7, columnspan=2)
+        # tk.Label(_setPage, bg=backgroundColor, fg=fontColor, font=fontLabelSub, text="Barcodes Alt Printer:").grid(row=7, column=7, columnspan=2)
+        # tk.Label(_setPage, bg=backgroundColor, fg=fontColor, font=fontLabelSub, text="Text Printer (Small):").grid(row=8, column=7, columnspan=2)
+        # tk.Label(_setPage, bg=backgroundColor, fg=fontColor, font=fontLabelSub, text="Text Printer (Large):").grid(row=9, column=7, columnspan=2)
 
         # Sliders
-        labelSettingVerticalSlider = tk.Scale(settingsPage, 
-                                              from_=0, 
-                                              to=25, 
-                                              bg=backgroundColor, 
-                                              fg=fontColor,
-                                              troughcolor=controlsColor,
+        labelSettingVerticalSlider = tk.Scale(_setPage, 
+                                              from_=5, 
+                                              to=138, 
+                                              bg=_set.backgroundColor, 
+                                              fg=_set.fontColor,
+                                              troughcolor=_set.controlsColor,
                                               bd=0,
-                                              activebackground=fontColor,
-                                              highlightbackground=backgroundColor,
-                                              highlightcolor=specialColor,
+                                              activebackground=_set.fontColor,
+                                              highlightbackground=_set.backgroundColor,
+                                              highlightcolor=_set.specialColor,
                                               command=lambda x:moveLabelHomeX(),
-                                              variable=settings.labelHomeVertical)
+                                              variable=_set.labelHomeVertical)
         labelSettingVerticalSlider.grid(row=5, column=3, sticky='nsw', rowspan=3)
-        labelSettingHorizontalSlider = tk.Scale(settingsPage, 
-                                                from_=0, 
-                                                to=25, 
+        labelSettingHorizontalSlider = tk.Scale(_setPage, 
+                                                from_=5, 
+                                                to=370, 
                                                 orient="horizontal", 
-                                                bg=backgroundColor, 
-                                                fg=fontColor,
-                                                troughcolor=controlsColor,
+                                                bg=_set.backgroundColor, 
+                                                fg=_set.fontColor,
+                                                troughcolor=_set.controlsColor,
                                                 bd=0,
-                                                activebackground=fontColor,
-                                                highlightbackground=backgroundColor,
-                                                highlightcolor=specialColor,
+                                                activebackground=_set.fontColor,
+                                                highlightbackground=_set.backgroundColor,
+                                                highlightcolor=_set.specialColor,
                                                 command=lambda x:moveLabelHomeX(),
-                                                variable=settings.labelHomeHorizontal)
+                                                variable=_set.labelHomeHorizontal)
         labelSettingHorizontalSlider.grid(row=8, column=1, columnspan=2, sticky='new')
 
         # Canvas
-        labelSettingCanvasHeight = 150
-        labelSettingCanvasWidth = 400
-        labelSettingCanvas = tk.Canvas(settingsPage,
+        labelSettingCanvasHeight = 204
+        labelSettingCanvasWidth = 508
+        labelSettingCanvas = tk.Canvas(_setPage,
                                        height=labelSettingCanvasHeight,
                                        width=labelSettingCanvasWidth,
                                        bd=0, 
@@ -1087,35 +1119,35 @@ class printApp(tk.Tk):
                                        relief='ridge')
         labelSettingCanvas.grid(row=5, column=1, rowspan=3, columnspan=2)
 
-        labelSettingCanvas.create_rectangle(5,5,395,145, outline="#ff0000")
+        labelSettingCanvas.create_rectangle(5,5,503,199, outline="#ff0000")
         labelSettingCanvas.create_polygon(6,0,0,6,6,6, outline="#0000ff", fill="#0000ff")
-        labelSettingCanvas.create_polygon(394,0,400,6,394,6, outline="#0000ff", fill="#0000ff")
-        labelSettingCanvas.create_polygon(0,144,6,144,6,150, outline="#0000ff", fill="#0000ff")
-        labelSettingCanvas.create_polygon(394,144,400,144,394,150, outline="#0000ff", fill="#0000ff")
+        labelSettingCanvas.create_polygon(503,0,508,6,503,6, outline="#0000ff", fill="#0000ff")
+        labelSettingCanvas.create_polygon(0,199,6,199,6,204, outline="#0000ff", fill="#0000ff")
+        labelSettingCanvas.create_polygon(503,199,508,199,503,204, outline="#0000ff", fill="#0000ff")
         
-        positionx = 0
-        positiony = 0
+        positionx = 5
+        positiony = 5
         objectxline1 = labelSettingCanvas.create_line(positionx,positiony,positionx+9,positiony+9)
         objectxline2 = labelSettingCanvas.create_line(positionx,positiony+9,positionx+9,positiony)
 
         # Printer Selection
 
-        defaultPrinterSelector = printerSelector(settingsPage, "Default Printer:", defaultPrinter)
+        defaultPrinterSelector = printerSelector(_setPage, "Default Printer:", defaultPrinter)
         defaultPrinterSelector.grid(row=4, column=7, sticky='e')
-        barcodePrinterSelector = printerSelector(settingsPage, "Barcode Printer:", barcodePrinter)
+        barcodePrinterSelector = printerSelector(_setPage, "Barcode Printer:", barcodePrinter)
         barcodePrinterSelector.grid(row=5, column=7, sticky='e')
-        barcodeALTPrinterSelector = printerSelector(settingsPage, "Barcode Printer Alt:", barcodeAltPrinter)
+        barcodeALTPrinterSelector = printerSelector(_setPage, "Barcode Printer Alt:", barcodeAltPrinter)
         barcodeALTPrinterSelector.grid(row=6, column=7, sticky='e')
-        QRPrinterSelector = printerSelector(settingsPage, "QR Printer:", QRPrinter)
+        QRPrinterSelector = printerSelector(_setPage, "QR Printer:", QRPrinter)
         QRPrinterSelector.grid(row=7, column=7, sticky='e')
-        textSMLPrinterSelector = printerSelector(settingsPage, "Text Printer (Small):", textSMLPrinter)
+        textSMLPrinterSelector = printerSelector(_setPage, "Text Printer (Small):", textSMLPrinter)
         textSMLPrinterSelector.grid(row=8, column=7, sticky='e')
-        textLRGPrinterSelector = printerSelector(settingsPage, "Text Printer (Large):", textLRGPrinter)
+        textLRGPrinterSelector = printerSelector(_setPage, "Text Printer (Large):", textLRGPrinter)
         textLRGPrinterSelector.grid(row=9, column=7, sticky='e')
 
         # buttons
 
-        savePrinters = newButton(settingsPage, "Save Printers", lambda:blank())
+        savePrinters = newButton(_setPage, "Save Printers", lambda:blank())
         savePrinters.grid(row=10, column=7)
 
         ### Plain Text Page ###
@@ -1129,35 +1161,35 @@ class printApp(tk.Tk):
         # Labels
         tk.Label(plainPage,
                  text="Plain text Labels",
-                 bg=backgroundColor,
-                 fg=fontColor,
+                 bg=_set.backgroundColor,
+                 fg=_set.fontColor,
                  font=fontHeaderH1).grid(row=0, columnspan=6, sticky="ew")
         
         tk.Label(plainPage,
                  text="Add range to tags",
-                 bg=backgroundColor,
-                 fg=fontColor,
-                 font=fontType2).grid(row=1, column=5)
+                 bg=_set.backgroundColor,
+                 fg=_set.fontColor,
+                 font=_set.fontType2).grid(row=1, column=5)
         
         tk.Label(plainPage,
-                 textvariable=settings.tagQtytxt,
-                 bg=backgroundColor,
-                 fg=specialColor).grid(row=7, column=0)
+                 textvariable=_set.tagQtytxt,
+                 bg=_set.backgroundColor,
+                 fg=_set.specialColor).grid(row=7, column=0)
         
         # RadioButtons
         smallTextButton = tk.Radiobutton(plainPage,
                     image=smallTextLabelsImage, 
                     text="Small Text Label", 
                     compound="top", 
-                    bg=backgroundColor,
-                    fg=fontColor,
+                    bg=_set.backgroundColor,
+                    fg=_set.fontColor,
                     relief="flat", 
-                    activebackground=controlsColor, 
-                    activeforeground=specialColor,
+                    activebackground=_set.controlsColor, 
+                    activeforeground=_set.specialColor,
                     font=fontLabelH1,
-                    variable=settings.varTextSelection,
+                    variable=_set.varTextSelection,
                     indicatoron=False,
-                    selectcolor=controlsColor,
+                    selectcolor=_set.controlsColor,
                     bd=0,
                     offrelief="flat",
                     value="Small")
@@ -1168,15 +1200,15 @@ class printApp(tk.Tk):
                     image=largeTextLabelsImage, 
                     text="Large Text Label",
                     compound="top", 
-                    bg=backgroundColor, 
-                    fg=fontColor,
+                    bg=_set.backgroundColor, 
+                    fg=_set.fontColor,
                     relief="flat", 
-                    activebackground=controlsColor, 
-                    activeforeground=specialColor,
+                    activebackground=_set.controlsColor, 
+                    activeforeground=_set.specialColor,
                     font=fontLabelH1,
-                    variable=settings.varTextSelection,
+                    variable=_set.varTextSelection,
                     indicatoron=False,
-                    selectcolor=controlsColor,
+                    selectcolor=_set.controlsColor,
                     bd=0,
                     offrelief="flat",
                     value="Large")
@@ -1188,7 +1220,7 @@ class printApp(tk.Tk):
         textLabelSelection(smallTextButton) # Set default button
 
         # Buttons
-        printTextBtn = newButton2(plainPage, "Print Now", lambda: print(settings.varTextSelection.get()))
+        printTextBtn = newButton2(plainPage, "Print Now", lambda: print(_set.varTextSelection.get()))
         printTextBtn.grid(row=8, column=2)
 
         clearTextBtn = newButton2(plainPage, "Clear", lambda: clearPlainTextPage())
